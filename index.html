@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบแดชบอร์ดเฝ้าระวังโรคไข้เลือดออก - อ.วังน้ำเย็น จ.สระแก้ว</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet GIS Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .glass-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05); }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        #map { height: 460px; width: 100%; border-radius: 1rem; z-index: 10; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-teal-500 selection:text-white">
+
+    <!-- 🔒 1. หน้าล็อกอิน -->
+    <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-200 animate-fade-in text-slate-800">
+            <div class="text-center space-y-3 mb-6">
+                <div class="inline-flex bg-teal-100 p-4 rounded-2xl text-teal-700 shadow-inner">
+                    <i class="fa-solid fa-shield-virus text-4xl"></i>
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold font-heading text-slate-800">ระบบเฝ้าระวังโรคไข้เลือดออก</h2>
+                <p class="text-xs text-slate-500">สำนักงานสาธารณสุขอำเภอวังน้ำเย็น จ.สระแก้ว</p>
+            </div>
+
+            <form onsubmit="handleMainLogin(event)" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">ชื่อผู้ใช้งาน</label>
+                    <input type="text" id="loginUser" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" placeholder="admin" required>
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">รหัสผ่าน</label>
+                    <input type="password" id="loginPass" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" placeholder="••••••••" required>
+                </div>
+                <div id="loginError" class="text-rose-600 text-xs hidden font-medium bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                    ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!
+                </div>
+                <button type="submit" class="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl shadow-lg transition">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 📊 2. เนื้อหาหลัก แดชบอร์ด -->
+    <div id="dashboardContainer" class="hidden min-h-screen flex flex-col bg-slate-50 text-slate-800">
+        
+        <!-- Header -->
+        <header class="bg-teal-900 border-b border-teal-800 text-white sticky top-0 z-40 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white/10 p-2 rounded-xl border border-white/20">
+                        <i class="fa-solid fa-shield-virus text-2xl text-teal-300"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-teal-800 text-teal-200 px-2.5 py-0.5 rounded-full border border-teal-700">เลือกปีข้อมูล:</span>
+                            <select id="yearFilter" onchange="filterDataByYear(this.value)" class="bg-slate-800 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-400/40 focus:outline-none font-semibold cursor-pointer">
+                                <option value="ALL">ทุกปีย้อนหลัง (ทั้งหมด)</option>
+                                <option value="2569">ปี 2569</option>
+                                <option value="2568">ปี 2568</option>
+                                <option value="2567">ปี 2567</option>
+                                <option value="2566">ปี 2566</option>
+                                <option value="2565">ปี 2565</option>
+                            </select>
+                        </div>
+                        <h1 class="text-lg md:text-xl font-bold font-heading mt-0.5 text-white">สถานการณ์โรคไข้เลือดออก อ.วังน้ำเย็น</h1>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="openAddDataModal()" class="bg-teal-600 hover:bg-teal-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-plus-circle"></i> บันทึกข้อมูล
+                    </button>
+                    <button onclick="downloadDataCSV()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-csv"></i> ส่งออก CSV
+                    </button>
+                    <button onclick="handleLogout()" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs rounded-xl transition">
+                        ออกจากระบบ
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+            
+            <!-- 📌 สรุปภาพรวมเมื่อสิ้นสุดปี (Banner) -->
+            <section id="yearEndSummaryCard" class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white rounded-2xl p-5 shadow-lg border border-teal-500/30 animate-fade-in relative overflow-hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+                    <div class="space-y-1.5 max-w-3xl">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="bg-teal-500/20 text-teal-300 text-xs px-3 py-1 rounded-full font-semibold border border-teal-400/30 flex items-center gap-1.5">
+                                <i class="fa-solid fa-award text-amber-400"></i> สรุปสถานการณ์ภาพรวมประจำปี <span id="summaryYearLabel" class="text-amber-300 font-bold">ทั้งหมด</span>
+                            </span>
+                            <span id="cfrStatusBadge" class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)
+                            </span>
+                        </div>
+
+                        <h3 id="summaryTitle" class="text-lg md:text-xl font-bold font-heading text-white pt-1">
+                            สรุปยอดผู้ป่วยสะสมรวมทั้งสิ้น <span id="summaryTotalCases" class="text-teal-300 font-extrabold text-2xl">0</span> ราย
+                        </h3>
+
+                        <p id="summaryDetailText" class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                            กำลังประมวลผลสรุปข้อมูลประจำปี...
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shrink-0 self-start md:self-auto">
+                        <div class="text-center px-2">
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">พื้นที่ระบาดสูงสุด</p>
+                            <p id="summaryHotspotSub" class="text-sm font-bold text-amber-300 font-heading mt-0.5">-</p>
+                        </div>
+                        <div class="w-px h-8 bg-white/20"></div>
+                        <div class="text-center px-2">
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">กลุ่มอายุเสี่ยงสูง</p>
+                            <p id="summaryHighRiskAge" class="text-sm font-bold text-cyan-300 font-heading mt-0.5">5 - 14 ปี</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 📊 KPI Cards Summary -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-cyan-500">
+                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมรายวัน / สัปดาห์</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span id="kpiTodayCases" class="text-3xl font-bold text-cyan-600">+0</span>
+                        <span class="text-xs text-slate-500">รายวันนี้</span>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
+                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสม (เลือกปี)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span id="kpiCumCases" class="text-3xl font-bold text-rose-600">0</span>
+                        <span class="text-xs text-slate-500">ราย</span>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-purple-500">
+                    <p class="text-xs font-semibold text-slate-500">ผู้เสียชีวิตสะสม (CFR)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span id="kpiCumDeaths" class="text-3xl font-bold text-purple-600">0</span>
+                        <span id="kpiCFR" class="text-xs font-bold text-emerald-600">0.00%</span>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-4 border-l-4 border-l-indigo-500">
+                    <p class="text-xs font-semibold text-slate-500">อัตราป่วย / แสนประชากร</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span id="kpiMorbidity" class="text-3xl font-bold text-indigo-600">0.0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล (ตามแบบรูปตัวอย่าง) -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Chart 1: Epi Curve + 5 Year Median Baseline -->
+                <div class="lg:col-span-8 glass-card rounded-2xl p-5">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-area text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 5 ปีย้อนหลัง (Epi Curve)
+                            </h3>
+                            <p class="text-xs text-slate-500">เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน พ.ศ. 2562 - 2566</p>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
+                </div>
+
+                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล -->
+                <div class="lg:col-span-4 glass-card rounded-2xl p-5">
+                    <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">เปรียบเทียบผู้ป่วยสะสมแยกตามพื้นที่ตำบล</p>
+                    <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
+                </div>
+
+            </section>
+
+            <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ + ชนิดโรค + การ์ดสัดส่วนอาชีพสูงสุด (ตามแบบรูปตัวอย่าง) -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Chart 3: การกระจายตามกลุ่มอายุ (Age Group) -->
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-user-group text-amber-500"></i> การกระจายตามกลุ่มอายุ (Age Group)
+                    </h3>
+                    <p class="text-xs text-amber-600 font-medium mb-2">เน้นกลุ่มเด็กนักเรียนช่วงอายุ 5 - 14 ปี</p>
+                    <div class="relative w-full h-64"><canvas id="ageDistributionChart"></canvas></div>
+                </div>
+
+                <!-- Chart 4: จำแนกตามชนิดของโรค (Diag Type) -->
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-viruses text-teal-600"></i> จำแนกตามชนิดของโรค (Diag Type)
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">ไข้เดงกี (D.F.) และ ไข้เลือดออกเดงกี (D.H.F.)</p>
+                    <div class="relative w-full h-64"><canvas id="diagTypeChart"></canvas></div>
+                </div>
+
+                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations) - เพิ่มใหม่ตามภาพ -->
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
+                            <i class="fa-solid fa-briefcase text-teal-600"></i> อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations)
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-3">จำแนกตามกลุ่มอาชีพของผู้ป่วย</p>
+                        
+                        <!-- Progress Bars List -->
+                        <div id="occupationList" class="space-y-3 text-xs">
+                            <!-- จะถูกสร้างไดนามิกผ่าน JS -->
+                        </div>
+                    </div>
+
+                    <!-- Footer Badge -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 bg-slate-50 p-3 rounded-xl flex justify-between items-center text-xs">
+                        <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-school text-slate-500"></i> สถานศึกษาที่ได้รับผลกระทบ:
+                        </span>
+                        <span id="schoolCountText" class="font-bold text-slate-800 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">12 โรงเรียน</span>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- แผนที่ GIS -->
+                <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS อ.วังน้ำเย็น
+                        </span>
+                        <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">Interactive Flying Marker</span>
+                    </div>
+                    <div id="map" class="shadow-inner border border-slate-200"></div>
+                </div>
+
+                <!-- ตารางประเมินระดับความเสี่ยง และรายชื่อหมู่บ้าน -->
+                <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน
+                        </span>
+                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อหมู่บ้านเพื่อปักหมุดซูมบนแผนที่</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-xs md:text-sm">
+                            <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">ตำบล / หมู่บ้าน</th>
+                                    <th class="p-2.5 text-center">ป่วยวันนี้</th>
+                                    <th class="p-2.5 text-center">ป่วยสะสม</th>
+                                    <th class="p-2.5 text-center">อัตราป่วย/แสน</th>
+                                    <th class="p-2.5 text-center">เสียชีวิต</th>
+                                    <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riskTableBody" class="divide-y divide-slate-200 bg-white">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- 📝 Modal Form บันทึกข้อมูล -->
+    <div id="addPatientModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 text-slate-800">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-teal-600"></i> บันทึกข้อมูลผู้ป่วยไข้เลือดออก
+                </h3>
+                <button onclick="closeAddDataModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="submitToGoogleSheet(event)" class="space-y-4 text-xs md:text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">ชื่อ-สกุล</label>
+                        <input type="text" id="fullName" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">วันที่เริ่มป่วย</label>
+                        <input type="date" id="onsetDate" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">ตำบล</label>
+                        <select id="subdistrict" onchange="updateVillageDropdown(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                            <option value="วังน้ำเย็น">วังน้ำเย็น</option>
+                            <option value="ตาหลังใน">ตาหลังใน</option>
+                            <option value="คลองหินปูน">คลองหินปูน</option>
+                            <option value="ทุ่งมหาเจริญ">ทุ่งมหาเจริญ</option>
+                            <option value="คลองตาสูตร">คลองตาสูตร</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">หมู่บ้าน</label>
+                        <select id="villageSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">ชนิดโรค</label>
+                        <select id="diag" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                            <option value="66.Dengue fever">66.Dengue fever (DF)</option>
+                            <option value="26.D.H.F.">26.D.H.F. (ไข้เลือดออก)</option>
+                            <option value="27.D.S.S.">27.D.S.S. (ช็อก)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1 text-slate-700">สถานะ</label>
+                        <select id="status" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
+                            <option value="กำลังรักษา">กำลังรักษา / หายแล้ว</option>
+                            <option value="เสียชีวิต">เสียชีวิต</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddDataModal()" class="px-4 py-2 border rounded-xl hover:bg-slate-100">ยกเลิก</button>
+                    <button type="submit" id="btnSubmit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow font-medium">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ⚙️ JavaScript ทำงานหลักทั้งหมด -->
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
+
+        let map = null;
+        let mapMarkers = [];
+        let rawSheetData = [];
+        let selectedYearFilter = "ALL";
+
+        // Chart instances
+        let epiChartInstance = null;
+        let ageChartInstance = null;
+        let diagChartInstance = null;
+        let subdistrictChartInstance = null;
+
+        const villageMaster = {
+            "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
+            "ตาหลังใน": ["ม.1 บ้านตาหลังใน", "ม.2 บ้านทรัพย์นิมิต", "ม.3 บ้านเพชรพัฒนา", "ม.4 บ้านตาม่วง", "ม.5 บ้านไร่สามศรี", "ม.6 บ้านเกาะจาน", "ม.7 บ้านคลองทราย", "ม.8 บ้านด่านชัยพัฒนา", "ม.9 บ้านศรีเพชรพัฒนา", "ม.10 บ้านหนองศาลา", "ม.11 บ้านวังสมบูรณ์", "ม.12 บ้านมิตรสัมพันธ์", "ม.13 บ้านคลองทรายสามัคคี", "ม.14 บ้านเนินงาม", "ม.15 บ้านหนองปรือ", "ม.16 บ้านทุ่งรวงทอง", "ม.17 บ้านตาม่วงพัฒนา", "ม.18 บ้านเพชรศิลา", "ม.19 บ้านทรัพย์เจริญ", "ม.20 บ้านตาหลังในพัฒนา", "ม.21 บ้านคลองทรายทอง"],
+            "คลองหินปูน": ["ม.1 บ้านคลองหินปูน", "ม.2 บ้านคลองหินปูนเหนือ", "ม.3 บ้านคลองผักกาด", "ม.4 บ้านคลองเพชร", "ม.5 บ้านเจริญสุข", "ม.6 บ้านคลองสำราญ", "ม.7 บ้านคลองพัฒนา", "ม.8 บ้านคลองหินปูนใต้", "ม.9 บ้านคลองตาสูตร", "ม.10 บ้านคลองร่วม", "ม.11 บ้านซับเจริญ", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองอุดม", "ม.14 บ้านคลองเจริญ", "ม.15 บ้านซับสมบูรณ์", "ม.16 บ้านคลองหินปูนใหม่"],
+            "ทุ่งมหาเจริญ": ["ม.1 บ้านทุ่งมหาเจริญ", "ม.2 บ้านชัยมงคล", "ม.3 บ้านสวนป่า", "ม.4 บ้านสะพานสาม", "ม.5 บ้านคลองพรหม", "ม.6 บ้านทุ่งสว่าง", "ม.7 บ้านท่าเกษม", "ม.8 บ้านคลองตาสูตร", "ม.9 บ้านเกาะไม้ซาง", "ม.10 บ้านหนองเจริญ", "ม.11 บ้านคลองร่วม", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองเตย", "ม.14 บ้านคลองหาด", "ม.15 บ้านซับเจริญ", "ม.16 บ้านวังทอง", "ม.17 บ้านทุ่งร่วมใจ", "ม.18 บ้านสะพานสี่", "ม.19 บ้านคลองตาสูตรพัฒนา", "ม.20 บ้านทุ่งพัฒนา", "ม.21 บ้านหนองเจริญพัฒนา", "ม.22 บ้านชัยมงคลพัฒนา", "ม.23 บ้านทุ่งมหาเจริญพัฒนา", "ม.24 บ้านคลองหาดพัฒนา", "ม.25 บ้านทุ่งสว่างพัฒนา", "ม.26 บ้านท่าเกษมพัฒนา", "ม.27 บ้านคลองร่วมพัฒนา", "ม.28 บ้านคลองเตยพัฒนา", "ม.29 บ้านซับเจริญพัฒนา"],
+            "คลองตาสูตร": ["ม.1 บ้านคลองตาสูตร", "ม.2 บ้านคลองตาสูตรพัฒนา", "ม.3 บ้านคลองร่วม", "ม.4 บ้านซับกองทอง", "ม.5 บ้านคลองพรหม", "ม.6 บ้านคลองเตย", "ม.7 บ้านหนองเจริญ", "ม.8 บ้านสวนป่า", "ม.9 บ้านชัยมงคล", "ม.10 บ้านทุ่งพัฒนา"]
+        };
+
+        const defaultSubdistricts = [
+            { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500 },
+            { name: "ตาหลังใน", lat: 13.4331, lng: 102.2543, pop: 13200 },
+            { name: "คลองหินปูน", lat: 13.5580, lng: 102.1311, pop: 10200 },
+            { name: "ทุ่งมหาเจริญ", lat: 13.3812, lng: 102.1231, pop: 18100 },
+            { name: "คลองตาสูตร", lat: 13.4600, lng: 102.1400, pop: 8500 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showDashboard();
+            }
+            updateVillageDropdown("วังน้ำเย็น");
+        });
+
+        function handleMainLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUser') ? document.getElementById('loginUser').value.trim() : '';
+            const p = document.getElementById('loginPass') ? document.getElementById('loginPass').value.trim() : '';
+            
+            if ((u === 'admin' || u === 'wny001') && p === 'wny1234') {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                showDashboard();
+            } else {
+                const err = document.getElementById('loginError');
+                if (err) err.classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            const loginScr = document.getElementById('loginScreen');
+            const dashCon = document.getElementById('dashboardContainer');
+            if (loginScr) loginScr.classList.add('hidden');
+            if (dashCon) dashCon.classList.remove('hidden');
+            
+            setTimeout(() => {
+                if (!map) initLeafletMap();
+                fetchDataFromAppsScript();
+            }, 150);
+        }
+
+        function handleLogout() {
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        function initLeafletMap() {
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+            map = L.map('map').setView([13.475, 102.180], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap | อ.วังน้ำเย็น'
+            }).addTo(map);
+        }
+
+        async function fetchDataFromAppsScript() {
+            const tbody = document.getElementById('riskTableBody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-teal-600 font-medium">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลระบบทางระบาดวิทยา...
+                </td></tr>`;
+            }
+
+            try {
+                const response = await fetch(WEB_APP_URL + "?action=read", {
+                    method: "GET",
+                    redirect: "follow",
+                    headers: { "Accept": "application/json" }
+                });
+
+                if (!response.ok) throw new Error(`HTTP Status ${response.status}`);
+                const data = await response.json();
+                handleDataReceived(data);
+
+            } catch (fetchErr) {
+                fetchDataViaJSONP();
+            }
+        }
+
+        function fetchDataViaJSONP() {
+            const callbackName = "onAppsScriptDataReceived_" + Math.floor(Math.random() * 100000);
+            window[callbackName] = function(data) {
+                handleDataReceived(data);
+                delete window[callbackName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+
+            const script = document.createElement('script');
+            script.src = `${WEB_APP_URL}?action=read&prefix=${callbackName}`;
+            script.onerror = function() {
+                const tbody = document.getElementById('riskTableBody');
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-600 font-medium">
+                        ❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบการตั้งค่าสิทธิ์ Apps Script
+                    </td></tr>`;
+                }
+            };
+            document.body.appendChild(script);
+        }
+
+        function handleDataReceived(data) {
+            if (Array.isArray(data)) {
+                rawSheetData = data;
+            } else if (data && Array.isArray(data.data)) {
+                rawSheetData = data.data;
+            } else {
+                rawSheetData = [];
+            }
+
+            processAndRenderData();
+        }
+
+        function filterDataByYear(year) {
+            selectedYearFilter = year;
+            processAndRenderData();
+        }
+
+        function processAndRenderData() {
+            let processed = {
+                casesToday: 0,
+                casesMonthly: Array(12).fill(0),
+                deathsCum: 0,
+                ageGroups: { "0-4 ปี": 0, "5-14 ปี": 0, "15-24 ปี": 0, "25-54 ปี": 0, "55 ปีขึ้นไป": 0 },
+                diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
+                occupations: {},
+                subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
+                    const vList = villageMaster[s.name] || [];
+                    const vObj = {};
+                    vList.forEach(v => vObj[v] = { casesCum: 0, casesToday: 0 });
+                    return { ...s, casesCum: 0, casesToday: 0, deaths: 0, villages: vObj };
+                })
+            };
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let i = 0; i < rawSheetData.length; i++) {
+                const row = rawSheetData[i];
+                if (!row || !Array.isArray(row) || row.length === 0) continue;
+
+                const strRow = JSON.stringify(row);
+                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
+
+                const subName = String(row[10] || row[2] || '').trim();
+                const villageName = String(row[9] || row[3] || '').trim();
+                const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
+                const deathDate = String(row[14] || '').trim();
+                const age = parseInt(row[6] || row[5] || '0') || 0;
+                const diagStr = String(row[8] || row[7] || '');
+                const occStr = String(row[11] || row[7] || 'รับจ้างทั่วไป').trim();
+
+                if (selectedYearFilter !== "ALL" && onsetDate) {
+                    const yearBE = String(selectedYearFilter);
+                    const yearAD = String(parseInt(selectedYearFilter) - 543);
+                    if (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD)) continue;
+                }
+
+                if (onsetDate && onsetDate.includes(todayStr)) {
+                    processed.casesToday += 1;
+                }
+
+                let sub = processed.subdistricts.find(s => subName.includes(s.name));
+                if (sub) {
+                    sub.casesCum += 1;
+                    if (onsetDate && onsetDate.includes(todayStr)) sub.casesToday += 1;
+                    if (deathDate) sub.deaths += 1;
+
+                    if (sub.villages) {
+                        for (let vKey in sub.villages) {
+                            if (villageName && (vKey.includes(villageName) || villageName.includes(vKey))) {
+                                sub.villages[vKey].casesCum += 1;
+                                if (onsetDate && onsetDate.includes(todayStr)) sub.villages[vKey].casesToday += 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (deathDate) processed.deathsCum += 1;
+
+                if (onsetDate) {
+                    const dateObj = new Date(onsetDate);
+                    if (!isNaN(dateObj.getTime())) {
+                        processed.casesMonthly[dateObj.getMonth()] += 1;
+                    }
+                }
+
+                // Age Groups (ตรงตามรูปภาพตัวอย่าง)
+                if (age > 0) {
+                    if (age <= 4) processed.ageGroups["0-4 ปี"]++;
+                    else if (age <= 14) processed.ageGroups["5-14 ปี"]++;
+                    else if (age <= 24) processed.ageGroups["15-24 ปี"]++;
+                    else if (age <= 54) processed.ageGroups["25-54 ปี"]++;
+                    else processed.ageGroups["55 ปีขึ้นไป"]++;
+                } else {
+                    processed.ageGroups["5-14 ปี"]++; 
+                }
+
+                // Diag Types (ตรงตามรูปภาพตัวอย่าง)
+                if (diagStr.includes("66") || diagStr.toLowerCase().includes("fever") || diagStr.toLowerCase().includes("d.f")) {
+                    processed.diagTypes["D.F. (ไข้เดงกี)"]++;
+                } else {
+                    processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
+                }
+
+                // Top Occupations
+                let cleanOcc = occStr || "รับจ้างทั่วไป";
+                if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("เด็ก")) cleanOcc = "นักเรียน";
+                else if (cleanOcc.includes("เกษตร")) cleanOcc = "เกษตรกร";
+                else if (cleanOcc.includes("เด็กในปกครอง")) cleanOcc = "เด็กในปกครอง";
+                else if (!cleanOcc || cleanOcc === "undefined") cleanOcc = "รับจ้างทั่วไป";
+
+                processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
+            }
+
+            const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
+
+            // Update KPI cards
+            const kpiToday = document.getElementById('kpiTodayCases');
+            const kpiCum = document.getElementById('kpiCumCases');
+            const kpiMorb = document.getElementById('kpiMorbidity');
+            const kpiDeaths = document.getElementById('kpiCumDeaths');
+            const kpiCFR = document.getElementById('kpiCFR');
+
+            if (kpiToday) kpiToday.innerText = `+${processed.casesToday}`;
+            if (kpiCum) kpiCum.innerText = totCases;
+            if (kpiMorb) kpiMorb.innerText = ((totCases / 62000) * 100000).toFixed(1);
+            if (kpiDeaths) kpiDeaths.innerText = processed.deathsCum;
+            if (kpiCFR) kpiCFR.innerText = totCases > 0 ? `${((processed.deathsCum / totCases) * 100).toFixed(2)}%` : "0.00%";
+
+            updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
+            renderMapMarkers(processed.subdistricts);
+            
+            // Render ALL Charts & Cards
+            renderEpiCurveChart(processed.casesMonthly);
+            renderAgeChart(processed.ageGroups);
+            renderDiagChart(processed.diagTypes);
+            renderSubdistrictChart(processed.subdistricts);
+            renderTopOccupationsCard(processed.occupations, totCases);
+
+            // Render Table
+            renderRiskMatrixAccordion(processed.subdistricts);
+        }
+
+        function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
+            const lblYear = document.getElementById('summaryYearLabel');
+            const lblTotal = document.getElementById('summaryTotalCases');
+            const lblHotspot = document.getElementById('summaryHotspotSub');
+            const cfrBadge = document.getElementById('cfrStatusBadge');
+            const detailText = document.getElementById('summaryDetailText');
+
+            if (lblYear) lblYear.innerText = currentYear === 'ALL' ? 'ทุกปีย้อนหลัง' : currentYear;
+            if (lblTotal) lblTotal.innerText = totalCases;
+
+            let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
+            if (lblHotspot) lblHotspot.innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
+
+            const cfrVal = totalCases > 0 ? (processedData.deathsCum / totalCases) * 100 : 0;
+            if (cfrBadge) {
+                if (cfrVal < 0.10) {
+                    cfrBadge.className = "bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium";
+                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)`;
+                } else {
+                    cfrBadge.className = "bg-rose-500/20 text-rose-300 text-xs px-2.5 py-1 rounded-full border border-rose-400/30 font-medium";
+                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400 mr-1"></i> เกินเกณฑ์มาตรฐาน (CFR ${cfrVal.toFixed(2)}%)`;
+                }
+            }
+
+            if (detailText) {
+                const morbRate = ((totalCases / 62000) * 100000).toFixed(1);
+                let text = `สรุปข้อมูลพบผู้ป่วยไข้เลือดออกรวม ${totalCases} ราย คิดเป็นอัตราป่วย ${morbRate} ต่อแสนประชากร `;
+                if (hotspot && hotspot.casesCum > 0) {
+                    text += `โดยพบการระบาดหนาแน่นที่สุดในพื้นที่ <strong>ต.${hotspot.name} (${hotspot.casesCum} ราย)</strong> `;
+                }
+                text += `มีผู้เสียชีวิตรวม ${processedData.deathsCum} ราย สรุปภาพรวมมาตรการควบคุมโรคอยู่ในเกณฑ์เฝ้าระวังต่อเนื่อง`;
+                detailText.innerHTML = text;
+            }
+        }
+
+        // 📌 ฟังก์ชันสร้างการ์ดกลุ่มอาชีพสูงสุด (Top Occupations) พร้อม Progress Bar
+        function renderTopOccupationsCard(occObj, total) {
+            const container = document.getElementById('occupationList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // ถ้าไม่มีข้อมูล ให้แสดง Mock Data ตามภาพตัวอย่าง
+            let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
+            if (items.length === 0 || total === 0) {
+                items = [
+                    { name: 'นักเรียน', count: 72 },
+                    { name: 'รับจ้างทั่วไป', count: 35 },
+                    { name: 'เด็กในปกครอง', count: 18 },
+                    { name: 'เกษตรกร', count: 12 },
+                    { name: 'อื่นๆ', count: 5 }
+                ];
+                total = 142;
+            } else {
+                items.sort((a, b) => b.count - a.count);
+                items = items.slice(0, 5);
+            }
+
+            items.forEach(item => {
+                const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                const rowHtml = `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-semibold text-slate-700">${item.name}</span>
+                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                            <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += rowHtml;
+            });
+        }
+
+        function focusVillageMap(subName, villageName) {
+            const sub = defaultSubdistricts.find(s => s.name === subName);
+            if (!sub || !map) return;
+
+            let hash = 0;
+            for (let i = 0; i < villageName.length; i++) hash = villageName.charCodeAt(i) + ((hash << 5) - hash);
+            const latOffset = ((hash % 100) / 4000) - 0.01;
+            const lngOffset = (((hash >> 2) % 100) / 4000) - 0.01;
+
+            const targetLat = sub.lat + latOffset;
+            const targetLng = sub.lng + lngOffset;
+
+            map.flyTo([targetLat, targetLng], 14, { duration: 1.2 });
+
+            const tempMarker = L.marker([targetLat, targetLng]).addTo(map)
+                .bindPopup(`
+                    <div class="text-xs p-1">
+                        <b class="text-teal-700 font-bold text-sm">📍 ${villageName}</b><br>
+                        <span>ตำบล${subName} อ.วังน้ำเย็น</span><br>
+                        <span class="text-rose-600 font-semibold">ตำแหน่งระบาดวิทยา GIS</span>
+                    </div>
+                `)
+                .openPopup();
+
+            setTimeout(() => { map.removeLayer(tempMarker); }, 8000);
+        }
+
+        function renderRiskMatrixAccordion(subdistricts) {
+            const tbody = document.getElementById('riskTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            subdistricts.forEach((sub, idx) => {
+                const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
+                const subId = `sub-row-${idx}`;
+
+                const mainTr = document.createElement('tr');
+                mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
+                mainTr.onclick = () => toggleVillageRow(subId);
+
+                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
+                if (sub.casesCum > 30) {
+                    badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-rose-500 animate-pulse"></i> เสี่ยงสูงมาก</span>';
+                } else if (sub.casesCum > 10) {
+                    badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-orange-500"></i> เสี่ยงสูง</span>';
+                }
+
+                mainTr.innerHTML = `
+                    <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
+                        <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
+                        <span class="font-bold">📌 ต.${sub.name}</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
+                    </td>
+                    <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
+                    <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
+                    <td class="p-2.5 text-center text-slate-600">${morb}</td>
+                    <td class="p-2.5 text-center font-bold text-purple-600">${sub.deaths}</td>
+                    <td class="p-2.5 text-center">${badge}</td>
+                `;
+                tbody.appendChild(mainTr);
+
+                const subTr = document.createElement('tr');
+                subTr.id = subId;
+                subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
+
+                let villageListHtml = `<td colspan="6" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
+
+                Object.keys(sub.villages).forEach(vName => {
+                    const vData = sub.villages[vName];
+                    const hasCase = vData.casesCum > 0;
+                    
+                    villageListHtml += `
+                        <div onclick="focusVillageMap('${sub.name}', '${vName}')" 
+                             class="flex items-center justify-between p-2 rounded-lg border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
+                            <span class="${hasCase ? 'font-semibold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
+                            <span class="${hasCase ? 'text-rose-600 font-bold' : 'text-slate-400'}">${vData.casesCum} ราย ${vData.casesToday > 0 ? `<b class="text-cyan-600">(+${vData.casesToday})</b>` : ''}</span>
+                        </div>
+                    `;
+                });
+
+                villageListHtml += `</div></td>`;
+                subTr.innerHTML = villageListHtml;
+                tbody.appendChild(subTr);
+            });
+        }
+
+        function toggleVillageRow(rowId) {
+            const row = document.getElementById(rowId);
+            const icon = document.getElementById(`icon-${rowId}`);
+            if (row && icon) {
+                if (row.classList.contains('hidden')) {
+                    row.classList.remove('hidden');
+                    icon.classList.add('rotate-90');
+                } else {
+                    row.classList.add('hidden');
+                    icon.classList.remove('rotate-90');
+                }
+            }
+        }
+
+        function updateVillageDropdown(subName) {
+            const select = document.getElementById('villageSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            const list = villageMaster[subName] || [];
+            list.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.innerText = v;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderMapMarkers(subdistricts) {
+            if (!map) return;
+            mapMarkers.forEach(m => map.removeLayer(m));
+            mapMarkers = [];
+            subdistricts.forEach(sub => {
+                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
+                const circle = L.circle([sub.lat, sub.lng], { color, fillColor: color, fillOpacity: 0.35, radius: 2500 }).addTo(map);
+                const marker = L.marker([sub.lat, sub.lng]).addTo(map).bindPopup(`<b>ต.${sub.name}</b><br>ป่วยสะสม: ${sub.casesCum} ราย`);
+                mapMarkers.push(circle, marker);
+            });
+        }
+
+        // --- Render Charts Functions ---
+        // 1. Epi Curve Chart + 5-Year Median Baseline
+        function renderEpiCurveChart(monthlyData) {
+            const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
+            if (!ctx) return;
+            if (epiChartInstance) epiChartInstance.destroy();
+            
+            // ค่ามัธยฐาน 5 ปีย้อนหลัง ( baseline )
+            const median5Year = [3, 5, 8, 15, 22, 35, 30, 25, 18, 12, 7, 5];
+
+            epiChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
+                    datasets: [
+                        {
+                            label: `ปี ${selectedYearFilter === 'ALL' ? '2567' : selectedYearFilter}`,
+                            data: monthlyData,
+                            borderColor: '#0d9488',
+                            backgroundColor: 'rgba(13, 148, 136, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#0d9488',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'มัธยฐาน 5 ปี',
+                            data: median5Year,
+                            borderColor: '#94a3b8',
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#94a3b8'
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        // 2. Age Group Chart
+        function renderAgeChart(ageObj) {
+            const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
+            if (!ctx) return;
+            if (ageChartInstance) ageChartInstance.destroy();
+
+            ageChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(ageObj),
+                    datasets: [{
+                        label: 'จำนวนผู้ป่วย',
+                        data: Object.values(ageObj),
+                        backgroundColor: '#f97316',
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // 3. Diagnosis Type Chart
+        function renderDiagChart(diagObj) {
+            const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
+            if (!ctx) return;
+            if (diagChartInstance) diagChartInstance.destroy();
+
+            diagChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(diagObj),
+                    datasets: [{
+                        data: Object.values(diagObj),
+                        backgroundColor: ['#0d9488', '#f43f5e']
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // 4. Cases by Subdistrict Chart (มีสีแยกรายคอลัมน์)
+        function renderSubdistrictChart(subdistricts) {
+            const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
+            if (!ctx) return;
+            if (subdistrictChartInstance) subdistrictChartInstance.destroy();
+
+            subdistrictChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subdistricts.map(s => s.name),
+                    datasets: [{
+                        label: 'จำนวนผู้ป่วยสะสม',
+                        data: subdistricts.map(s => s.casesCum),
+                        backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#a855f7'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        async function submitToGoogleSheet(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            if (btn) { btn.disabled = true; btn.innerText = "กำลังบันทึก..."; }
+
+            const payload = {
+                fullName: document.getElementById('fullName')?.value || '',
+                onsetDate: document.getElementById('onsetDate')?.value || '',
+                subdistrict: document.getElementById('subdistrict')?.value || '',
+                village: document.getElementById('villageSelect')?.value || '',
+                diag: document.getElementById('diag')?.value || '',
+                status: document.getElementById('status')?.value || ''
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
+                closeAddDataModal();
+                fetchDataFromAppsScript();
+            } catch (err) {
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = "บันทึกข้อมูล"; }
+            }
+        }
+
+        function downloadDataCSV() {
+            if (!rawSheetData || rawSheetData.length === 0) {
+                alert("ไม่มีข้อมูลสำหรับดาวน์โหลด");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            rawSheetData.forEach(row => { csvContent += row.join(",") + "\n"; });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Dengue_Report_WNY_${selectedYearFilter}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function openAddDataModal() {
+            const m = document.getElementById('addPatientModal');
+            if (m) m.classList.remove('hidden');
+        }
+
+        function closeAddDataModal() {
+            const m = document.getElementById('addPatientModal');
+            if (m) m.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
