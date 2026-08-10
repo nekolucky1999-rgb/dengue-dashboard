@@ -233,6 +233,92 @@
 
             </section>
 
+            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) - ออกแบบสไตล์รูปที่ 2 -->
+            <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="text-xl">🏡</span> ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI)
+                        </h3>
+                        <p class="text-xs text-slate-500">ประเมินดัชนีความชุกของลูกน้ำยุงลาย (House Index) และจัดระดับความเสี่ยงการระบาดรายหมู่บ้าน (ข้อมูลจาก Sheet2)</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-teal-50 text-teal-700 px-3 py-1 rounded-lg border border-teal-200 font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-table text-teal-600"></i> Sheet2 Data Active
+                        </span>
+                    </div>
+                </div>
+
+                <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ (ตามรูปที่ 2) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- การ์ดสีเขียว -->
+                    <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
+                            <span class="w-3.5 h-3.5 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
+                            <span>หมู่บ้านเฝ้าระวัง (HI < 5%)</span>
+                        </div>
+                        <span id="hiSafeCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                    </div>
+
+                    <!-- การ์ดสีส้ม -->
+                    <div class="bg-amber-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
+                            <span class="w-3.5 h-3.5 bg-amber-200 rounded-full inline-block animate-pulse"></span>
+                            <span>หมู่บ้านเสี่ยง (HI 5 - 10%)</span>
+                        </div>
+                        <span id="hiRiskCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                    </div>
+
+                    <!-- การ์ดสีแดง -->
+                    <div class="bg-rose-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
+                            <span class="w-3.5 h-3.5 bg-rose-300 rounded-full inline-block animate-pulse"></span>
+                            <span>หมู่บ้านระบาด (HI > 10%)</span>
+                        </div>
+                        <span id="hiOutbreakCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                    </div>
+                </div>
+
+                <!-- ช่องค้นหาและตัวกรอง -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="hiVillageSearch" onkeyup="filterHiTable()" placeholder="ค้นหาหมู่บ้าน..." class="w-full sm:w-64 px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
+                        <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 outline-none font-medium">
+                            <option value="jul" selected>เดือน ก.ค.</option>
+                            <option value="jun">เดือน มิ.ย.</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <label class="text-xs text-slate-500 font-medium">กรองสถานะ:</label>
+                        <select id="hiStatusFilter" onchange="filterHiTable()" class="px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 outline-none font-medium">
+                            <option value="all">ทุกสถานะ</option>
+                            <option value="เฝ้าระวัง">เฝ้าระวัง</option>
+                            <option value="เสี่ยง">เสี่ยง</option>
+                            <option value="ระบาด">ระบาด</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ตารางดัชนี HI รายหมู่บ้าน (ตามรูปที่ 2) -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs md:text-sm">
+                        <thead class="bg-slate-800 text-white font-semibold">
+                            <tr>
+                                <th class="p-3">หมู่บ้าน</th>
+                                <th class="p-3 text-center">ตำบล</th>
+                                <th class="p-3 text-center">ค่า HI (%)</th>
+                                <th class="p-3 text-center">ผู้ป่วย</th>
+                                <th class="p-3 text-center">สถานะ</th>
+                                <th class="p-3 text-center">ปรับสถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hiSurveillanceTableBody" class="divide-y divide-slate-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
@@ -357,7 +443,7 @@
         let diagChartInstance = null;
         let subdistrictChartInstance = null;
 
-        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง (Bar Data Labels)
+        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง (Data Labels)
         const topBarLabelsPlugin = {
             id: 'topBarLabels',
             afterDatasetsDraw(chart) {
@@ -382,6 +468,58 @@
             }
         };
         Chart.register(topBarLabelsPlugin);
+
+        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet2 (ตามรูปที่ 1)
+        const hiSheet2Master = [
+            // ตำบลวังน้ำเย็น
+            { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
+            { village: "หมู่ 4 บ้านเกสรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
+            { village: "หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 11.69, jul: 15.58 },
+            { village: "ชุมชน 1 หมู่ 5", subdistrict: "วังน้ำเย็น", jun: 4.76, jul: 39.29 },
+            { village: "หมู่ 6 บ้านวังจำปี", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 10.75 },
+            { village: "หมู่ 8 บ้านซับพลู", subdistrict: "วังน้ำเย็น", jun: 16.67, jul: 15.28 },
+            { village: "หมู่ 9 บ้านวังเทพ", subdistrict: "วังน้ำเย็น", jun: 15.00, jul: 9.00 },
+            { village: "หมู่ 10 บ้านวังเจริญ", subdistrict: "วังน้ำเย็น", jun: 11.00, jul: 11.00 },
+            { village: "หมู่ 13 บ้านมิตรสัมพันธ์", subdistrict: "วังน้ำเย็น", jun: 10.29, jul: 4.00 },
+            { village: "หมู่ 14 บ้านวังศิลา", subdistrict: "วังน้ำเย็น", jun: 5.06, jul: 3.89 },
+            { village: "หมู่ 15 บ้านโคกสว่าง", subdistrict: "วังน้ำเย็น", jun: 20.41, jul: 22.45 },
+            { village: "หมู่ 16 บ้านวังชมภู", subdistrict: "วังน้ำเย็น", jun: 10.71, jul: 10.71 },
+            { village: "หมู่ 17 บ้านท่าเกวียน", subdistrict: "วังน้ำเย็น", jun: 22.31, jul: 13.08 },
+            { village: "หมู่ 19 บ้านวังแก้ว", subdistrict: "วังน้ำเย็น", jun: 14.75, jul: 16.39 },
+            { village: "ชุมชน 1 หมู่ 10", subdistrict: "วังน้ำเย็น", jun: 15.42, jul: 15.92 },
+            { village: "ชุมชน 9 หมู่ 9", subdistrict: "วังน้ำเย็น", jun: 27.93, jul: 4.50 },
+            { village: "หมู่ 1 บ้านวังน้ำเย็น", subdistrict: "วังน้ำเย็น", jun: 23.53, jul: 8.82 },
+            { village: "หมู่ 2 บ้านศรีเจริญ", subdistrict: "วังน้ำเย็น", jun: 35.75, jul: 28.42 },
+            { village: "หมู่ 7 บ้านคลองทราย", subdistrict: "วังน้ำเย็น", jun: 10.59, jul: 12.35 },
+            { village: "หมู่ 11 บ้านชัยมงคล", subdistrict: "วังน้ำเย็น", jun: 29.17, jul: 20.83 },
+            { village: "หมู่ 12 บ้านภูเวียง", subdistrict: "วังน้ำเย็น", jun: 9.18, jul: 12.24 },
+            { village: "หมู่ 18 บ้านวังบูรพา", subdistrict: "วังน้ำเย็น", jun: 9.24, jul: 6.72 },
+            { village: "ชุมชน 2 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 9.48, jul: 27.59 },
+            { village: "ชุมชน 3 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 6.12, jul: 41.84 },
+            { village: "ชุมชน 4 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 4.50, jul: 19.82 },
+            { village: "ชุมชน 5 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 6.34, jul: 6.34 },
+            { village: "ชุมชน 6 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 16.90, jul: 7.75 },
+            { village: "ชุมชน 7 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 14.63, jul: 25.20 },
+            { village: "ชุมชน 8 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 10.43, jul: 28.33 },
+            { village: "ชุมชน 10 หมู่ 2", subdistrict: "วังน้ำเย็น", jun: 35.00, jul: 6.67 },
+            
+            // ตำบลตาหลังใน
+            { village: "หมู่ 1 ตาหลังใน", subdistrict: "ตาหลังใน", jun: 3.60, jul: 8.00 },
+            { village: "หมู่ 2 หนองปรือ", subdistrict: "ตาหลังใน", jun: 15.00, jul: 19.00 },
+            { village: "หมู่ 15 บ้านหนอง", subdistrict: "ตาหลังใน", jun: 27.50, jul: 28.75 },
+            { village: "หมู่ 16 บ้านตาหลัง", subdistrict: "ตาหลังใน", jun: 14.41, jul: 14.41 },
+            { village: "หมู่ 21 บ้านสลักได", subdistrict: "ตาหลังใน", jun: 12.00, jul: 11.00 },
+            { village: "ตาหลังใหม่ชัยเจริญ", subdistrict: "ตาหลังใน", jun: 0, jul: 0 },
+            
+            // ตำบลคลองหินปูน
+            { village: "ทรัพย์เจริญ", subdistrict: "คลองหินปูน", jun: 0, jul: 0 },
+            { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0, jul: 0 },
+            
+            // ตำบลทุ่งมหาเจริญ
+            { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0, jul: 0 }
+        ];
+
+        let currentHiList = [];
 
         const villageMaster = {
             "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
@@ -612,6 +750,7 @@
                 },
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
                 occupations: {},
+                villageCasesMap: {},
                 subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
                     const vList = villageMaster[s.name] || [];
                     const vObj = {};
@@ -660,6 +799,10 @@
                 if (deathDate) {
                     sub.deaths += 1;
                     processed.deathsCum += 1;
+                }
+
+                if (villageNameFromCol) {
+                    processed.villageCasesMap[villageNameFromCol] = (processed.villageCasesMap[villageNameFromCol] || 0) + 1;
                 }
 
                 if (sub.villages) {
@@ -766,9 +909,120 @@
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
+            // 🏡 Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet2)
+            renderHiSurveillanceTable(processed.villageCasesMap);
+
             // Render Map Markers & Table
             renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts);
+        }
+
+        // 📌 ฟังก์ชันจัดการระบบเฝ้าระวังระดับหมู่บ้าน HI/CI (รูปที่ 2)
+        function renderHiSurveillanceTable(vCasesMap = {}) {
+            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
+            const tbody = document.getElementById('hiSurveillanceTableBody');
+            if (!tbody) return;
+
+            currentHiList = hiSheet2Master.map(item => {
+                const hiValue = selectedMonth === 'jul' ? item.jul : item.jun;
+                
+                // คำนวณผู้ป่วยสะสมรายหมู่บ้าน
+                let caseCnt = 0;
+                for (let vKey in vCasesMap) {
+                    if (vKey.includes(item.village) || item.village.includes(vKey)) {
+                        caseCnt += vCasesMap[vKey];
+                    }
+                }
+                
+                // คำนวณสถานะเริ่มต้นตามเกณฑ์ HI (HI < 5: เฝ้าระวัง, 5-10: เสี่ยง, >10: ระบาด)
+                let status = "เฝ้าระวัง";
+                if (hiValue > 10) status = "ระบาด";
+                else if (hiValue >= 5) status = "เสี่ยง";
+
+                return {
+                    ...item,
+                    hiVal: hiValue,
+                    cases: caseCnt,
+                    status: status
+                };
+            });
+
+            updateHiCountsAndTable();
+        }
+
+        function updateHiCountsAndTable() {
+            const safeCountEl = document.getElementById('hiSafeCount');
+            const riskCountEl = document.getElementById('hiRiskCount');
+            const outbreakCountEl = document.getElementById('hiOutbreakCount');
+
+            let safeCnt = 0, riskCnt = 0, outbreakCnt = 0;
+
+            currentHiList.forEach(item => {
+                if (item.status === "เฝ้าระวัง") safeCnt++;
+                else if (item.status === "เสี่ยง") riskCnt++;
+                else if (item.status === "ระบาด") outbreakCnt++;
+            });
+
+            if (safeCountEl) safeCountEl.innerText = safeCnt;
+            if (riskCountEl) riskCountEl.innerText = riskCnt;
+            if (outbreakCountEl) outbreakCountEl.innerText = outbreakCnt;
+
+            filterHiTable();
+        }
+
+        function filterHiTable() {
+            const searchVal = document.getElementById('hiVillageSearch')?.value.toLowerCase().trim() || '';
+            const filterStatus = document.getElementById('hiStatusFilter')?.value || 'all';
+            const tbody = document.getElementById('hiSurveillanceTableBody');
+
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const filtered = currentHiList.filter(item => {
+                const matchSearch = item.village.toLowerCase().includes(searchVal) || item.subdistrict.toLowerCase().includes(searchVal);
+                const matchStatus = filterStatus === 'all' || item.status === filterStatus;
+                return matchSearch && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400 font-medium">ไม่พบข้อมูลหมู่บ้านตามเงื่อนไขการค้นหา</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                let badgeClass = "bg-emerald-600 text-white";
+                if (item.status === "เสี่ยง") badgeClass = "bg-amber-500 text-white";
+                else if (item.status === "ระบาด") badgeClass = "bg-rose-600 text-white";
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 border-b border-slate-100 transition text-xs md:text-sm";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${item.village}</td>
+                    <td class="p-3 text-center text-slate-600">${item.subdistrict}</td>
+                    <td class="p-3 text-center font-bold ${item.hiVal > 10 ? 'text-rose-600' : (item.hiVal >= 5 ? 'text-amber-600' : 'text-emerald-600')}">${item.hiVal.toFixed(2)}%</td>
+                    <td class="p-3 text-center font-bold text-slate-700">${item.cases} ราย</td>
+                    <td class="p-3 text-center">
+                        <span id="badge-${idx}" class="px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm ${badgeClass}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <select onchange="updateSingleHiStatus(${idx}, this.value)" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white font-medium focus:outline-none focus:ring-1 focus:ring-teal-500">
+                            <option value="เฝ้าระวัง" ${item.status === "เฝ้าระวัง" ? "selected" : ""}>เฝ้าระวัง</option>
+                            <option value="เสี่ยง" ${item.status === "เสี่ยง" ? "selected" : ""}>เสี่ยง</option>
+                            <option value="ระบาด" ${item.status === "ระบาด" ? "selected" : ""}>ระบาด</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateSingleHiStatus(index, newStatus) {
+            if (currentHiList[index]) {
+                currentHiList[index].status = newStatus;
+                updateHiCountsAndTable();
+            }
         }
 
         function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
