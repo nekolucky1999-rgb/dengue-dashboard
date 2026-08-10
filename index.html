@@ -233,23 +233,23 @@
 
             </section>
 
-            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) - ออกแบบสไตล์รูปที่ 2 -->
+            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) - อัปเดตตรงตาม Sheet 2 -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span class="text-xl">🏡</span> ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI)
                         </h3>
-                        <p class="text-xs text-slate-500">ประเมินดัชนีความชุกของลูกน้ำยุงลาย (House Index) และจัดระดับความเสี่ยงการระบาดรายหมู่บ้าน (ข้อมูลจาก Sheet2)</p>
+                        <p class="text-xs text-slate-500">ประเมินดัชนีความชุกของลูกน้ำยุงลาย (House Index) และจัดระดับความเสี่ยงการระบาดรายหมู่บ้าน (ข้อมูลจาก Sheet 2)</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-xs bg-teal-50 text-teal-700 px-3 py-1 rounded-lg border border-teal-200 font-medium flex items-center gap-1">
-                            <i class="fa-solid fa-table text-teal-600"></i> Sheet2 Data Active
+                            <i class="fa-solid fa-table text-teal-600"></i> Sheet2 Synced
                         </span>
                     </div>
                 </div>
 
-                <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ (ตามรูปที่ 2) -->
+                <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <!-- การ์ดสีเขียว -->
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
@@ -282,7 +282,7 @@
                 <!-- ช่องค้นหาและตัวกรอง -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="text" id="hiVillageSearch" onkeyup="filterHiTable()" placeholder="ค้นหาหมู่บ้าน..." class="w-full sm:w-64 px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
+                        <input type="text" id="hiVillageSearch" onkeyup="filterHiTable()" placeholder="ค้นหาหมู่บ้าน/ชุมชน..." class="w-full sm:w-64 px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
                         <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 outline-none font-medium">
                             <option value="jul" selected>เดือน ก.ค.</option>
                             <option value="jun">เดือน มิ.ย.</option>
@@ -300,12 +300,12 @@
                     </div>
                 </div>
 
-                <!-- ตารางดัชนี HI รายหมู่บ้าน (ตามรูปที่ 2) -->
+                <!-- ตารางดัชนี HI รายหมู่บ้าน -->
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
                     <table class="w-full text-left text-xs md:text-sm">
                         <thead class="bg-slate-800 text-white font-semibold">
                             <tr>
-                                <th class="p-3">หมู่บ้าน</th>
+                                <th class="p-3">หมู่บ้าน / ชุมชน</th>
                                 <th class="p-3 text-center">ตำบล</th>
                                 <th class="p-3 text-center">ค่า HI (%)</th>
                                 <th class="p-3 text-center">ผู้ป่วย</th>
@@ -469,19 +469,21 @@
         };
         Chart.register(topBarLabelsPlugin);
 
-        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet2 (ตามรูปที่ 1)
+        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2 (ถอดตรงตามภาพ 100%)
         const hiSheet2Master = [
-            // ตำบลวังน้ำเย็น
+            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 1) ---
             { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
-            { village: "หมู่ 4 บ้านเกสรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
+            { village: "หมู่ 4 บ้านเกษตรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
             { village: "หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 11.69, jul: 15.58 },
-            { village: "ชุมชน 1 หมู่ 5", subdistrict: "วังน้ำเย็น", jun: 4.76, jul: 39.29 },
+            { village: "ชุมชน 1 หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 4.76, jul: 39.29 },
             { village: "หมู่ 6 บ้านวังจำปี", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 10.75 },
             { village: "หมู่ 8 บ้านซับพลู", subdistrict: "วังน้ำเย็น", jun: 16.67, jul: 15.28 },
             { village: "หมู่ 9 บ้านวังเทพ", subdistrict: "วังน้ำเย็น", jun: 15.00, jul: 9.00 },
             { village: "หมู่ 10 บ้านวังเจริญ", subdistrict: "วังน้ำเย็น", jun: 11.00, jul: 11.00 },
             { village: "หมู่ 13 บ้านมิตรสัมพันธ์", subdistrict: "วังน้ำเย็น", jun: 10.29, jul: 4.00 },
             { village: "หมู่ 14 บ้านวังศิลา", subdistrict: "วังน้ำเย็น", jun: 5.06, jul: 3.89 },
+
+            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 2) ---
             { village: "หมู่ 15 บ้านโคกสว่าง", subdistrict: "วังน้ำเย็น", jun: 20.41, jul: 22.45 },
             { village: "หมู่ 16 บ้านวังชมภู", subdistrict: "วังน้ำเย็น", jun: 10.71, jul: 10.71 },
             { village: "หมู่ 17 บ้านท่าเกวียน", subdistrict: "วังน้ำเย็น", jun: 22.31, jul: 13.08 },
@@ -492,6 +494,8 @@
             { village: "หมู่ 2 บ้านศรีเจริญ", subdistrict: "วังน้ำเย็น", jun: 35.75, jul: 28.42 },
             { village: "หมู่ 7 บ้านคลองทราย", subdistrict: "วังน้ำเย็น", jun: 10.59, jul: 12.35 },
             { village: "หมู่ 11 บ้านชัยมงคล", subdistrict: "วังน้ำเย็น", jun: 29.17, jul: 20.83 },
+
+            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 3) ---
             { village: "หมู่ 12 บ้านภูเวียง", subdistrict: "วังน้ำเย็น", jun: 9.18, jul: 12.24 },
             { village: "หมู่ 18 บ้านวังบูรพา", subdistrict: "วังน้ำเย็น", jun: 9.24, jul: 6.72 },
             { village: "ชุมชน 2 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 9.48, jul: 27.59 },
@@ -502,21 +506,19 @@
             { village: "ชุมชน 7 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 14.63, jul: 25.20 },
             { village: "ชุมชน 8 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 10.43, jul: 28.33 },
             { village: "ชุมชน 10 หมู่ 2", subdistrict: "วังน้ำเย็น", jun: 35.00, jul: 6.67 },
-            
-            // ตำบลตาหลังใน
+
+            // --- ตำบลตาหลังใน ---
             { village: "หมู่ 1 ตาหลังใน", subdistrict: "ตาหลังใน", jun: 3.60, jul: 8.00 },
             { village: "หมู่ 2 หนองปรือ", subdistrict: "ตาหลังใน", jun: 15.00, jul: 19.00 },
-            { village: "หมู่ 15 บ้านหนอง", subdistrict: "ตาหลังใน", jun: 27.50, jul: 28.75 },
-            { village: "หมู่ 16 บ้านตาหลัง", subdistrict: "ตาหลังใน", jun: 14.41, jul: 14.41 },
+            { village: "หมู่ 15 บ้านหนองศาลา", subdistrict: "ตาหลังใน", jun: 27.50, jul: 28.75 },
+            { village: "หมู่ 16 บ้านตาหลังใน", subdistrict: "ตาหลังใน", jun: 14.41, jul: 14.41 },
             { village: "หมู่ 21 บ้านสลักได", subdistrict: "ตาหลังใน", jun: 12.00, jul: 11.00 },
-            { village: "ตาหลังใหม่ชัยเจริญ", subdistrict: "ตาหลังใน", jun: 0, jul: 0 },
-            
-            // ตำบลคลองหินปูน
-            { village: "ทรัพย์เจริญ", subdistrict: "คลองหินปูน", jun: 0, jul: 0 },
-            { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0, jul: 0 },
-            
-            // ตำบลทุ่งมหาเจริญ
-            { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0, jul: 0 }
+            { village: "ตาหลังใหม่ชัยเจริญ", subdistrict: "ตาหลังใน", jun: 0.00, jul: 0.00 },
+
+            // --- ตำบลอื่นๆ ---
+            { village: "ทรัพย์เจริญ", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
+            { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
+            { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0.00, jul: 0.00 }
         ];
 
         let currentHiList = [];
@@ -909,7 +911,7 @@
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            // 🏡 Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet2)
+            // 🏡 Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
             renderHiSurveillanceTable(processed.villageCasesMap);
 
             // Render Map Markers & Table
@@ -917,7 +919,7 @@
             renderRiskMatrixAccordion(processed.subdistricts);
         }
 
-        // 📌 ฟังก์ชันจัดการระบบเฝ้าระวังระดับหมู่บ้าน HI/CI (รูปที่ 2)
+        // 📌 ฟังก์ชันจัดการระบบเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
         function renderHiSurveillanceTable(vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const tbody = document.getElementById('hiSurveillanceTableBody');
@@ -934,7 +936,7 @@
                     }
                 }
                 
-                // คำนวณสถานะเริ่มต้นตามเกณฑ์ HI (HI < 5: เฝ้าระวัง, 5-10: เสี่ยง, >10: ระบาด)
+                // คำนวณสถานะตามเกณฑ์ HI (HI < 5: เฝ้าระวัง, 5-10: เสี่ยง, >10: ระบาด)
                 let status = "เฝ้าระวัง";
                 if (hiValue > 10) status = "ระบาด";
                 else if (hiValue >= 5) status = "เสี่ยง";
@@ -991,15 +993,21 @@
 
             filtered.forEach((item, idx) => {
                 let badgeClass = "bg-emerald-600 text-white";
-                if (item.status === "เสี่ยง") badgeClass = "bg-amber-500 text-white";
-                else if (item.status === "ระบาด") badgeClass = "bg-rose-600 text-white";
+                let textClass = "text-emerald-600";
+                if (item.status === "เสี่ยง") {
+                    badgeClass = "bg-amber-500 text-white";
+                    textClass = "text-amber-600";
+                } else if (item.status === "ระบาด") {
+                    badgeClass = "bg-rose-600 text-white";
+                    textClass = "text-rose-600";
+                }
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 border-b border-slate-100 transition text-xs md:text-sm";
                 tr.innerHTML = `
                     <td class="p-3 font-semibold text-slate-800">${item.village}</td>
                     <td class="p-3 text-center text-slate-600">${item.subdistrict}</td>
-                    <td class="p-3 text-center font-bold ${item.hiVal > 10 ? 'text-rose-600' : (item.hiVal >= 5 ? 'text-amber-600' : 'text-emerald-600')}">${item.hiVal.toFixed(2)}%</td>
+                    <td class="p-3 text-center font-bold ${textClass}">${item.hiVal.toFixed(2)}%</td>
                     <td class="p-3 text-center font-bold text-slate-700">${item.cases} ราย</td>
                     <td class="p-3 text-center">
                         <span id="badge-${idx}" class="px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm ${badgeClass}">
