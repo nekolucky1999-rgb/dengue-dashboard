@@ -349,13 +349,39 @@
         let mapMarkers = [];
         let activeMarker = null;
         let rawSheetData = [];
-        let selectedYearFilter = "2569"; // ตั้งต้นเป็นปี 2569
+        let selectedYearFilter = "2569";
 
         // Chart instances
         let epiChartInstance = null;
         let ageChartInstance = null;
         let diagChartInstance = null;
         let subdistrictChartInstance = null;
+
+        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง (Bar Data Labels)
+        const topBarLabelsPlugin = {
+            id: 'topBarLabels',
+            afterDatasetsDraw(chart) {
+                if (chart.config.type !== 'bar') return;
+                const { ctx } = chart;
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    if (meta.hidden) return;
+                    meta.data.forEach((element, index) => {
+                        const val = dataset.data[index];
+                        if (val !== undefined && val !== null) {
+                            ctx.save();
+                            ctx.font = 'bold 11px Prompt, sans-serif';
+                            ctx.fillStyle = '#1e293b';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillText(val, element.x, element.y - 3);
+                            ctx.restore();
+                        }
+                    });
+                });
+            }
+        };
+        Chart.register(topBarLabelsPlugin);
 
         const villageMaster = {
             "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
@@ -515,12 +541,10 @@
             return -1;
         }
 
-        // 📌 ฟังก์ชันคำนวณมัธยฐาน 5 ปีย้อนหลังแบบ Dynamic ตามปีที่เลือก
         function calculateDynamic5YearMedian(currentYearBE) {
             const currentY = parseInt(currentYearBE, 10);
             const priorYears = [currentY - 5, currentY - 4, currentY - 3, currentY - 2, currentY - 1];
             
-            // สร้างที่เก็บสถิติรายเดือนของแต่ละปี 5 ปีย้อนหลัง
             const yearCounts = {};
             priorYears.forEach(y => {
                 yearCounts[y] = Array(12).fill(0);
@@ -563,9 +587,8 @@
                 
                 const hasData = vals.some(v => v > 0);
                 if (hasData) {
-                    medianMonthly[m] = vals[2]; // ค่ากลาง (Index 2 ของ 5 ปี)
+                    medianMonthly[m] = vals[2];
                 } else {
-                    // หากฐานข้อมูลในไฟล์ไม่มีข้อมูลปีเก่า จะสร้างเกณฑ์มัธยฐานประเมินสำหรับ อ.วังน้ำเย็น
                     const defaultScale = [1, 1, 2, 3, 4, 6, 5, 4, 3, 2, 1, 1];
                     medianMonthly[m] = defaultScale[m];
                 }
@@ -734,7 +757,6 @@
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
             
-            // คำนวณมัธยฐาน 5 ปีย้อนหลัง
             const dynamicMedianData = calculateDynamic5YearMedian(selectedYearFilter);
 
             // Render ALL Charts & Cards
@@ -989,7 +1011,6 @@
             const startYearBE = curYearBE - 5;
             const endYearBE = curYearBE - 1;
 
-            // อัปเดตคำอธิบายใต้หัวกราฟ Epi Curve ให้ตรงตามช่วงปี 5 ปีย้อนหลังจริง
             const subTitleEl = document.getElementById('epiCurveSubtitle');
             if (subTitleEl) {
                 subTitleEl.innerText = `เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน 5 ปีย้อนหลัง (พ.ศ. ${startYearBE} - ${endYearBE})`;
@@ -1054,7 +1075,13 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            grace: '15%',
+                            ticks: { precision: 0 }
+                        } 
+                    }
                 }
             });
         }
@@ -1142,7 +1169,13 @@
                             }
                         }
                     },
-                    scales: { y: { beginAtZero: true } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            grace: '15%',
+                            ticks: { precision: 0 }
+                        } 
+                    }
                 }
             });
         }
