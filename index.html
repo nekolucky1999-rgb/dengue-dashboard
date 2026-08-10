@@ -26,7 +26,7 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-teal-500 selection:text-white">
 
-    <!-- 📊 เนื้อหาหลัก แดชบอร์ด (แสดงผลทันทีโดยไม่ต้องล็อกอิน) -->
+    <!-- 📊 เนื้อหาหลัก แดชบอร์ด -->
     <div id="dashboardContainer" class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
         
         <!-- Header -->
@@ -349,7 +349,15 @@
     <!-- ⚙️ JavaScript ทำงานหลักทั้งหมด -->
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
-        const TOTAL_DISTRICT_POPULATION = 59894; // ประชากรรวม อ.วังน้ำเย็น
+        
+        // 📌 ประชากรจริงรายตำบล และยอดรวม อ.วังน้ำเย็น (59,894 คน)
+        const subdistrictPopulations = {
+            "วังน้ำเย็น": 19903,
+            "ตาหลังใน": 12559,
+            "คลองหินปูน": 9285,
+            "ทุ่งมหาเจริญ": 18147
+        };
+        const TOTAL_DISTRICT_POPULATION = 59894;
 
         let map = null;
         let mapMarkers = [];
@@ -634,7 +642,8 @@
                 const vObj = {};
                 vList.forEach(v => vObj[v.village] = { casesCum: 0, casesToday: 0 });
                 
-                let popEst = Math.round(TOTAL_DISTRICT_POPULATION / (subdistrictNames.length || 1));
+                // ดึงประชากรจริงตามตำบล ถ้าไม่มีในลิสต์ให้ใช้ค่าเฉลี่ย
+                let popEst = subdistrictPopulations[subName] || 10000;
                 let lat = 13.4600, lng = 102.1700;
                 if (subName.includes("วังน้ำเย็น")) { lat = 13.5015; lng = 102.1812; }
                 else if (subName.includes("ตาหลังใน")) { lat = 13.4331; lng = 102.2543; }
@@ -997,7 +1006,7 @@
                 mainTr.innerHTML = `
                     <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
                         <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
-                        <span class="font-bold">📌 ${sub.name}</span>
+                        <span class="font-bold">${sub.name}</span>
                         <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${villages.length})</span>
                     </td>
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
