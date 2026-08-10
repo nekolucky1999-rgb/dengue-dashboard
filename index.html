@@ -272,7 +272,6 @@
                                 <tr>
                                     <th class="p-2.5">ตำบล / หมู่บ้าน</th>
                                     <th class="p-2.5 text-center">ประชากร</th>
-                                    <th class="p-2.5 text-center">ค่า HI (%)</th>
                                     <th class="p-2.5 text-center">ป่วยวันนี้</th>
                                     <th class="p-2.5 text-center">ป่วยสะสม</th>
                                     <th class="p-2.5 text-center">อัตราป่วย/แสน</th>
@@ -407,7 +406,7 @@
         async function fetchDataFromAppsScript() {
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-teal-600 font-medium">
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-teal-600 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลตามปี ${selectedYearFilter}...
                 </td></tr>`;
             }
@@ -441,7 +440,7 @@
             script.onerror = function() {
                 const tbody = document.getElementById('riskTableBody');
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-600 font-medium">
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-600 font-medium">
                         ❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบการตั้งค่าสิทธิ์ Apps Script
                     </td></tr>`;
                 }
@@ -687,7 +686,6 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const colIndexes = findColumnIndexes();
 
-            // 📌 กรองเฉพาะข้อมูลผู้ป่วยของปีที่เลือก (selectedYearFilter) เท่านั้น
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
@@ -706,7 +704,7 @@
 
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
-                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue; // 🔒 กรองปีที่นี่
+                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let subNameFromCol = colIndexes.sub !== -1 ? String(row[colIndexes.sub] || '').trim() : String(row[10] || '').trim();
                 let villageNameFromCol = colIndexes.village !== -1 ? String(row[colIndexes.village] || '').trim() : String(row[9] || '').trim();
@@ -1009,7 +1007,6 @@
                         <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${villages.length})</span>
                     </td>
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
-                    <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi > 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
                     <td class="p-2.5 text-center font-bold text-rose-600">${sub.casesCum}</td>
                     <td class="p-2.5 text-center text-slate-600">${morb}</td>
@@ -1020,9 +1017,8 @@
                 subTr.id = subId;
                 subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
 
-                let villageListHtml = `<td colspan="7" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
+                let villageListHtml = `<td colspan="6" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
                 villages.forEach(v => {
-                    const vHiVal = selectedMonth === 'jul' ? v.jul : v.jun;
                     let caseCnt = 0;
                     for (let vKey in vCasesMap) {
                         if (vKey.includes(v.village) || v.village.includes(vKey)) caseCnt += vCasesMap[vKey];
@@ -1034,7 +1030,6 @@
                                 ${caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">ป่วย ${caseCnt}</span>` : ''}
                             </span>
                             <div class="text-right">
-                                <span class="text-[11px] block font-semibold ${vHiVal > 10 ? 'text-rose-600' : 'text-slate-500'}">HI: ${vHiVal.toFixed(1)}%</span>
                                 <span class="${caseCnt > 0 ? 'text-rose-600 font-bold' : 'text-slate-400'}">${caseCnt} ราย</span>
                             </div>
                         </div>`;
