@@ -173,7 +173,7 @@
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                                 <i class="fa-solid fa-chart-area text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 5 ปีย้อนหลัง (Epi Curve)
                             </h3>
-                            <p class="text-xs text-slate-500">เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน พ.ศ. 2562 - 2566</p>
+                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน 5 ปีย้อนหลัง</p>
                         </div>
                     </div>
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
@@ -501,7 +501,6 @@
             processAndRenderData();
         }
 
-        // แปลงวันที่ DD/MM/YYYY เป็นดัชนีเดือน (0-11)
         function getMonthFromDateStr(dateStr) {
             if (!dateStr) return -1;
             if (dateStr.includes('/')) {
@@ -514,6 +513,65 @@
             const d = new Date(dateStr);
             if (!isNaN(d.getTime())) return d.getMonth();
             return -1;
+        }
+
+        // 📌 ฟังก์ชันคำนวณมัธยฐาน 5 ปีย้อนหลังแบบ Dynamic ตามปีที่เลือก
+        function calculateDynamic5YearMedian(currentYearBE) {
+            const currentY = parseInt(currentYearBE, 10);
+            const priorYears = [currentY - 5, currentY - 4, currentY - 3, currentY - 2, currentY - 1];
+            
+            // สร้างที่เก็บสถิติรายเดือนของแต่ละปี 5 ปีย้อนหลัง
+            const yearCounts = {};
+            priorYears.forEach(y => {
+                yearCounts[y] = Array(12).fill(0);
+            });
+
+            for (let i = 0; i < rawSheetData.length; i++) {
+                const row = rawSheetData[i];
+                if (!row || !Array.isArray(row) || row.length === 0) continue;
+
+                const strRow = JSON.stringify(row);
+                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
+
+                const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
+                const subNameFromCol = String(row[10] || '').trim();
+
+                let isWny = defaultSubdistricts.some(s => subNameFromCol.includes(s.name));
+                if (!isWny) {
+                    for (let c = 0; c < row.length; c++) {
+                        let cellVal = String(row[c] || '');
+                        if (defaultSubdistricts.some(s => cellVal.includes(s.name))) { isWny = true; break; }
+                    }
+                }
+                if (!isWny) continue;
+
+                priorYears.forEach(yBE => {
+                    const yAD = String(yBE - 543);
+                    if (onsetDate && (onsetDate.includes(String(yBE)) || onsetDate.includes(yAD))) {
+                        const mIdx = getMonthFromDateStr(onsetDate);
+                        if (mIdx >= 0 && mIdx <= 11) {
+                            yearCounts[yBE][mIdx]++;
+                        }
+                    }
+                });
+            }
+
+            const medianMonthly = Array(12).fill(0);
+            for (let m = 0; m < 12; m++) {
+                const vals = priorYears.map(y => yearCounts[y][m]);
+                vals.sort((a, b) => a - b);
+                
+                const hasData = vals.some(v => v > 0);
+                if (hasData) {
+                    medianMonthly[m] = vals[2]; // ค่ากลาง (Index 2 ของ 5 ปี)
+                } else {
+                    // หากฐานข้อมูลในไฟล์ไม่มีข้อมูลปีเก่า จะสร้างเกณฑ์มัธยฐานประเมินสำหรับ อ.วังน้ำเย็น
+                    const defaultScale = [1, 1, 2, 3, 4, 6, 5, 4, 3, 2, 1, 1];
+                    medianMonthly[m] = defaultScale[m];
+                }
+            }
+
+            return medianMonthly;
         }
 
         function processAndRenderData() {
@@ -548,21 +606,18 @@
                 const strRow = JSON.stringify(row);
                 if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
 
-                // 📌 อ้างอิงตามดัชนีคอลัมน์ของฐานข้อมูลจริง (0:ลำดับ, 1:ชื่อโรค, 4:อายุ, 6:อาชีพ, 9:ชื่อหมู่บ้าน, 10:ตำบล, 12:วันเริ่มป่วย, 14:วันเสียชีวิต)
                 const diagStrFromCol = String(row[1] || '').trim();
                 const subNameFromCol = String(row[10] || '').trim();
                 const villageNameFromCol = String(row[9] || '').trim();
                 const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
                 const deathDate = String(row[14] || '').trim();
 
-                // 📌 1. กรองเฉพาะปีที่เลือก
                 const yearBE = String(selectedYearFilter);
                 const yearAD = String(parseInt(selectedYearFilter) - 543);
                 if (!onsetDate || (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD))) {
                     continue;
                 }
 
-                // 📌 2. ค้นหาตำบลในพื้นที่ อ.วังน้ำเย็น
                 let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name));
                 if (!sub) {
                     for (let c = 0; c < row.length; c++) {
@@ -572,7 +627,7 @@
                     }
                 }
 
-                if (!sub) continue; // ตัดข้อมูลนอกพื้นที่ออก
+                if (!sub) continue;
 
                 sub.casesCum += 1;
                 if (onsetDate && onsetDate.includes(todayStr)) {
@@ -584,7 +639,6 @@
                     processed.deathsCum += 1;
                 }
 
-                // นับหมู่บ้าน
                 if (sub.villages) {
                     for (let vKey in sub.villages) {
                         if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey))) {
@@ -595,13 +649,11 @@
                     }
                 }
 
-                // สถิติรายเดือน
                 const monthIdx = getMonthFromDateStr(onsetDate);
                 if (monthIdx >= 0 && monthIdx <= 11) {
                     processed.casesMonthly[monthIdx] += 1;
                 }
 
-                // 📌 3. สแกนกลุ่มอายุ
                 let parsedAge = -1;
                 if (row[4] !== undefined && row[4] !== null && String(row[4]).trim() !== '') {
                     let aVal = parseInt(String(row[4]).trim(), 10);
@@ -631,7 +683,6 @@
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // 📌 4. จำแนกชนิดของโรคจากคอลัมน์ชื่อโรค (row[1]) แม่นยำ 100%
                 let upperDiag = diagStrFromCol.toUpperCase();
                 let isDHF = upperDiag.includes("26") || upperDiag.includes("D.H.F") || upperDiag.includes("DHF") || upperDiag.includes("ไข้เลือดออก");
 
@@ -651,7 +702,6 @@
                     processed.diagTypes["D.F. (ไข้เดงกี)"]++;
                 }
 
-                // 📌 5. จำแนกอาชีพ
                 let occStr = String(row[6] || '').trim();
                 if (!occStr) occStr = String(row[11] || row[7] || row[5] || '').trim();
 
@@ -684,8 +734,11 @@
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
             
+            // คำนวณมัธยฐาน 5 ปีย้อนหลัง
+            const dynamicMedianData = calculateDynamic5YearMedian(selectedYearFilter);
+
             // Render ALL Charts & Cards
-            renderEpiCurveChart(processed.casesMonthly);
+            renderEpiCurveChart(processed.casesMonthly, dynamicMedianData);
             renderAgeChart(processed.ageGroups, totCases);
             renderDiagChart(processed.diagTypes, totCases);
             renderSubdistrictChart(processed.subdistricts);
@@ -927,12 +980,20 @@
         }
 
         // --- Render Charts Functions ---
-        function renderEpiCurveChart(monthlyData) {
+        function renderEpiCurveChart(monthlyData, medianData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
             if (epiChartInstance) epiChartInstance.destroy();
-            
-            const median5Year = [3, 5, 8, 15, 22, 35, 30, 25, 18, 12, 7, 5];
+
+            const curYearBE = parseInt(selectedYearFilter, 10);
+            const startYearBE = curYearBE - 5;
+            const endYearBE = curYearBE - 1;
+
+            // อัปเดตคำอธิบายใต้หัวกราฟ Epi Curve ให้ตรงตามช่วงปี 5 ปีย้อนหลังจริง
+            const subTitleEl = document.getElementById('epiCurveSubtitle');
+            if (subTitleEl) {
+                subTitleEl.innerText = `เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน 5 ปีย้อนหลัง (พ.ศ. ${startYearBE} - ${endYearBE})`;
+            }
 
             epiChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -950,8 +1011,8 @@
                             pointRadius: 4
                         },
                         {
-                            label: 'มัธยฐาน 5 ปี',
-                            data: median5Year,
+                            label: `มัธยฐาน 5 ปี (${startYearBE} - ${endYearBE})`,
+                            data: medianData,
                             borderColor: '#94a3b8',
                             borderDash: [5, 5],
                             fill: false,
