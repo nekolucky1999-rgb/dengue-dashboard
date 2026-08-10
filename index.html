@@ -8,6 +8,8 @@
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 📌 เพิ่ม Plugin สำหรับแสดงตัวเลขบนหัวแท่งกราฟ -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     
@@ -74,6 +76,7 @@
                                 <option value="2567">ปี 2567</option>
                                 <option value="2566">ปี 2566</option>
                                 <option value="2565">ปี 2565</option>
+                                <option value="2564">ปี 2564</option>
                             </select>
                         </div>
                         <h1 class="text-lg md:text-xl font-bold font-heading mt-0.5 text-white">สถานการณ์โรคไข้เลือดออก อ.วังน้ำเย็น</h1>
@@ -163,23 +166,21 @@
                 </div>
             </section>
 
-            <!-- 📊 แถวที่ 1: กราฟ Epi Curve สดจาก Sheet 1 + กราฟแยกรายตำบล -->
+            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Chart 1: Epi Curve (Synced Sheet 1) -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-5">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 2566 - 2569 (Epi Curve)
+                                <i class="fa-solid fa-chart-line text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 2564 - 2569 (Epi Curve)
                             </h3>
-                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">เปรียบเทียบผู้ป่วยจริงรายเดือน กับ ค่ามัธยฐานปี 2566 - 2569 (คำนวณจาก Sheet 1)</p>
+                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">เปรียบเทียบผู้ป่วยจริงรายเดือน กับ ค่ามัธยฐานปี 2564 - 2569 (ดึงตรงจาก Sheet 3)</p>
                         </div>
                     </div>
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
                 </div>
 
-                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
@@ -193,7 +194,6 @@
             <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ + ชนิดโรค + การ์ดสัดส่วนอาชีพ -->
             <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Chart 3: การกระจายตามกลุ่มอายุ -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-user-group text-amber-500"></i> การกระจายตามกลุ่มอายุ (Age Group)
@@ -202,7 +202,6 @@
                     <div class="relative w-full h-64"><canvas id="ageDistributionChart"></canvas></div>
                 </div>
 
-                <!-- Chart 4: จำแนกตามชนิดของโรค -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-viruses text-teal-600"></i> จำแนกตามชนิดของโรค (Diag Type)
@@ -211,7 +210,6 @@
                     <div class="relative w-full h-64"><canvas id="diagTypeChart"></canvas></div>
                 </div>
 
-                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด -->
                 <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
                     <div>
                         <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
@@ -233,7 +231,7 @@
 
             </section>
 
-            <!-- 🏡 3. ระบบเฝ้าระวังดัชนีลูกน้ำยุงลาย HI/CI รายตำบลและหมู่บ้าน (Synced Sheet 1 & 2) -->
+            <!-- 🏡 3. รายงานดัชนีลูกน้ำยุงลาย HI/CI -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
@@ -250,7 +248,6 @@
                     </div>
                 </div>
 
-                <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
@@ -277,15 +274,13 @@
                     </div>
                 </div>
 
-                <!-- รายชื่อตำบลและหมู่บ้านย่อย (Grouped Accordion) -->
                 <div id="hiSubdistrictAccordion" class="space-y-3 pt-2">
                 </div>
             </section>
 
-            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายตำบล / หมู่บ้าน -->
+            <!-- 🗺️📋 แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยง -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                <!-- แผนที่ GIS -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -296,7 +291,6 @@
                     <div id="map" class="shadow-inner border border-slate-200"></div>
                 </div>
 
-                <!-- ตารางประเมินระดับความเสี่ยง (Synced Sheet 1 & Sheet 2) -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -345,7 +339,7 @@
                         <input type="text" id="fullName" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
                     </div>
                     <div>
-                        <label class="block font-medium mb-1 text-slate-700">วันที่เริ่มป่วย</label>
+                        <label class="block font-medium mb-1 text-slate-700">วันที่เริ่มป่วย (วัน/เดือน/ปี)</label>
                         <input type="date" id="onsetDate" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
                     </div>
                 </div>
@@ -398,7 +392,8 @@
         let mapMarkers = [];
         let activeMarker = null;
         let rawSheetData = [];       // Sheet 1 Data
-        let rawSheet2Data = [];      // Sheet 2 Dynamic Data
+        let rawSheet2Data = [];      // Sheet 2 Data
+        let rawSheet3Data = [];      // Sheet 3 Data (Median 2564-2569)
         let selectedYearFilter = "2569";
 
         // Chart instances
@@ -407,7 +402,6 @@
         let ageChartInstance = null;
         let diagChartInstance = null;
 
-        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2 Master
         const defaultHiSheet2Master = [
             { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
             { village: "หมู่ 4 บ้านเกษตรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
@@ -577,7 +571,6 @@
             document.body.appendChild(script);
         }
 
-        // 📌 ฟังก์ชันแปลง Array of Objects เป็น 2D Array หาก Apps Script ส่งรูปแบบ Object กลับมา
         function normalizeTo2DArray(dataArray) {
             if (!Array.isArray(dataArray) || dataArray.length === 0) return [];
             if (typeof dataArray[0] === 'object' && !Array.isArray(dataArray[0])) {
@@ -589,21 +582,21 @@
         }
 
         function handleDataReceived(data) {
-            let s1 = [];
-            let s2 = [];
+            let s1 = [], s2 = [], s3 = [];
 
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 if (Array.isArray(data.sheet1)) s1 = data.sheet1;
                 else if (Array.isArray(data.data)) s1 = data.data;
-                else if (Array.isArray(data.result)) s1 = data.result;
 
                 if (Array.isArray(data.sheet2)) s2 = data.sheet2;
+                if (Array.isArray(data.sheet3)) s3 = data.sheet3;
             } else if (Array.isArray(data)) {
                 s1 = data;
             }
 
             rawSheetData = normalizeTo2DArray(s1);
             rawSheet2Data = normalizeTo2DArray(s2);
+            rawSheet3Data = normalizeTo2DArray(s3);
 
             processAndRenderData();
         }
@@ -613,123 +606,111 @@
             processAndRenderData();
         }
 
-        // 📌 ฟังก์ชันแกะรอยวันที่ปรับปรุงพิเศษ (รองรับทุกฟอร์แมต ISO, DD/MM/YYYY, YYYY-MM-DD ทั้ง ค.ศ. และ พ.ศ.)
-        function parseFlexibleDate(dateVal) {
+        // แกะวันที่โดยยึดตามรูปแบบ DD/MM/YYYY ของไทย
+        function parseThaiDateStrictJS(dateVal) {
             if (!dateVal) return null;
             let str = String(dateVal).trim();
             if (!str || str === 'undefined' || str === 'null') return null;
 
-            // ISO String
-            if (str.includes('T') || str.includes('GMT')) {
-                let dObj = new Date(str);
-                if (!isNaN(dObj.getTime())) {
-                    let d = dObj.getDate();
-                    let m = dObj.getMonth();
-                    let y = dObj.getFullYear();
+            let parts = str.split(/[\/\-\.]/);
+            if (parts.length >= 3) {
+                let p0 = parseInt(parts[0], 10);
+                let p1 = parseInt(parts[1], 10);
+                let p2 = parseInt(parts[2], 10);
+
+                if (!isNaN(p0) && !isNaN(p1) && !isNaN(p2)) {
+                    let d, m, y;
+                    if (p0 > 1000) { 
+                        y = p0; m = p1 - 1; d = p2; 
+                    } else { 
+                        d = p0; m = p1 - 1; y = p2; 
+                    }
+
+                    if (y < 100) y = (y >= 60) ? (2500 + y) : (2000 + y);
                     let yearBE = y > 2400 ? y : y + 543;
                     let yearAD = y > 2400 ? y - 543 : y;
-                    return { day: d, month: m, yearBE: yearBE, yearAD: yearAD, rawStr: str };
-                }
-            }
 
-            // DD/MM/YYYY หรือ YYYY-MM-DD
-            let delimiter = str.includes('/') ? '/' : (str.includes('-') ? '-' : null);
-            if (delimiter) {
-                let parts = str.split(delimiter);
-                if (parts.length === 3) {
-                    let p0 = parseInt(parts[0], 10);
-                    let p1 = parseInt(parts[1], 10);
-                    let p2 = parseInt(parts[2], 10);
-
-                    if (!isNaN(p0) && !isNaN(p1) && !isNaN(p2)) {
-                        let d, m, y;
-                        if (p0 > 1000) { y = p0; m = p1 - 1; d = p2; }
-                        else { d = p0; m = p1 - 1; y = p2; }
-
-                        if (y < 100) y += 2000;
-                        let yearBE = y > 2400 ? y : y + 543;
-                        let yearAD = y > 2400 ? y - 543 : y;
-
-                        if (!isNaN(m) && m >= 0 && m <= 11) {
-                            return { day: d, month: m, yearBE: yearBE, yearAD: yearAD, rawStr: str };
-                        }
+                    if (!isNaN(m) && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+                        return { day: d, month: m, yearBE: yearBE, yearAD: yearAD };
                     }
                 }
             }
             return null;
         }
 
-        // 📌 ค้นหา Index คอลัมน์จากคำสำคัญหัวตาราง
         function findColumnIndexes() {
             let colIndexes = { onset: -1, sub: -1, village: -1, death: -1, age: -1, diag: -1, occ: -1 };
-            if (rawSheetData.length > 0 && Array.isArray(rawSheetData[0])) {
-                rawSheetData[0].forEach((head, idx) => {
-                    let hText = String(head || '').trim().toLowerCase();
-                    if (hText.includes('เริ่มป่วย') || hText.includes('วันป่วย') || hText.includes('onset') || hText.includes('date')) {
-                        if (colIndexes.onset === -1) colIndexes.onset = idx;
+            
+            for (let r = 0; r < Math.min(5, rawSheetData.length); r++) {
+                if (!Array.isArray(rawSheetData[r])) continue;
+                
+                rawSheetData[r].forEach((head, idx) => {
+                    let hText = String(head || '').trim();
+                    let hTextLower = hText.toLowerCase();
+
+                    if (hText === 'วัน/เดือน/ปี') {
+                        colIndexes.onset = idx;
+                    } else if (colIndexes.onset === -1 && (hTextLower.includes('วันเริ่มป่วย') || hTextLower.includes('เริ่มป่วย') || hTextLower.includes('onset'))) {
+                        colIndexes.onset = idx;
                     }
-                    if (hText.includes('ตำบล') || hText.includes('subdistrict') || hText.includes('tumbol')) {
+
+                    if (hTextLower.includes('ตำบล') || hTextLower.includes('subdistrict')) {
                         if (colIndexes.sub === -1) colIndexes.sub = idx;
                     }
-                    if (hText.includes('หมู่') || hText.includes('village') || hText.includes('moo')) {
+                    if (hTextLower.includes('หมู่') || hTextLower.includes('village')) {
                         if (colIndexes.village === -1) colIndexes.village = idx;
                     }
-                    if (hText.includes('เสียชีวิต') || hText.includes('ตาย') || hText.includes('death') || hText.includes('status')) {
+                    if (hTextLower.includes('เสียชีวิต') || hTextLower.includes('ตาย') || hTextLower.includes('death')) {
                         if (colIndexes.death === -1) colIndexes.death = idx;
                     }
-                    if (hText.includes('อายุ') || hText.includes('age')) {
+                    if (hTextLower.includes('อายุ') || hTextLower.includes('age')) {
                         if (colIndexes.age === -1) colIndexes.age = idx;
                     }
-                    if (hText.includes('โรค') || hText.includes('วินิจฉัย') || hText.includes('diag')) {
+                    if (hTextLower.includes('โรค') || hTextLower.includes('วินิจฉัย') || hTextLower.includes('diag')) {
                         if (colIndexes.diag === -1) colIndexes.diag = idx;
                     }
-                    if (hText.includes('อาชีพ') || hText.includes('occ')) {
+                    if (hTextLower.includes('อาชีพ') || hTextLower.includes('occ')) {
                         if (colIndexes.occ === -1) colIndexes.occ = idx;
                     }
                 });
+                
+                if (colIndexes.onset !== -1) break;
             }
             return colIndexes;
         }
 
-        // 📌 คำนวณค่ามัธยฐานเฉพาะปี 2566 - 2569 จาก Sheet 1
-        function calculate66To69MedianFromSheet1() {
-            const targetYears = [2566, 2567, 2568, 2569];
-            const yearCounts = {};
-            targetYears.forEach(y => { yearCounts[y] = Array(12).fill(0); });
+        function getMedianFromSheet3() {
+            let medianMonthly = Array(12).fill(null);
+            if (!rawSheet3Data || rawSheet3Data.length <= 1) return medianMonthly;
 
-            const colIndexes = findColumnIndexes();
-
-            for (let i = 0; i < rawSheetData.length; i++) {
-                const row = rawSheetData[i];
-                if (!row || !Array.isArray(row) || row.length === 0) continue;
-
-                const strRow = JSON.stringify(row);
-                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
-
-                let onsetStr = "";
-                if (colIndexes.onset !== -1 && row[colIndexes.onset]) {
-                    onsetStr = String(row[colIndexes.onset]).trim();
-                } else {
-                    for (let c = 0; c < row.length; c++) {
-                        let parsed = parseFlexibleDate(row[c]);
-                        if (parsed) { onsetStr = String(row[c]).trim(); break; }
-                    }
-                }
-
-                const parsedDate = parseFlexibleDate(onsetStr);
-                if (!parsedDate) continue;
-
-                if (targetYears.includes(parsedDate.yearBE)) {
-                    yearCounts[parsedDate.yearBE][parsedDate.month]++;
+            let medianColIdx = -1;
+            let header = rawSheet3Data[0];
+            for (let c = 0; c < header.length; c++) {
+                let hText = String(header[c] || '').toLowerCase();
+                if (hText.includes('มัธยฐาน') || hText.includes('median')) {
+                    medianColIdx = c;
+                    break;
                 }
             }
+            if (medianColIdx === -1) medianColIdx = header.length - 1;
 
-            const medianMonthly = Array(12).fill(0);
-            for (let m = 0; m < 12; m++) {
-                const vals = targetYears.map(y => yearCounts[y][m]);
-                vals.sort((a, b) => a - b);
-                const med = (vals[1] + vals[2]) / 2;
-                medianMonthly[m] = parseFloat(med.toFixed(1));
+            const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+
+            for (let i = 1; i < rawSheet3Data.length; i++) {
+                let row = rawSheet3Data[i];
+                if (!row || row.length === 0) continue;
+                
+                let monthText = String(row[0] || '').trim();
+                let monthIdx = -1;
+                
+                monthNames.forEach((mName, idx) => {
+                    if (monthText.includes(mName)) monthIdx = idx;
+                });
+
+                if (monthIdx !== -1 && row[medianColIdx] !== undefined && String(row[medianColIdx]).trim() !== "") {
+                    let val = parseFloat(row[medianColIdx]);
+                    medianMonthly[monthIdx] = isNaN(val) ? null : val;
+                }
             }
 
             return medianMonthly;
@@ -767,15 +748,14 @@
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
 
                 const strRow = JSON.stringify(row);
-                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
+                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค') || strRow.includes('ทะเบียนคนไข้')) continue;
 
-                // ดึงวันเริ่มป่วย
                 let onsetStr = "";
                 if (colIndexes.onset !== -1 && row[colIndexes.onset]) {
                     onsetStr = String(row[colIndexes.onset]).trim();
                 } else {
                     for (let c = 0; c < row.length; c++) {
-                        let parsed = parseFlexibleDate(row[c]);
+                        let parsed = parseThaiDateStrictJS(row[c]);
                         if (parsed) { onsetStr = String(row[c]).trim(); break; }
                     }
                 }
@@ -785,10 +765,9 @@
                 let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
                 let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
 
-                const dateObj = parseFlexibleDate(onsetStr);
+                const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
 
-                // กรองตามปีที่เลือก (พ.ศ.)
                 if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name));
@@ -826,12 +805,10 @@
                     }
                 }
 
-                // นับผู้ป่วยรายเดือน
                 if (dateObj.month >= 0 && dateObj.month <= 11) {
                     processed.casesMonthly[dateObj.month] += 1;
                 }
 
-                // ช่วงอายุ
                 let parsedAge = -1;
                 if (colIndexes.age !== -1 && row[colIndexes.age] !== undefined) {
                     let aVal = parseInt(String(row[colIndexes.age]).trim(), 10);
@@ -858,13 +835,11 @@
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // ชนิดโรค
                 let upperDiag = diagStr.toUpperCase();
                 let isDHF = upperDiag.includes("26") || upperDiag.includes("D.H.F") || upperDiag.includes("DHF") || upperDiag.includes("ไข้เลือดออก");
                 if (isDHF) processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
                 else processed.diagTypes["D.F. (ไข้เดงกี)"]++;
 
-                // อาชีพ
                 let occStr = colIndexes.occ !== -1 ? String(row[colIndexes.occ] || '').trim() : String(row[6] || '').trim();
                 if (occStr && !occStr.includes('http') && occStr !== 'undefined') {
                     let cleanOcc = occStr;
@@ -880,7 +855,6 @@
 
             const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
 
-            // Update KPI cards
             const kpiToday = document.getElementById('kpiTodayCases');
             const kpiCum = document.getElementById('kpiCumCases');
             const kpiMorb = document.getElementById('kpiMorbidity');
@@ -895,25 +869,20 @@
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
 
-            // คำนวณค่ามัธยฐานช่วงปี 2566 - 2569 สดจาก Sheet 1
-            const median66To69Data = calculate66To69MedianFromSheet1();
+            const medianSheet3Data = getMedianFromSheet3();
 
-            // Render ALL Charts & Cards
-            renderEpiCurveChart(processed.casesMonthly, median66To69Data);
+            renderEpiCurveChart(processed.casesMonthly, medianSheet3Data);
             renderSubdistrictChart(processed.subdistricts);
             renderAgeChart(processed.ageGroups, totCases);
             renderDiagChart(processed.diagTypes, totCases);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            // 🏡 Render รายงาน HI/CI
             renderHiSurveillanceTable(processed.villageCasesMap);
 
-            // Render Map & Risk Table
             renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts, processed.villageCasesMap);
         }
 
-        // 📌 ฟังก์ชันแสดงกราฟ Epi Curve
         function renderEpiCurveChart(monthlyData, medianData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
@@ -921,7 +890,7 @@
 
             const subTitleEl = document.getElementById('epiCurveSubtitle');
             if (subTitleEl) {
-                subTitleEl.innerText = `เปรียบเทียบผู้ป่วยจริงรายเดือน ปี พ.ศ. ${selectedYearFilter} กับ ค่ามัธยฐานปี 2566 - 2569 (คำนวณจาก Sheet 1)`;
+                subTitleEl.innerText = `เปรียบเทียบผู้ป่วยจริงรายเดือน ปี พ.ศ. ${selectedYearFilter} กับ ค่ามัธยฐานปี 2564 - 2569 (ดึงตรงจาก Sheet 3)`;
             }
 
             epiChartInstance = new Chart(ctx, {
@@ -940,7 +909,7 @@
                             pointRadius: 5
                         },
                         {
-                            label: `มัธยฐานปี 2566 - 2569 [Sheet 1]`,
+                            label: `มัธยฐานปี 2564 - 2569 [Sheet 3]`,
                             data: medianData,
                             borderColor: '#94a3b8',
                             borderDash: [5, 5],
@@ -955,14 +924,15 @@
                     responsive: true, 
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } } 
+                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
+                        datalabels: { display: false } // ไม่แสดงตัวเลขลอยบนกราฟเส้น
                     },
                     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // 📌 ฟังก์ชันแสดงกราฟช่วงอายุ
+        // 📌 กราฟกลุ่มอายุ (แสดงตัวเลขบนหัวแท่ง)
         function renderAgeChart(ageObj, total) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
@@ -972,6 +942,7 @@
 
             ageChartInstance = new Chart(ctx, {
                 type: 'bar',
+                plugins: [ChartDataLabels],
                 data: {
                     labels: Object.keys(ageObj),
                     datasets: [{
@@ -984,13 +955,63 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, grace: '15%', ticks: { precision: 0 } } }
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            font: { weight: 'bold', size: 12, family: 'Prompt' },
+                            color: '#ea580c',
+                            formatter: function(value) {
+                                return value > 0 ? value : ''; // แสดงเฉพาะค่ามากกว่า 0
+                            }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // 📌 ฟังก์ชันแสดงกราฟชนิดของโรค
+        // 📌 กราฟผู้ป่วยจำแนกรายตำบล (แสดงตัวเลขบนหัวแท่ง)
+        function renderSubdistrictChart(subdistricts) {
+            const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
+            if (!ctx) return;
+            if (subdistrictChartInstance) subdistrictChartInstance.destroy();
+
+            const names = subdistricts.map(s => s.name);
+            const counts = subdistricts.map(s => s.casesCum);
+            const rates = subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1)));
+
+            subdistrictChartInstance = new Chart(ctx, {
+                type: 'bar',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: names,
+                    datasets: [
+                        { label: 'จำนวนผู้ป่วย (ราย)', data: counts, backgroundColor: '#ef4444', borderRadius: 6 },
+                        { label: 'อัตราป่วย (ต่อแสน)', data: rates, backgroundColor: '#eab308', borderRadius: 6 }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'top' },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            font: { weight: 'bold', size: 11, family: 'Prompt' },
+                            color: '#334155',
+                            formatter: function(value) {
+                                return value > 0 ? value : ''; // แสดงเฉพาะค่ามากกว่า 0
+                            }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
+                }
+            });
+        }
+
         function renderDiagChart(diagObj, total) {
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
@@ -1017,6 +1038,7 @@
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { position: 'bottom' },
+                        datalabels: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -1031,7 +1053,6 @@
             });
         }
 
-        // 📌 ฟังก์ชันแสดงการ์ดสัดส่วนอาชีพ
         function renderTopOccupationsCard(occObj, total) {
             const container = document.getElementById('occupationList');
             if (!container) return;
@@ -1064,7 +1085,6 @@
             });
         }
 
-        // 📌 ฟังก์ชันจัดกลุ่มรายงานดัชนี HI/CI
         function renderHiSurveillanceTable(vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
@@ -1192,7 +1212,6 @@
             }
         }
 
-        // 📌 ฟังก์ชันแสดงตารางประเมินระดับความเสี่ยง
         function renderRiskMatrixAccordion(subdistricts, vCasesMap = {}) {
             const tbody = document.getElementById('riskTableBody');
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
@@ -1282,33 +1301,6 @@
                     icon.classList.remove('rotate-90');
                 }
             }
-        }
-
-        function renderSubdistrictChart(subdistricts) {
-            const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
-            if (!ctx) return;
-            if (subdistrictChartInstance) subdistrictChartInstance.destroy();
-
-            const names = subdistricts.map(s => s.name);
-            const counts = subdistricts.map(s => s.casesCum);
-            const rates = subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1)));
-
-            subdistrictChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: names,
-                    datasets: [
-                        { label: 'จำนวนผู้ป่วย (ราย)', data: counts, backgroundColor: '#ef4444', borderRadius: 6 },
-                        { label: 'อัตราป่วย (ต่อแสน)', data: rates, backgroundColor: '#eab308', borderRadius: 6 }
-                    ]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } },
-                    scales: { y: { beginAtZero: true, grace: '15%', ticks: { precision: 0 } } }
-                }
-            });
         }
 
         function renderMapMarkers(subdistricts) {
