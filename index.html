@@ -105,7 +105,7 @@
                                 <i class="fa-solid fa-award text-amber-400"></i> สรุปสถานการณ์ภาพรวมประจำปี พ.ศ. <span id="summaryYearLabel" class="text-amber-300 font-bold">2569</span>
                             </span>
                             <span id="cfrStatusBadge" class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium">
-                                <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)
+                                <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราป่วยตายผ่านเกณฑ์ (< 0.10%)
                             </span>
                         </div>
 
@@ -163,17 +163,17 @@
                 </div>
             </section>
 
-            <!-- 📊 แถวที่ 1: กราฟสรุปจำนวนผู้ป่วยรายเดือน + กราฟแยกรายตำบล -->
+            <!-- 📊 แถวที่ 1: กราฟ Epi Curve สดจาก Sheet 1 + กราฟแยกรายตำบล -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Chart 1: จำนวนผู้ป่วยรายเดือน (Monthly Cases) -->
+                <!-- Chart 1: Epi Curve (Synced Sheet 1) -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-5">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-teal-600"></i> จำนวนผู้ป่วยจำแนกรายเดือน (Monthly Cases)
+                                <i class="fa-solid fa-chart-line text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 2566 - 2569 (Epi Curve)
                             </h3>
-                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">แสดงแนวโน้มจำนวนผู้ป่วยสะสมจริงรายเดือนจากฐานข้อมูล</p>
+                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">เปรียบเทียบผู้ป่วยจริงรายเดือน กับ ค่ามัธยฐานปี 2566 - 2569 (คำนวณจาก Sheet 1)</p>
                         </div>
                     </div>
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
@@ -217,7 +217,7 @@
                         <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                             <i class="fa-solid fa-briefcase text-teal-600"></i> อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations)
                         </h3>
-                        <p class="text-xs text-slate-500 mb-3">คำนวณสัดส่วน % อาชีพผู้ป่วยจากฐานข้อมูล</p>
+                        <p class="text-xs text-slate-500 mb-3">คำนวณสัดส่วน % อาชีพผู้ป่วยจากฐานข้อมูล Sheet 1</p>
                         
                         <div id="occupationList" class="space-y-3 text-xs">
                         </div>
@@ -233,90 +233,56 @@
 
             </section>
 
-            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) -->
+            <!-- 🏡 3. ระบบเฝ้าระวังดัชนีลูกน้ำยุงลาย HI/CI รายตำบลและหมู่บ้าน (Synced Sheet 1 & 2) -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI)
+                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน
                         </h3>
-                        <p class="text-xs text-slate-500">ประเมินดัชนีความชุกของลูกน้ำยุงลาย (House Index) และจัดระดับความเสี่ยงการระบาดรายหมู่บ้าน (ข้อมูลจาก Sheet 2)</p>
+                        <p class="text-xs text-slate-500">จัดกลุ่มข้อมูลระดับตำบลเป็นหลัก และสามารถคลิกขยายดูรายละเอียดรายหมู่บ้านได้ (ซิ้งค์ข้อมูล Sheet 1 และ Sheet 2)</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs bg-teal-50 text-teal-700 px-3 py-1 rounded-lg border border-teal-200 font-medium flex items-center gap-1">
-                            <i class="fa-solid fa-table text-teal-600"></i> Sheet2 Synced
-                        </span>
+                        <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
+                            <option value="jul" selected>เดือน กรกฎาคม (ก.ค.)</option>
+                            <option value="jun">เดือน มิถุนายน (มิ.ย.)</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
-                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
-                            <span class="w-3.5 h-3.5 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
+                        <div class="flex items-center gap-2 font-bold text-sm md:text-base">
+                            <span class="w-3 h-3 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
                             <span>หมู่บ้านเฝ้าระวัง (HI < 5%)</span>
                         </div>
-                        <span id="hiSafeCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                        <span id="hiSafeCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
 
                     <div class="bg-amber-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
-                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
-                            <span class="w-3.5 h-3.5 bg-amber-200 rounded-full inline-block animate-pulse"></span>
+                        <div class="flex items-center gap-2 font-bold text-sm md:text-base">
+                            <span class="w-3 h-3 bg-amber-200 rounded-full inline-block animate-pulse"></span>
                             <span>หมู่บ้านเสี่ยง (HI 5 - 10%)</span>
                         </div>
-                        <span id="hiRiskCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                        <span id="hiRiskCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
 
                     <div class="bg-rose-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
-                        <div class="flex items-center gap-2 font-bold text-base md:text-lg">
-                            <span class="w-3.5 h-3.5 bg-rose-300 rounded-full inline-block animate-pulse"></span>
+                        <div class="flex items-center gap-2 font-bold text-sm md:text-base">
+                            <span class="w-3 h-3 bg-rose-300 rounded-full inline-block animate-pulse"></span>
                             <span>หมู่บ้านระบาด (HI > 10%)</span>
                         </div>
-                        <span id="hiOutbreakCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
+                        <span id="hiOutbreakCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
                 </div>
 
-                <!-- ช่องค้นหาและตัวกรอง -->
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="text" id="hiVillageSearch" onkeyup="filterHiTable()" placeholder="ค้นหาหมู่บ้าน/ชุมชน..." class="w-full sm:w-64 px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
-                        <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 outline-none font-medium">
-                            <option value="jul" selected>เดือน ก.ค.</option>
-                            <option value="jun">เดือน มิ.ย.</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                        <label class="text-xs text-slate-500 font-medium">กรองสถานะ:</label>
-                        <select id="hiStatusFilter" onchange="filterHiTable()" class="px-3 py-2 text-xs md:text-sm rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 outline-none font-medium">
-                            <option value="all">ทุกสถานะ</option>
-                            <option value="เฝ้าระวัง">เฝ้าระวัง</option>
-                            <option value="เสี่ยง">เสี่ยง</option>
-                            <option value="ระบาด">ระบาด</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ตารางดัชนี HI รายหมู่บ้าน -->
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table class="w-full text-left text-xs md:text-sm">
-                        <thead class="bg-slate-800 text-white font-semibold">
-                            <tr>
-                                <th class="p-3">หมู่บ้าน / ชุมชน</th>
-                                <th class="p-3 text-center">ตำบล</th>
-                                <th class="p-3 text-center">ค่า HI (%)</th>
-                                <th class="p-3 text-center">ผู้ป่วย</th>
-                                <th class="p-3 text-center">สถานะ</th>
-                                <th class="p-3 text-center">ปรับสถานะ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hiSurveillanceTableBody" class="divide-y divide-slate-200 bg-white">
-                        </tbody>
-                    </table>
+                <!-- รายชื่อตำบลและหมู่บ้านย่อย (Grouped Accordion) -->
+                <div id="hiSubdistrictAccordion" class="space-y-3 pt-2">
                 </div>
             </section>
 
-            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
+            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายตำบล / หมู่บ้าน -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 <!-- แผนที่ GIS -->
@@ -330,25 +296,25 @@
                     <div id="map" class="shadow-inner border border-slate-200"></div>
                 </div>
 
-                <!-- ตารางประเมินระดับความเสี่ยง -->
+                <!-- ตารางประเมินระดับความเสี่ยง (Synced Sheet 1 & Sheet 2) -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน (Sync HI/CI)
                         </span>
-                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลหรือหมู่บ้านเพื่อซูมและปักหมุด</span>
+                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายรายหมู่บ้าน</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl border border-slate-200">
                         <table class="w-full text-left text-xs md:text-sm">
-                            <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                            <thead class="bg-slate-800 text-white font-semibold">
                                 <tr>
                                     <th class="p-2.5">ตำบล / หมู่บ้าน</th>
-                                    <th class="p-2.5 text-center">ประชากร (คน)</th>
+                                    <th class="p-2.5 text-center">ประชากร</th>
+                                    <th class="p-2.5 text-center">ค่า HI (%)</th>
                                     <th class="p-2.5 text-center">ป่วยวันนี้</th>
                                     <th class="p-2.5 text-center">ป่วยสะสม</th>
                                     <th class="p-2.5 text-center">อัตราป่วย/แสน</th>
-                                    <th class="p-2.5 text-center">เสียชีวิต</th>
                                     <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
                                 </tr>
                             </thead>
@@ -431,43 +397,18 @@
         let map = null;
         let mapMarkers = [];
         let activeMarker = null;
-        let rawSheetData = [];
+        let rawSheetData = [];       // Sheet 1 Data
+        let rawSheet2Data = [];      // Sheet 2 Dynamic Data
         let selectedYearFilter = "2569";
 
         // Chart instances
         let epiChartInstance = null;
+        let subdistrictChartInstance = null;
         let ageChartInstance = null;
         let diagChartInstance = null;
-        let subdistrictChartInstance = null;
 
-        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง
-        const topBarLabelsPlugin = {
-            id: 'topBarLabels',
-            afterDatasetsDraw(chart) {
-                if (chart.config.type !== 'bar') return;
-                const { ctx } = chart;
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (meta.hidden) return;
-                    meta.data.forEach((element, index) => {
-                        const val = dataset.data[index];
-                        if (val !== undefined && val !== null) {
-                            ctx.save();
-                            ctx.font = 'bold 11px Prompt, sans-serif';
-                            ctx.fillStyle = '#1e293b';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'bottom';
-                            ctx.fillText(val, element.x, element.y - 3);
-                            ctx.restore();
-                        }
-                    });
-                });
-            }
-        };
-        Chart.register(topBarLabelsPlugin);
-
-        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2
-        const hiSheet2Master = [
+        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2 Master
+        const defaultHiSheet2Master = [
             { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
             { village: "หมู่ 4 บ้านเกษตรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
             { village: "หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 11.69, jul: 15.58 },
@@ -508,8 +449,6 @@
             { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
             { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0.00, jul: 0.00 }
         ];
-
-        let currentHiList = [];
 
         const villageMaster = {
             "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
@@ -638,14 +577,33 @@
             document.body.appendChild(script);
         }
 
-        function handleDataReceived(data) {
-            if (Array.isArray(data)) {
-                rawSheetData = data;
-            } else if (data && Array.isArray(data.data)) {
-                rawSheetData = data.data;
-            } else {
-                rawSheetData = [];
+        // 📌 ฟังก์ชันแปลง Array of Objects เป็น 2D Array หาก Apps Script ส่งรูปแบบ Object กลับมา
+        function normalizeTo2DArray(dataArray) {
+            if (!Array.isArray(dataArray) || dataArray.length === 0) return [];
+            if (typeof dataArray[0] === 'object' && !Array.isArray(dataArray[0])) {
+                const headers = Object.keys(dataArray[0]);
+                const rows = dataArray.map(obj => headers.map(k => obj[k]));
+                return [headers, ...rows];
             }
+            return dataArray;
+        }
+
+        function handleDataReceived(data) {
+            let s1 = [];
+            let s2 = [];
+
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                if (Array.isArray(data.sheet1)) s1 = data.sheet1;
+                else if (Array.isArray(data.data)) s1 = data.data;
+                else if (Array.isArray(data.result)) s1 = data.result;
+
+                if (Array.isArray(data.sheet2)) s2 = data.sheet2;
+            } else if (Array.isArray(data)) {
+                s1 = data;
+            }
+
+            rawSheetData = normalizeTo2DArray(s1);
+            rawSheet2Data = normalizeTo2DArray(s2);
 
             processAndRenderData();
         }
@@ -655,31 +613,126 @@
             processAndRenderData();
         }
 
-        // 📌 ฟังก์ชันดึงเดือนจากสตริงวันที่แบบยืดหยุ่น
-        function getMonthFromDateStr(dateStr) {
-            if (!dateStr) return -1;
-            const str = String(dateStr).trim();
-            
-            // Format: DD/MM/YYYY หรือ D/M/YYYY
-            if (str.includes('/')) {
-                const parts = str.split('/');
-                if (parts.length === 3) {
-                    const m = parseInt(parts[1], 10) - 1;
-                    if (m >= 0 && m <= 11) return m;
-                }
-            }
-            // Format: YYYY-MM-DD
-            else if (str.includes('-')) {
-                const parts = str.split('-');
-                if (parts.length === 3) {
-                    const m = parseInt(parts[1], 10) - 1;
-                    if (m >= 0 && m <= 11) return m;
+        // 📌 ฟังก์ชันแกะรอยวันที่ปรับปรุงพิเศษ (รองรับทุกฟอร์แมต ISO, DD/MM/YYYY, YYYY-MM-DD ทั้ง ค.ศ. และ พ.ศ.)
+        function parseFlexibleDate(dateVal) {
+            if (!dateVal) return null;
+            let str = String(dateVal).trim();
+            if (!str || str === 'undefined' || str === 'null') return null;
+
+            // ISO String
+            if (str.includes('T') || str.includes('GMT')) {
+                let dObj = new Date(str);
+                if (!isNaN(dObj.getTime())) {
+                    let d = dObj.getDate();
+                    let m = dObj.getMonth();
+                    let y = dObj.getFullYear();
+                    let yearBE = y > 2400 ? y : y + 543;
+                    let yearAD = y > 2400 ? y - 543 : y;
+                    return { day: d, month: m, yearBE: yearBE, yearAD: yearAD, rawStr: str };
                 }
             }
 
-            const d = new Date(str);
-            if (!isNaN(d.getTime())) return d.getMonth();
-            return -1;
+            // DD/MM/YYYY หรือ YYYY-MM-DD
+            let delimiter = str.includes('/') ? '/' : (str.includes('-') ? '-' : null);
+            if (delimiter) {
+                let parts = str.split(delimiter);
+                if (parts.length === 3) {
+                    let p0 = parseInt(parts[0], 10);
+                    let p1 = parseInt(parts[1], 10);
+                    let p2 = parseInt(parts[2], 10);
+
+                    if (!isNaN(p0) && !isNaN(p1) && !isNaN(p2)) {
+                        let d, m, y;
+                        if (p0 > 1000) { y = p0; m = p1 - 1; d = p2; }
+                        else { d = p0; m = p1 - 1; y = p2; }
+
+                        if (y < 100) y += 2000;
+                        let yearBE = y > 2400 ? y : y + 543;
+                        let yearAD = y > 2400 ? y - 543 : y;
+
+                        if (!isNaN(m) && m >= 0 && m <= 11) {
+                            return { day: d, month: m, yearBE: yearBE, yearAD: yearAD, rawStr: str };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        // 📌 ค้นหา Index คอลัมน์จากคำสำคัญหัวตาราง
+        function findColumnIndexes() {
+            let colIndexes = { onset: -1, sub: -1, village: -1, death: -1, age: -1, diag: -1, occ: -1 };
+            if (rawSheetData.length > 0 && Array.isArray(rawSheetData[0])) {
+                rawSheetData[0].forEach((head, idx) => {
+                    let hText = String(head || '').trim().toLowerCase();
+                    if (hText.includes('เริ่มป่วย') || hText.includes('วันป่วย') || hText.includes('onset') || hText.includes('date')) {
+                        if (colIndexes.onset === -1) colIndexes.onset = idx;
+                    }
+                    if (hText.includes('ตำบล') || hText.includes('subdistrict') || hText.includes('tumbol')) {
+                        if (colIndexes.sub === -1) colIndexes.sub = idx;
+                    }
+                    if (hText.includes('หมู่') || hText.includes('village') || hText.includes('moo')) {
+                        if (colIndexes.village === -1) colIndexes.village = idx;
+                    }
+                    if (hText.includes('เสียชีวิต') || hText.includes('ตาย') || hText.includes('death') || hText.includes('status')) {
+                        if (colIndexes.death === -1) colIndexes.death = idx;
+                    }
+                    if (hText.includes('อายุ') || hText.includes('age')) {
+                        if (colIndexes.age === -1) colIndexes.age = idx;
+                    }
+                    if (hText.includes('โรค') || hText.includes('วินิจฉัย') || hText.includes('diag')) {
+                        if (colIndexes.diag === -1) colIndexes.diag = idx;
+                    }
+                    if (hText.includes('อาชีพ') || hText.includes('occ')) {
+                        if (colIndexes.occ === -1) colIndexes.occ = idx;
+                    }
+                });
+            }
+            return colIndexes;
+        }
+
+        // 📌 คำนวณค่ามัธยฐานเฉพาะปี 2566 - 2569 จาก Sheet 1
+        function calculate66To69MedianFromSheet1() {
+            const targetYears = [2566, 2567, 2568, 2569];
+            const yearCounts = {};
+            targetYears.forEach(y => { yearCounts[y] = Array(12).fill(0); });
+
+            const colIndexes = findColumnIndexes();
+
+            for (let i = 0; i < rawSheetData.length; i++) {
+                const row = rawSheetData[i];
+                if (!row || !Array.isArray(row) || row.length === 0) continue;
+
+                const strRow = JSON.stringify(row);
+                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
+
+                let onsetStr = "";
+                if (colIndexes.onset !== -1 && row[colIndexes.onset]) {
+                    onsetStr = String(row[colIndexes.onset]).trim();
+                } else {
+                    for (let c = 0; c < row.length; c++) {
+                        let parsed = parseFlexibleDate(row[c]);
+                        if (parsed) { onsetStr = String(row[c]).trim(); break; }
+                    }
+                }
+
+                const parsedDate = parseFlexibleDate(onsetStr);
+                if (!parsedDate) continue;
+
+                if (targetYears.includes(parsedDate.yearBE)) {
+                    yearCounts[parsedDate.yearBE][parsedDate.month]++;
+                }
+            }
+
+            const medianMonthly = Array(12).fill(0);
+            for (let m = 0; m < 12; m++) {
+                const vals = targetYears.map(y => yearCounts[y][m]);
+                vals.sort((a, b) => a - b);
+                const med = (vals[1] + vals[2]) / 2;
+                medianMonthly[m] = parseFloat(med.toFixed(1));
+            }
+
+            return medianMonthly;
         }
 
         function processAndRenderData() {
@@ -707,6 +760,7 @@
             };
 
             const todayStr = new Date().toISOString().split('T')[0];
+            const colIndexes = findColumnIndexes();
 
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
@@ -715,17 +769,27 @@
                 const strRow = JSON.stringify(row);
                 if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
 
-                const diagStrFromCol = String(row[1] || '').trim();
-                const subNameFromCol = String(row[10] || '').trim();
-                const villageNameFromCol = String(row[9] || '').trim();
-                const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
-                const deathDate = String(row[14] || '').trim();
-
-                const yearBE = String(selectedYearFilter);
-                const yearAD = String(parseInt(selectedYearFilter) - 543);
-                if (!onsetDate || (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD))) {
-                    continue;
+                // ดึงวันเริ่มป่วย
+                let onsetStr = "";
+                if (colIndexes.onset !== -1 && row[colIndexes.onset]) {
+                    onsetStr = String(row[colIndexes.onset]).trim();
+                } else {
+                    for (let c = 0; c < row.length; c++) {
+                        let parsed = parseFlexibleDate(row[c]);
+                        if (parsed) { onsetStr = String(row[c]).trim(); break; }
+                    }
                 }
+
+                let subNameFromCol = colIndexes.sub !== -1 ? String(row[colIndexes.sub] || '').trim() : String(row[10] || '').trim();
+                let villageNameFromCol = colIndexes.village !== -1 ? String(row[colIndexes.village] || '').trim() : String(row[9] || '').trim();
+                let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
+                let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
+
+                const dateObj = parseFlexibleDate(onsetStr);
+                if (!dateObj) continue;
+
+                // กรองตามปีที่เลือก (พ.ศ.)
+                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name));
                 if (!sub) {
@@ -739,7 +803,7 @@
                 if (!sub) continue;
 
                 sub.casesCum += 1;
-                if (onsetDate && onsetDate.includes(todayStr)) {
+                if (onsetStr.includes(todayStr)) {
                     sub.casesToday += 1;
                     processed.casesToday += 1;
                 }
@@ -756,24 +820,23 @@
                     for (let vKey in sub.villages) {
                         if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey))) {
                             sub.villages[vKey].casesCum += 1;
-                            if (onsetDate && onsetDate.includes(todayStr)) sub.villages[vKey].casesToday += 1;
+                            if (onsetStr.includes(todayStr)) sub.villages[vKey].casesToday += 1;
                             break;
                         }
                     }
                 }
 
-                // สรุปยอดผู้ป่วยแยกรายเดือนตามฐานข้อมูลจริง
-                const monthIdx = getMonthFromDateStr(onsetDate);
-                if (monthIdx >= 0 && monthIdx <= 11) {
-                    processed.casesMonthly[monthIdx] += 1;
+                // นับผู้ป่วยรายเดือน
+                if (dateObj.month >= 0 && dateObj.month <= 11) {
+                    processed.casesMonthly[dateObj.month] += 1;
                 }
 
+                // ช่วงอายุ
                 let parsedAge = -1;
-                if (row[4] !== undefined && row[4] !== null && String(row[4]).trim() !== '') {
-                    let aVal = parseInt(String(row[4]).trim(), 10);
+                if (colIndexes.age !== -1 && row[colIndexes.age] !== undefined) {
+                    let aVal = parseInt(String(row[colIndexes.age]).trim(), 10);
                     if (!isNaN(aVal) && aVal >= 0 && aVal <= 100) parsedAge = aVal;
                 }
-
                 if (parsedAge === -1) {
                     for (let c = 0; c < row.length; c++) {
                         let cellVal = String(row[c] || '').trim();
@@ -781,13 +844,11 @@
                         if (numMatch) {
                             let num = parseInt(numMatch[1], 10);
                             if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
-                                parsedAge = num;
-                                break;
+                                parsedAge = num; break;
                             }
                         }
                     }
                 }
-
                 if (parsedAge >= 0) {
                     if (parsedAge < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
                     else if (parsedAge < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
@@ -797,28 +858,14 @@
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                let upperDiag = diagStrFromCol.toUpperCase();
+                // ชนิดโรค
+                let upperDiag = diagStr.toUpperCase();
                 let isDHF = upperDiag.includes("26") || upperDiag.includes("D.H.F") || upperDiag.includes("DHF") || upperDiag.includes("ไข้เลือดออก");
+                if (isDHF) processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
+                else processed.diagTypes["D.F. (ไข้เดงกี)"]++;
 
-                if (!isDHF) {
-                    for (let c = 0; c < row.length; c++) {
-                        let cellText = String(row[c] || '').toUpperCase();
-                        if (cellText.includes("26.D.H.F") || cellText.includes("D.H.F.") || cellText.includes("ไข้เลือดออก")) {
-                            isDHF = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (isDHF) {
-                    processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
-                } else {
-                    processed.diagTypes["D.F. (ไข้เดงกี)"]++;
-                }
-
-                let occStr = String(row[6] || '').trim();
-                if (!occStr) occStr = String(row[11] || row[7] || row[5] || '').trim();
-
+                // อาชีพ
+                let occStr = colIndexes.occ !== -1 ? String(row[colIndexes.occ] || '').trim() : String(row[6] || '').trim();
                 if (occStr && !occStr.includes('http') && occStr !== 'undefined') {
                     let cleanOcc = occStr;
                     if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("นิสิต")) cleanOcc = "นักเรียน";
@@ -848,30 +895,33 @@
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
 
+            // คำนวณค่ามัธยฐานช่วงปี 2566 - 2569 สดจาก Sheet 1
+            const median66To69Data = calculate66To69MedianFromSheet1();
+
             // Render ALL Charts & Cards
-            renderEpiCurveChart(processed.casesMonthly);
+            renderEpiCurveChart(processed.casesMonthly, median66To69Data);
+            renderSubdistrictChart(processed.subdistricts);
             renderAgeChart(processed.ageGroups, totCases);
             renderDiagChart(processed.diagTypes, totCases);
-            renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            // Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
+            // 🏡 Render รายงาน HI/CI
             renderHiSurveillanceTable(processed.villageCasesMap);
 
-            // Render Map Markers & Table
+            // Render Map & Risk Table
             renderMapMarkers(processed.subdistricts);
-            renderRiskMatrixAccordion(processed.subdistricts);
+            renderRiskMatrixAccordion(processed.subdistricts, processed.villageCasesMap);
         }
 
-        // 📌 ฟังก์ชันแสดงกราฟจำนวนผู้ป่วยรายเดือนแบบตรงตามฐานข้อมูลจริง (ไม่รวมย้อนหลัง)
-        function renderEpiCurveChart(monthlyData) {
+        // 📌 ฟังก์ชันแสดงกราฟ Epi Curve
+        function renderEpiCurveChart(monthlyData, medianData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
             if (epiChartInstance) epiChartInstance.destroy();
 
             const subTitleEl = document.getElementById('epiCurveSubtitle');
             if (subTitleEl) {
-                subTitleEl.innerText = `แสดงแนวโน้มจำนวนผู้ป่วยสะสมจริงรายเดือน ประจำปี พ.ศ. ${selectedYearFilter}`;
+                subTitleEl.innerText = `เปรียบเทียบผู้ป่วยจริงรายเดือน ปี พ.ศ. ${selectedYearFilter} กับ ค่ามัธยฐานปี 2566 - 2569 (คำนวณจาก Sheet 1)`;
             }
 
             epiChartInstance = new Chart(ctx, {
@@ -887,377 +937,32 @@
                             fill: true,
                             tension: 0.3,
                             pointBackgroundColor: '#0d9488',
-                            pointRadius: 5,
-                            pointHoverRadius: 7
+                            pointRadius: 5
+                        },
+                        {
+                            label: `มัธยฐานปี 2566 - 2569 [Sheet 1]`,
+                            data: medianData,
+                            borderColor: '#94a3b8',
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#94a3b8'
                         }
                     ]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ผู้ป่วย: ${context.raw} ราย`;
-                                }
-                            }
-                        }
+                    plugins: { 
+                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } } 
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grace: '15%',
-                            ticks: { precision: 0 }
-                        }
-                    }
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // 📌 ฟังก์ชันจัดการระบบเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
-        function renderHiSurveillanceTable(vCasesMap = {}) {
-            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
-            const tbody = document.getElementById('hiSurveillanceTableBody');
-            if (!tbody) return;
-
-            currentHiList = hiSheet2Master.map(item => {
-                const hiValue = selectedMonth === 'jul' ? item.jul : item.jun;
-                
-                let caseCnt = 0;
-                for (let vKey in vCasesMap) {
-                    if (vKey.includes(item.village) || item.village.includes(vKey)) {
-                        caseCnt += vCasesMap[vKey];
-                    }
-                }
-                
-                let status = "เฝ้าระวัง";
-                if (hiValue > 10) status = "ระบาด";
-                else if (hiValue >= 5) status = "เสี่ยง";
-
-                return {
-                    ...item,
-                    hiVal: hiValue,
-                    cases: caseCnt,
-                    status: status
-                };
-            });
-
-            updateHiCountsAndTable();
-        }
-
-        function updateHiCountsAndTable() {
-            const safeCountEl = document.getElementById('hiSafeCount');
-            const riskCountEl = document.getElementById('hiRiskCount');
-            const outbreakCountEl = document.getElementById('hiOutbreakCount');
-
-            let safeCnt = 0, riskCnt = 0, outbreakCnt = 0;
-
-            currentHiList.forEach(item => {
-                if (item.status === "เฝ้าระวัง") safeCnt++;
-                else if (item.status === "เสี่ยง") riskCnt++;
-                else if (item.status === "ระบาด") outbreakCnt++;
-            });
-
-            if (safeCountEl) safeCountEl.innerText = safeCnt;
-            if (riskCountEl) riskCountEl.innerText = riskCnt;
-            if (outbreakCountEl) outbreakCountEl.innerText = outbreakCnt;
-
-            filterHiTable();
-        }
-
-        function filterHiTable() {
-            const searchVal = document.getElementById('hiVillageSearch')?.value.toLowerCase().trim() || '';
-            const filterStatus = document.getElementById('hiStatusFilter')?.value || 'all';
-            const tbody = document.getElementById('hiSurveillanceTableBody');
-
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const filtered = currentHiList.filter(item => {
-                const matchSearch = item.village.toLowerCase().includes(searchVal) || item.subdistrict.toLowerCase().includes(searchVal);
-                const matchStatus = filterStatus === 'all' || item.status === filterStatus;
-                return matchSearch && matchStatus;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400 font-medium">ไม่พบข้อมูลหมู่บ้านตามเงื่อนไขการค้นหา</td></tr>`;
-                return;
-            }
-
-            filtered.forEach((item, idx) => {
-                let badgeClass = "bg-emerald-600 text-white";
-                let textClass = "text-emerald-600";
-                if (item.status === "เสี่ยง") {
-                    badgeClass = "bg-amber-500 text-white";
-                    textClass = "text-amber-600";
-                } else if (item.status === "ระบาด") {
-                    badgeClass = "bg-rose-600 text-white";
-                    textClass = "text-rose-600";
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 border-b border-slate-100 transition text-xs md:text-sm";
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-slate-800">${item.village}</td>
-                    <td class="p-3 text-center text-slate-600">${item.subdistrict}</td>
-                    <td class="p-3 text-center font-bold ${textClass}">${item.hiVal.toFixed(2)}%</td>
-                    <td class="p-3 text-center font-bold text-slate-700">${item.cases} ราย</td>
-                    <td class="p-3 text-center">
-                        <span id="badge-${idx}" class="px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm ${badgeClass}">
-                            ${item.status}
-                        </span>
-                    </td>
-                    <td class="p-3 text-center">
-                        <select onchange="updateSingleHiStatus(${idx}, this.value)" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white font-medium focus:outline-none focus:ring-1 focus:ring-teal-500">
-                            <option value="เฝ้าระวัง" ${item.status === "เฝ้าระวัง" ? "selected" : ""}>เฝ้าระวัง</option>
-                            <option value="เสี่ยง" ${item.status === "เสี่ยง" ? "selected" : ""}>เสี่ยง</option>
-                            <option value="ระบาด" ${item.status === "ระบาด" ? "selected" : ""}>ระบาด</option>
-                        </select>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateSingleHiStatus(index, newStatus) {
-            if (currentHiList[index]) {
-                currentHiList[index].status = newStatus;
-                updateHiCountsAndTable();
-            }
-        }
-
-        function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
-            const lblYear = document.getElementById('summaryYearLabel');
-            const lblTotal = document.getElementById('summaryTotalCases');
-            const lblHotspot = document.getElementById('summaryHotspotSub');
-            const cfrBadge = document.getElementById('cfrStatusBadge');
-            const detailText = document.getElementById('summaryDetailText');
-
-            if (lblYear) lblYear.innerText = currentYear;
-            if (lblTotal) lblTotal.innerText = totalCases;
-
-            let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
-            if (lblHotspot) lblHotspot.innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
-
-            const cfrVal = totalCases > 0 ? (processedData.deathsCum / totalCases) * 100 : 0;
-            if (cfrBadge) {
-                if (cfrVal < 0.10) {
-                    cfrBadge.className = "bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium";
-                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราป่วยตายผ่านเกณฑ์ (< 0.10%)`;
-                } else {
-                    cfrBadge.className = "bg-rose-500/20 text-rose-300 text-xs px-2.5 py-1 rounded-full border border-rose-400/30 font-medium";
-                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400 mr-1"></i> เกินเกณฑ์มาตรฐาน (CFR ${cfrVal.toFixed(2)}%)`;
-                }
-            }
-
-            if (detailText) {
-                const morbRate = ((totalCases / 71500) * 100000).toFixed(1);
-                let text = `สรุปข้อมูลพบผู้ป่วยไข้เลือดออกประจำปี พ.ศ. ${currentYear} รวม ${totalCases} ราย คิดเป็นอัตราป่วย ${morbRate} ต่อแสนประชากร `;
-                if (hotspot && hotspot.casesCum > 0) {
-                    text += `โดยพบการระบาดหนาแน่นที่สุดในพื้นที่ <strong>ต.${hotspot.name} (${hotspot.casesCum} ราย)</strong> `;
-                }
-                text += `มีผู้เสียชีวิตรวม ${processedData.deathsCum} ราย สรุปภาพรวมมาตรการควบคุมโรคอยู่ในเกณฑ์เฝ้าระวังต่อเนื่อง`;
-                detailText.innerHTML = text;
-            }
-        }
-
-        function renderTopOccupationsCard(occObj, total) {
-            const container = document.getElementById('occupationList');
-            if (!container) return;
-            container.innerHTML = '';
-
-            let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
-
-            items.sort((a, b) => b.count - a.count);
-            items = items.slice(0, 5);
-
-            if (items.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพประจำปี ${selectedYearFilter}</p>`;
-                return;
-            }
-
-            items.forEach(item => {
-                const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : "0.0";
-                const rowHtml = `
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-semibold text-slate-700">${item.name}</span>
-                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-teal-600 font-semibold">(${pct}%)</span></span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-                            <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += rowHtml;
-            });
-        }
-
-        function renderMapMarkers(subdistricts) {
-            if (!map) return;
-            mapMarkers.forEach(m => map.removeLayer(m));
-            mapMarkers = [];
-
-            subdistricts.forEach(sub => {
-                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
-                
-                const circleMarker = L.circleMarker([sub.lat, sub.lng], {
-                    color: color,
-                    fillColor: color,
-                    fillOpacity: 0.85,
-                    radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6
-                }).addTo(map).bindPopup(`
-                    <div class="text-xs p-1">
-                        <b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br>
-                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
-                        <span class="text-rose-600 font-semibold">ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span>
-                    </div>
-                `);
-
-                mapMarkers.push(circleMarker);
-            });
-        }
-
-        function focusSubdistrictMap(subName) {
-            const sub = defaultSubdistricts.find(s => s.name === subName);
-            if (!sub || !map) return;
-
-            if (activeMarker) map.removeLayer(activeMarker);
-
-            map.flyTo([sub.lat, sub.lng], 13, { duration: 1.2 });
-
-            activeMarker = L.marker([sub.lat, sub.lng]).addTo(map)
-                .bindPopup(`
-                    <div class="text-xs p-1">
-                        <b class="text-teal-700 font-bold text-sm">📍 ตำบล${sub.name}</b><br>
-                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
-                        <span class="text-rose-600 font-semibold">หมุดตำแหน่งระบาดวิทยา GIS</span>
-                    </div>
-                `)
-                .openPopup();
-        }
-
-        function focusVillageMap(subName, villageName, event) {
-            if (event) event.stopPropagation();
-            const sub = defaultSubdistricts.find(s => s.name === subName);
-            if (!sub || !map) return;
-
-            if (activeMarker) map.removeLayer(activeMarker);
-
-            let hash = 0;
-            for (let i = 0; i < villageName.length; i++) hash = villageName.charCodeAt(i) + ((hash << 5) - hash);
-            const latOffset = ((hash % 100) / 4000) - 0.01;
-            const lngOffset = (((hash >> 2) % 100) / 4000) - 0.01;
-
-            const targetLat = sub.lat + latOffset;
-            const targetLng = sub.lng + lngOffset;
-
-            map.flyTo([targetLat, targetLng], 14, { duration: 1.2 });
-
-            activeMarker = L.marker([targetLat, targetLng]).addTo(map)
-                .bindPopup(`
-                    <div class="text-xs p-1">
-                        <b class="text-teal-700 font-bold text-sm">📍 ${villageName}</b><br>
-                        <span>ตำบล${subName} อ.วังน้ำเย็น</span><br>
-                        <span class="text-rose-600 font-semibold">ตำแหน่งระบาดวิทยา GIS</span>
-                    </div>
-                `)
-                .openPopup();
-        }
-
-        function renderRiskMatrixAccordion(subdistricts) {
-            const tbody = document.getElementById('riskTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            subdistricts.forEach((sub, idx) => {
-                const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
-                const subId = `sub-row-${idx}`;
-
-                const mainTr = document.createElement('tr');
-                mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
-                
-                mainTr.onclick = () => {
-                    toggleVillageRow(subId);
-                    focusSubdistrictMap(sub.name);
-                };
-
-                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
-                if (sub.casesCum > 30) {
-                    badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-rose-500 animate-pulse"></i> เสี่ยงสูงมาก</span>';
-                } else if (sub.casesCum > 10) {
-                    badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-orange-500"></i> เสี่ยงสูง</span>';
-                }
-
-                mainTr.innerHTML = `
-                    <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
-                        <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
-                        <span class="font-bold">📌 ต.${sub.name}</span>
-                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
-                    </td>
-                    <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
-                    <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
-                    <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
-                    <td class="p-2.5 text-center text-slate-600">${morb}</td>
-                    <td class="p-2.5 text-center font-bold text-purple-600">${sub.deaths}</td>
-                    <td class="p-2.5 text-center">${badge}</td>
-                `;
-                tbody.appendChild(mainTr);
-
-                const subTr = document.createElement('tr');
-                subTr.id = subId;
-                subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
-
-                let villageListHtml = `<td colspan="7" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
-
-                Object.keys(sub.villages).forEach(vName => {
-                    const vData = sub.villages[vName];
-                    const hasCase = vData.casesCum > 0;
-                    
-                    villageListHtml += `
-                        <div onclick="focusVillageMap('${sub.name}', '${vName}', event)" 
-                             class="flex items-center justify-between p-2 rounded-lg border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
-                            <span class="${hasCase ? 'font-semibold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
-                            <span class="${hasCase ? 'text-rose-600 font-bold' : 'text-slate-400'}">${vData.casesCum} ราย ${vData.casesToday > 0 ? `<b class="text-cyan-600">(+${vData.casesToday})</b>` : ''}</span>
-                        </div>
-                    `;
-                });
-
-                villageListHtml += `</div></td>`;
-                subTr.innerHTML = villageListHtml;
-                tbody.appendChild(subTr);
-            });
-        }
-
-        function toggleVillageRow(rowId) {
-            const row = document.getElementById(rowId);
-            const icon = document.getElementById(`icon-${rowId}`);
-            if (row && icon) {
-                if (row.classList.contains('hidden')) {
-                    row.classList.remove('hidden');
-                    icon.classList.add('rotate-90');
-                } else {
-                    row.classList.add('hidden');
-                    icon.classList.remove('rotate-90');
-                }
-            }
-        }
-
-        function updateVillageDropdown(subName) {
-            const select = document.getElementById('villageSelect');
-            if (!select) return;
-            select.innerHTML = '';
-            const list = villageMaster[subName] || [];
-            list.forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = v;
-                opt.innerText = v;
-                select.appendChild(opt);
-            });
-        }
-
+        // 📌 ฟังก์ชันแสดงกราฟช่วงอายุ
         function renderAgeChart(ageObj, total) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
@@ -1280,17 +985,12 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { legend: { display: false } },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            grace: '15%',
-                            ticks: { precision: 0 }
-                        } 
-                    }
+                    scales: { y: { beginAtZero: true, grace: '15%', ticks: { precision: 0 } } }
                 }
             });
         }
 
+        // 📌 ฟังก์ชันแสดงกราฟชนิดของโรค
         function renderDiagChart(diagObj, total) {
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
@@ -1331,6 +1031,259 @@
             });
         }
 
+        // 📌 ฟังก์ชันแสดงการ์ดสัดส่วนอาชีพ
+        function renderTopOccupationsCard(occObj, total) {
+            const container = document.getElementById('occupationList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
+
+            items.sort((a, b) => b.count - a.count);
+            items = items.slice(0, 5);
+
+            if (items.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพประจำปี ${selectedYearFilter}</p>`;
+                return;
+            }
+
+            items.forEach(item => {
+                const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : "0.0";
+                const rowHtml = `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-semibold text-slate-700">${item.name}</span>
+                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-teal-600 font-semibold">(${pct}%)</span></span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                            <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += rowHtml;
+            });
+        }
+
+        // 📌 ฟังก์ชันจัดกลุ่มรายงานดัชนี HI/CI
+        function renderHiSurveillanceTable(vCasesMap = {}) {
+            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
+            const accordionContainer = document.getElementById('hiSubdistrictAccordion');
+            if (!accordionContainer) return;
+
+            let safeTot = 0, riskTot = 0, outbreakTot = 0;
+            const hiDataSource = defaultHiSheet2Master;
+
+            const subdistrictGroups = defaultSubdistricts.map(sub => {
+                const subVillages = hiDataSource.filter(item => item.subdistrict === sub.name).map(v => {
+                    const hiVal = selectedMonth === 'jul' ? v.jul : v.jun;
+                    
+                    let caseCnt = 0;
+                    for (let vKey in vCasesMap) {
+                        if (vKey.includes(v.village) || v.village.includes(vKey)) {
+                            caseCnt += vCasesMap[vKey];
+                        }
+                    }
+
+                    let status = "เฝ้าระวัง";
+                    if (hiVal > 10) { status = "ระบาด"; outbreakTot++; }
+                    else if (hiVal >= 5) { status = "เสี่ยง"; riskTot++; }
+                    else { safeTot++; }
+
+                    return { ...v, hiVal, caseCnt, status };
+                });
+
+                const totalHiSum = subVillages.reduce((acc, curr) => acc + curr.hiVal, 0);
+                const avgHi = subVillages.length > 0 ? (totalHiSum / subVillages.length) : 0;
+
+                return {
+                    subName: sub.name,
+                    villages: subVillages,
+                    avgHi: avgHi
+                };
+            });
+
+            const safeCountEl = document.getElementById('hiSafeCount');
+            const riskCountEl = document.getElementById('hiRiskCount');
+            const outbreakCountEl = document.getElementById('hiOutbreakCount');
+
+            if (safeCountEl) safeCountEl.innerText = safeTot;
+            if (riskCountEl) riskCountEl.innerText = riskTot;
+            if (outbreakCountEl) outbreakCountEl.innerText = outbreakTot;
+
+            accordionContainer.innerHTML = '';
+
+            subdistrictGroups.forEach((group, idx) => {
+                const accId = `hi-acc-${idx}`;
+                
+                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (ปกติ)</span>`;
+                if (group.avgHi > 10) {
+                    subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
+                } else if (group.avgHi >= 5) {
+                    subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยง)</span>`;
+                }
+
+                const cardHtml = `
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                        <div onclick="toggleHiAccordion('${accId}')" class="p-4 bg-slate-50 hover:bg-slate-100 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 transition">
+                            <div class="flex items-center gap-2">
+                                <i id="icon-${accId}" class="fa-solid fa-chevron-right text-xs text-slate-400 transition-transform"></i>
+                                <span class="font-bold text-slate-800 text-base">📌 ตำบล${group.subName}</span>
+                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${group.villages.length} หมู่บ้าน/ชุมชน)</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                ${subBadge}
+                            </div>
+                        </div>
+
+                        <div id="${accId}" class="hidden border-t border-slate-200 p-3 bg-white">
+                            ${group.villages.length > 0 ? `
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs md:text-sm">
+                                        <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                            <tr>
+                                                <th class="p-2.5">หมู่บ้าน / ชุมชน</th>
+                                                <th class="p-2.5 text-center">ค่า HI (%) [Sheet 2]</th>
+                                                <th class="p-2.5 text-center">ผู้ป่วยสะสม [Sheet 1]</th>
+                                                <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            ${group.villages.map(v => {
+                                                let badgeBg = "bg-emerald-600 text-white";
+                                                let textCol = "text-emerald-600";
+                                                if (v.status === "เสี่ยง") { badgeBg = "bg-amber-500 text-white"; textCol = "text-amber-600"; }
+                                                else if (v.status === "ระบาด") { badgeBg = "bg-rose-600 text-white"; textCol = "text-rose-600"; }
+
+                                                return `
+                                                    <tr class="hover:bg-slate-50 transition">
+                                                        <td class="p-2.5 font-semibold text-slate-800">📍 ${v.village}</td>
+                                                        <td class="p-2.5 text-center font-bold ${textCol}">${v.hiVal.toFixed(2)}%</td>
+                                                        <td class="p-2.5 text-center font-bold text-slate-700">${v.caseCnt} ราย</td>
+                                                        <td class="p-2.5 text-center">
+                                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold inline-block ${badgeBg}">
+                                                                ${v.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ` : `<p class="text-xs text-slate-400 text-center py-3">ไม่มีข้อมูลหมู่บ้านในตำบลนี้</p>`}
+                        </div>
+                    </div>
+                `;
+                accordionContainer.innerHTML += cardHtml;
+            });
+        }
+
+        function toggleHiAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            if (content && icon) {
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    icon.classList.add('rotate-90');
+                } else {
+                    content.classList.add('hidden');
+                    icon.classList.remove('rotate-90');
+                }
+            }
+        }
+
+        // 📌 ฟังก์ชันแสดงตารางประเมินระดับความเสี่ยง
+        function renderRiskMatrixAccordion(subdistricts, vCasesMap = {}) {
+            const tbody = document.getElementById('riskTableBody');
+            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const hiDataSource = defaultHiSheet2Master;
+
+            subdistricts.forEach((sub, idx) => {
+                const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
+                const subId = `sub-row-${idx}`;
+
+                const subVillages = hiDataSource.filter(item => item.subdistrict === sub.name);
+                const totalHiSum = subVillages.reduce((acc, curr) => acc + (selectedMonth === 'jul' ? curr.jul : curr.jun), 0);
+                const avgHi = subVillages.length > 0 ? (totalHiSum / subVillages.length) : 0;
+
+                const mainTr = document.createElement('tr');
+                mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
+                
+                mainTr.onclick = () => {
+                    toggleVillageRow(subId);
+                    focusSubdistrictMap(sub.name);
+                };
+
+                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
+                if (sub.casesCum > 30 || avgHi > 10) {
+                    badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-rose-500 animate-pulse"></i> เสี่ยงสูงมาก</span>';
+                } else if (sub.casesCum > 10 || avgHi >= 5) {
+                    badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-orange-500"></i> เสี่ยงสูง</span>';
+                }
+
+                mainTr.innerHTML = `
+                    <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
+                        <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
+                        <span class="font-bold">📌 ต.${sub.name}</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
+                    </td>
+                    <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
+                    <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi >= 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
+                    <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
+                    <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
+                    <td class="p-2.5 text-center text-slate-600">${morb}</td>
+                    <td class="p-2.5 text-center">${badge}</td>
+                `;
+                tbody.appendChild(mainTr);
+
+                const subTr = document.createElement('tr');
+                subTr.id = subId;
+                subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
+
+                let villageListHtml = `<td colspan="7" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
+
+                Object.keys(sub.villages).forEach(vName => {
+                    const vData = sub.villages[vName];
+                    const hasCase = vData.casesCum > 0;
+
+                    const vHiMatch = hiDataSource.find(h => vName.includes(h.village) || h.village.includes(vName));
+                    const vHiVal = vHiMatch ? (selectedMonth === 'jul' ? vHiMatch.jul : vHiMatch.jun) : 0;
+                    
+                    villageListHtml += `
+                        <div onclick="focusVillageMap('${sub.name}', '${vName}', event)" 
+                             class="flex items-center justify-between p-2 rounded-lg border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase || vHiVal > 10 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
+                            <span class="${hasCase ? 'font-semibold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
+                            <div class="text-right">
+                                <span class="text-[11px] block font-semibold ${vHiVal > 10 ? 'text-rose-600' : 'text-slate-500'}">HI: ${vHiVal.toFixed(1)}%</span>
+                                <span class="${hasCase ? 'text-rose-600 font-bold' : 'text-slate-400'}">${vData.casesCum} ราย</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                villageListHtml += `</div></td>`;
+                subTr.innerHTML = villageListHtml;
+                tbody.appendChild(subTr);
+            });
+        }
+
+        function toggleVillageRow(rowId) {
+            const row = document.getElementById(rowId);
+            const icon = document.getElementById(`icon-${rowId}`);
+            if (row && icon) {
+                if (row.classList.contains('hidden')) {
+                    row.classList.remove('hidden');
+                    icon.classList.add('rotate-90');
+                } else {
+                    row.classList.add('hidden');
+                    icon.classList.remove('rotate-90');
+                }
+            }
+        }
+
         function renderSubdistrictChart(subdistricts) {
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
@@ -1345,44 +1298,89 @@
                 data: {
                     labels: names,
                     datasets: [
-                        {
-                            label: 'จำนวนผู้ป่วย (ราย)',
-                            data: counts,
-                            backgroundColor: '#ef4444',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'อัตราป่วย (ต่อแสน)',
-                            data: rates,
-                            backgroundColor: '#eab308',
-                            borderRadius: 6
-                        }
+                        { label: 'จำนวนผู้ป่วย (ราย)', data: counts, backgroundColor: '#ef4444', borderRadius: 6 },
+                        { label: 'อัตราป่วย (ต่อแสน)', data: rates, backgroundColor: '#eab308', borderRadius: 6 }
                     ]
                 },
                 options: { 
                     responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                afterBody: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const pop = subdistricts[index].pop;
-                                    return `ประชากรในตำบล: ${pop.toLocaleString()} คน`;
-                                }
-                            }
-                        }
-                    },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            grace: '15%',
-                            ticks: { precision: 0 }
-                        } 
-                    }
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, grace: '15%', ticks: { precision: 0 } } }
                 }
             });
+        }
+
+        function renderMapMarkers(subdistricts) {
+            if (!map) return;
+            mapMarkers.forEach(m => map.removeLayer(m));
+            mapMarkers = [];
+
+            subdistricts.forEach(sub => {
+                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
+                
+                const circleMarker = L.circleMarker([sub.lat, sub.lng], {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.85,
+                    radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6
+                }).addTo(map).bindPopup(`
+                    <div class="text-xs p-1">
+                        <b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br>
+                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
+                        <span class="text-rose-600 font-semibold">ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span>
+                    </div>
+                `);
+
+                mapMarkers.push(circleMarker);
+            });
+        }
+
+        function focusSubdistrictMap(subName) {
+            const sub = defaultSubdistricts.find(s => s.name === subName);
+            if (!sub || !map) return;
+            if (activeMarker) map.removeLayer(activeMarker);
+            map.flyTo([sub.lat, sub.lng], 13, { duration: 1.2 });
+            activeMarker = L.marker([sub.lat, sub.lng]).addTo(map).bindPopup(`<b>📍 ตำบล${sub.name}</b>`).openPopup();
+        }
+
+        function focusVillageMap(subName, villageName, event) {
+            if (event) event.stopPropagation();
+            const sub = defaultSubdistricts.find(s => s.name === subName);
+            if (!sub || !map) return;
+            if (activeMarker) map.removeLayer(activeMarker);
+
+            let hash = 0;
+            for (let i = 0; i < villageName.length; i++) hash = villageName.charCodeAt(i) + ((hash << 5) - hash);
+            const latOffset = ((hash % 100) / 4000) - 0.01;
+            const lngOffset = (((hash >> 2) % 100) / 4000) - 0.01;
+
+            map.flyTo([sub.lat + latOffset, sub.lng + lngOffset], 14, { duration: 1.2 });
+            activeMarker = L.marker([sub.lat + latOffset, sub.lng + lngOffset]).addTo(map).bindPopup(`<b>📍 ${villageName}</b>`).openPopup();
+        }
+
+        function updateVillageDropdown(subName) {
+            const select = document.getElementById('villageSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            const list = villageMaster[subName] || [];
+            list.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.innerText = v;
+                select.appendChild(opt);
+            });
+        }
+
+        function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
+            const lblYear = document.getElementById('summaryYearLabel');
+            const lblTotal = document.getElementById('summaryTotalCases');
+            const lblHotspot = document.getElementById('summaryHotspotSub');
+            if (lblYear) lblYear.innerText = currentYear;
+            if (lblTotal) lblTotal.innerText = totalCases;
+
+            let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
+            if (lblHotspot) lblHotspot.innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
         }
 
         async function submitToGoogleSheet(e) {
@@ -1418,10 +1416,7 @@
         }
 
         function downloadDataCSV() {
-            if (!rawSheetData || rawSheetData.length === 0) {
-                alert("ไม่มีข้อมูลสำหรับดาวน์โหลด");
-                return;
-            }
+            if (!rawSheetData || rawSheetData.length === 0) { alert("ไม่มีข้อมูลสำหรับดาวน์โหลด"); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             rawSheetData.forEach(row => { csvContent += row.join(",") + "\n"; });
             const link = document.createElement("a");
