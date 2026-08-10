@@ -79,11 +79,11 @@
                         </div>
 
                         <h3 id="summaryTitle" class="text-lg md:text-xl font-bold font-heading text-white pt-1">
-                            สรุปยอดผู้ป่วยสะสมรวมทั้งสิ้น <span id="summaryTotalCases" class="text-teal-300 font-extrabold text-2xl">0</span> ราย
+                            สรุปยอดผู้ป่วยสะสมประจำปี <span id="summaryTotalCases" class="text-teal-300 font-extrabold text-2xl">0</span> ราย
                         </h3>
 
                         <p id="summaryDetailText" class="text-xs md:text-sm text-slate-300 leading-relaxed">
-                            กำลังประมวลผลสรุปข้อมูลประจำปีจากฐานข้อมูล...
+                            ข้อมูลผู้ป่วยสะสมเฉพาะปี พ.ศ. <span id="summaryYearText" class="text-amber-300 font-bold">2569</span> แยกตามรายตำบลและหมู่บ้าน
                         </p>
                     </div>
 
@@ -149,7 +149,7 @@
 
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล (จาก Sheet 2)
+                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล (เฉพาะปีที่เลือก)
                     </h3>
                     <p class="text-xs text-slate-500 mb-2">เปรียบเทียบจำนวนผู้ป่วย (ราย) และอัตราป่วย (ต่อแสนประชากร)</p>
                     <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
@@ -202,9 +202,9 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน (จาก Sheet 2 แบบ 100%)
+                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน
                         </h3>
-                        <p class="text-xs text-slate-500">ดึงข้อมูลและรายชื่อตำบล/หมู่บ้านตรงตาม Sheet 2 พร้อมป้ายแดงแสดงหมู่บ้านที่พบผู้ป่วย</p>
+                        <p class="text-xs text-slate-500">ดึงข้อมูลและรายชื่อตำบล/หมู่บ้านตรงตาม Sheet 2 พร้อมป้ายแดงแสดงหมู่บ้านที่พบผู้ป่วยสะสมของปีที่เลือก</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <select id="hiMonthSelect" onchange="processAndRenderData()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
@@ -261,7 +261,7 @@
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงตามตำบล (Sheet 2)
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยง (แสดงผู้ป่วยสะสมเฉพาะปีที่เลือก)
                         </span>
                         <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายดูรายหมู่บ้าน</span>
                     </div>
@@ -350,7 +350,6 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
         
-        // 📌 ประชากรจริงรายตำบล และยอดรวม อ.วังน้ำเย็น (59,894 คน)
         const subdistrictPopulations = {
             "วังน้ำเย็น": 19903,
             "ตาหลังใน": 12559,
@@ -409,7 +408,7 @@
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-teal-600 font-medium">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลจาก Sheet 2 แบบ 100%...
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลตามปี ${selectedYearFilter}...
                 </td></tr>`;
             }
 
@@ -642,7 +641,6 @@
                 const vObj = {};
                 vList.forEach(v => vObj[v.village] = { casesCum: 0, casesToday: 0 });
                 
-                // ดึงประชากรจริงตามตำบล ถ้าไม่มีในลิสต์ให้ใช้ค่าเฉลี่ย
                 let popEst = subdistrictPopulations[subName] || 10000;
                 let lat = 13.4600, lng = 102.1700;
                 if (subName.includes("วังน้ำเย็น")) { lat = 13.5015; lng = 102.1812; }
@@ -689,6 +687,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const colIndexes = findColumnIndexes();
 
+            // 📌 กรองเฉพาะข้อมูลผู้ป่วยของปีที่เลือก (selectedYearFilter) เท่านั้น
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
@@ -705,16 +704,16 @@
                     }
                 }
 
+                const dateObj = parseThaiDateStrictJS(onsetStr);
+                if (!dateObj) continue;
+                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue; // 🔒 กรองปีที่นี่
+
                 let subNameFromCol = colIndexes.sub !== -1 ? String(row[colIndexes.sub] || '').trim() : String(row[10] || '').trim();
                 let villageNameFromCol = colIndexes.village !== -1 ? String(row[colIndexes.village] || '').trim() : String(row[9] || '').trim();
                 let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
                 let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
 
                 subNameFromCol = subNameFromCol.replace(/^(ต\.|ตำบล)\s*/g, '').trim();
-
-                const dateObj = parseThaiDateStrictJS(onsetStr);
-                if (!dateObj) continue;
-                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name) || s.name.includes(subNameFromCol));
                 if (!sub && processed.subdistricts.length > 0) sub = processed.subdistricts[0];
@@ -843,7 +842,7 @@
                 data: {
                     labels: subdistricts.map(s => s.name),
                     datasets: [
-                        { label: 'จำนวนผู้ป่วย (ราย)', data: subdistricts.map(s => s.casesCum), backgroundColor: '#ef4444', borderRadius: 6 },
+                        { label: `จำนวนผู้ป่วยปี ${selectedYearFilter} (ราย)`, data: subdistricts.map(s => s.casesCum), backgroundColor: '#ef4444', borderRadius: 6 },
                         { label: 'อัตราป่วย (ต่อแสน)', data: subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1))), backgroundColor: '#eab308', borderRadius: 6 }
                     ]
                 },
@@ -870,7 +869,7 @@
             container.innerHTML = '';
             let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] })).sort((a, b) => b.count - a.count).slice(0, 5);
             if (items.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพ</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพในปี ${selectedYearFilter}</p>`;
                 return;
             }
             items.forEach(item => {
@@ -943,7 +942,7 @@
                                             <tr>
                                                 <th class="p-2.5">หมู่บ้าน / ชุมชน</th>
                                                 <th class="p-2.5 text-center">ค่า HI (%)</th>
-                                                <th class="p-2.5 text-center">ผู้ป่วยสะสม</th>
+                                                <th class="p-2.5 text-center">ผู้ป่วยสะสมปี ${selectedYearFilter}</th>
                                                 <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
                                             </tr>
                                         </thead>
@@ -1012,7 +1011,7 @@
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
                     <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi > 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
-                    <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
+                    <td class="p-2.5 text-center font-bold text-rose-600">${sub.casesCum}</td>
                     <td class="p-2.5 text-center text-slate-600">${morb}</td>
                     <td class="p-2.5 text-center">${badge}</td>`;
                 tbody.appendChild(mainTr);
@@ -1062,7 +1061,7 @@
             subdistricts.forEach(sub => {
                 let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
                 const m = L.circleMarker([sub.lat, sub.lng], { color: color, fillColor: color, fillOpacity: 0.85, radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6 }).addTo(map)
-                    .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ${sub.name}</b><br><span>ผู้ป่วยสะสม: ${sub.casesCum} ราย</span></div>`);
+                    .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ${sub.name}</b><br><span>ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span></div>`);
                 mapMarkers.push(m);
             });
         }
@@ -1109,9 +1108,10 @@
 
         function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
             document.getElementById('summaryYearLabel').innerText = currentYear;
+            document.getElementById('summaryYearText').innerText = currentYear;
             document.getElementById('summaryTotalCases').innerText = totalCases;
             let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
-            document.getElementById('summaryHotspotSub').innerText = (hotspot && hotspot.casesCum > 0) ? `${hotspot.name}` : 'ไม่มีการระบาด';
+            document.getElementById('summaryHotspotSub').innerText = (hotspot && hotspot.casesCum > 0) ? `${hotspot.name} (${hotspot.casesCum} ราย)` : 'ไม่มีการระบาด';
         }
 
         async function submitToGoogleSheet(e) {
