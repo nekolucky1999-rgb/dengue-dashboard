@@ -237,10 +237,10 @@
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกราย 4 ตำบลหลัก
                         </h3>
-                        <p class="text-xs text-slate-500">ดึงข้อมูลหมู่บ้านและค่า HI ตรงจาก Sheet 2 ประจำปี 2569 จัดกลุ่มคำนวณเฉพาะ 4 ตำบล</p>
+                        <p class="text-xs text-slate-500">ดึงข้อมูลหมู่บ้านและค่า HI จาก Sheet 2 100% จัดกลุ่มคำนวณเฉพาะ 4 ตำบลหลัก</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
+                        <select id="hiMonthSelect" onchange="processAndRenderData()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
                             <option value="jul" selected>เดือน กรกฎาคม (ก.ค. 69)</option>
                             <option value="jun">เดือน มิถุนายน (มิ.ย. 69)</option>
                         </select>
@@ -401,56 +401,6 @@
         let ageChartInstance = null;
         let diagChartInstance = null;
 
-        const defaultHiSheet2Master = [
-            { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
-            { village: "หมู่ 4 บ้านเกษตรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
-            { village: "หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 11.69, jul: 15.58 },
-            { village: "ชุมชน 1 หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 4.76, jul: 39.29 },
-            { village: "หมู่ 6 บ้านวังจำปี", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 10.75 },
-            { village: "หมู่ 8 บ้านซับพลู", subdistrict: "วังน้ำเย็น", jun: 16.67, jul: 15.28 },
-            { village: "หมู่ 9 บ้านวังเทพ", subdistrict: "วังน้ำเย็น", jun: 15.00, jul: 9.00 },
-            { village: "หมู่ 10 บ้านวังเจริญ", subdistrict: "วังน้ำเย็น", jun: 11.00, jul: 11.00 },
-            { village: "หมู่ 13 บ้านมิตรสัมพันธ์", subdistrict: "วังน้ำเย็น", jun: 10.29, jul: 4.00 },
-            { village: "หมู่ 14 บ้านวังศิลา", subdistrict: "วังน้ำเย็น", jun: 5.06, jul: 3.89 },
-            { village: "หมู่ 15 บ้านโคกสว่าง", subdistrict: "วังน้ำเย็น", jun: 20.41, jul: 22.45 },
-            { village: "หมู่ 16 บ้านวังชมภู", subdistrict: "วังน้ำเย็น", jun: 10.71, jul: 10.71 },
-            { village: "หมู่ 17 บ้านท่าเกวียน", subdistrict: "วังน้ำเย็น", jun: 22.31, jul: 13.08 },
-            { village: "หมู่ 19 บ้านวังแก้ว", subdistrict: "วังน้ำเย็น", jun: 14.75, jul: 16.39 },
-            { village: "ชุมชน 1 หมู่ 10", subdistrict: "วังน้ำเย็น", jun: 15.42, jul: 15.92 },
-            { village: "ชุมชน 9 หมู่ 9", subdistrict: "วังน้ำเย็น", jun: 27.93, jul: 4.50 },
-            { village: "หมู่ 1 บ้านวังน้ำเย็น", subdistrict: "วังน้ำเย็น", jun: 23.53, jul: 8.82 },
-            { village: "หมู่ 2 บ้านศรีเจริญ", subdistrict: "วังน้ำเย็น", jun: 35.75, jul: 28.42 },
-            { village: "หมู่ 7 บ้านคลองทราย", subdistrict: "วังน้ำเย็น", jun: 10.59, jul: 12.35 },
-            { village: "หมู่ 11 บ้านชัยมงคล", subdistrict: "วังน้ำเย็น", jun: 29.17, jul: 20.83 },
-            { village: "หมู่ 12 บ้านภูเวียง", subdistrict: "วังน้ำเย็น", jun: 9.18, jul: 12.24 },
-            { village: "หมู่ 18 บ้านวังบูรพา", subdistrict: "วังน้ำเย็น", jun: 9.24, jul: 6.72 },
-            { village: "ชุมชน 2 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 9.48, jul: 27.59 },
-            { village: "ชุมชน 3 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 6.12, jul: 41.84 },
-            { village: "ชุมชน 4 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 4.50, jul: 19.82 },
-            { village: "ชุมชน 5 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 6.34, jul: 6.34 },
-            { village: "ชุมชน 6 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 16.90, jul: 7.75 },
-            { village: "ชุมชน 7 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 14.63, jul: 25.20 },
-            { village: "ชุมชน 8 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 10.43, jul: 28.33 },
-            { village: "ชุมชน 10 หมู่ 2", subdistrict: "วังน้ำเย็น", jun: 35.00, jul: 6.67 },
-            { village: "หมู่ 1 ตาหลังใน", subdistrict: "ตาหลังใน", jun: 3.60, jul: 8.00 },
-            { village: "หมู่ 2 หนองปรือ", subdistrict: "ตาหลังใน", jun: 15.00, jul: 19.00 },
-            { village: "หมู่ 15 บ้านหนองศาลา", subdistrict: "ตาหลังใน", jun: 27.50, jul: 28.75 },
-            { village: "หมู่ 16 บ้านตาหลังใน", subdistrict: "ตาหลังใน", jun: 14.41, jul: 14.41 },
-            { village: "หมู่ 21 บ้านสลักได", subdistrict: "ตาหลังใน", jun: 12.00, jul: 11.00 },
-            { village: "ตาหลังใหม่ชัยเจริญ", subdistrict: "ตาหลังใน", jun: 0.00, jul: 0.00 },
-            { village: "ทรัพย์เจริญ", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
-            { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
-            { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0.00, jul: 0.00 }
-        ];
-
-        // 📌 กำหนดเฉพาะ 4 ตำบลหลัก และรวมหมู่บ้านของคลองตาสูตรไว้ในคลองหินปูน
-        const villageMaster = {
-            "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
-            "ตาหลังใน": ["ม.1 บ้านตาหลังใน", "ม.2 บ้านทรัพย์นิมิต", "ม.3 บ้านเพชรพัฒนา", "ม.4 บ้านตาม่วง", "ม.5 บ้านไร่สามศรี", "ม.6 บ้านเกาะจาน", "ม.7 บ้านคลองทราย", "ม.8 บ้านด่านชัยพัฒนา", "ม.9 บ้านศรีเพชรพัฒนา", "ม.10 บ้านหนองศาลา", "ม.11 บ้านวังสมบูรณ์", "ม.12 บ้านมิตรสัมพันธ์", "ม.13 บ้านคลองทรายสามัคคี", "ม.14 บ้านเนินงาม", "ม.15 บ้านหนองปรือ", "ม.16 บ้านทุ่งรวงทอง", "ม.17 บ้านตาม่วงพัฒนา", "ม.18 บ้านเพชรศิลา", "ม.19 บ้านทรัพย์เจริญ", "ม.20 บ้านตาหลังในพัฒนา", "ม.21 บ้านคลองทรายทอง"],
-            "คลองหินปูน": ["ม.1 บ้านคลองหินปูน", "ม.2 บ้านคลองหินปูนเหนือ", "ม.3 บ้านคลองผักกาด", "ม.4 บ้านคลองเพชร", "ม.5 บ้านเจริญสุข", "ม.6 บ้านคลองสำราญ", "ม.7 บ้านคลองพัฒนา", "ม.8 บ้านคลองหินปูนใต้", "ม.9 บ้านคลองตาสูตร", "ม.10 บ้านคลองร่วม", "ม.11 บ้านซับเจริญ", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองอุดม", "ม.14 บ้านคลองเจริญ", "ม.15 บ้านซับสมบูรณ์", "ม.16 บ้านคลองหินปูนใหม่", "ตำบลคลองตาสูตร"],
-            "ทุ่งมหาเจริญ": ["ม.1 บ้านทุ่งมหาเจริญ", "ม.2 บ้านชัยมงคล", "ม.3 บ้านสวนป่า", "ม.4 บ้านสะพานสาม", "ม.5 บ้านคลองพรหม", "ม.6 บ้านทุ่งสว่าง", "ม.7 บ้านท่าเกษม", "ม.9 บ้านเกาะไม้ซาง", "ม.10 บ้านหนองเจริญ", "ม.11 บ้านคลองร่วม", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองเตย", "ม.14 บ้านคลองหาด", "ม.15 บ้านซับเจริญ", "ม.16 บ้านวังทอง", "ม.17 บ้านทุ่งร่วมใจ", "ม.18 บ้านสะพานสี่", "ม.20 บ้านทุ่งพัฒนา", "ม.21 บ้านหนองเจริญพัฒนา", "ม.22 บ้านชัยมงคลพัฒนา", "ม.23 บ้านทุ่งมหาเจริญพัฒนา", "ม.24 บ้านคลองหาดพัฒนา", "ม.25 บ้านทุ่งสว่างพัฒนา", "ม.26 บ้านท่าเกษมพัฒนา", "ม.27 บ้านคลองร่วมพัฒนา", "ม.28 บ้านคลองเตยพัฒนา", "ม.29 บ้านซับเจริญพัฒนา"]
-        };
-
         const defaultSubdistricts = [
             { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500 },
             { name: "ตาหลังใน", lat: 13.4331, lng: 102.2543, pop: 13200 },
@@ -528,7 +478,7 @@
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-teal-600 font-medium">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลระบบทางระบาดวิทยา...
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลระบบทางระบาดวิทยาจาก Sheet 2...
                 </td></tr>`;
             }
 
@@ -635,9 +585,17 @@
             return null;
         }
 
-        function getHiDataSource() {
+        // 📌 ฟังก์ชันหลัก: ดึงข้อมูลและสร้างโครงสร้างหมู่บ้านจาก Sheet 2 แบบ 100%
+        function getHiDataSourceAndVillages() {
+            let villagesBySubdistrict = {
+                "วังน้ำเย็น": [],
+                "ตาหลังใน": [],
+                "คลองหินปูน": [],
+                "ทุ่งมหาเจริญ": []
+            };
+
             if (!rawSheet2Data || rawSheet2Data.length <= 1) {
-                return defaultHiSheet2Master;
+                return villagesBySubdistrict;
             }
 
             let villageIdx = -1, subIdx = -1, junIdx = -1, julIdx = -1;
@@ -656,7 +614,6 @@
             if (junIdx === -1) junIdx = 2;
             if (julIdx === -1) julIdx = 3;
 
-            let parsedList = [];
             for (let i = 1; i < rawSheet2Data.length; i++) {
                 let row = rawSheet2Data[i];
                 if (!row || row.length === 0) continue;
@@ -666,46 +623,49 @@
                 let junVal = parseFloat(row[junIdx]) || 0;
                 let julVal = parseFloat(row[julIdx]) || 0;
 
-                // 📌 จัดกลุ่มบังคับลง 4 ตำบลหลัก (ถ้าไม่อยู่ใน 3 ตำบลแรก ให้รวมเข้าคลองหินปูน)
-                if (subdistrict.includes('วังน้ำเย็น')) {
-                    subdistrict = 'วังน้ำเย็น';
-                } else if (subdistrict.includes('ตาหลังใน')) {
-                    subdistrict = 'ตาหลังใน';
-                } else if (subdistrict.includes('ทุ่งมหาเจริญ')) {
-                    subdistrict = 'ทุ่งมหาเจริญ';
-                } else {
-                    subdistrict = 'คลองหินปูน';
+                if (!village || village === 'undefined' || village === 'null' || village.includes('หมู่บ้าน')) continue;
+
+                // ตรวจสอบจับคู่ตำบลให้ลงตัว 4 ตำบลหลัก
+                let targetSub = "คลองหินปูน";
+                if (subdistrict.includes('วังน้ำเย็น')) targetSub = "วังน้ำเย็น";
+                else if (subdistrict.includes('ตาหลังใน')) targetSub = "ตาหลังใน";
+                else if (subdistrict.includes('ทุ่งมหาเจริญ')) targetSub = "ทุ่งมหาเจริญ";
+                else if (subdistrict.includes('คลองหินปูน')) targetSub = "คลองหินปูน";
+                else {
+                    // หาก Sheet 2 ไม่ได้ระบุคอลัมน์ตำบลชัดเจน ให้เช็คจากชื่อหมู่บ้าน
+                    let vLower = village.toLowerCase();
+                    if (vLower.includes('ตาหลัง')) targetSub = "ตาหลังใน";
+                    else if (vLower.includes('ทุ่งมหา')) targetSub = "ทุ่งมหาเจริญ";
+                    else if (vLower.includes('วังน้ำเย็น') || vLower.includes('วังแดง') || vLower.includes('วังจำปี')) targetSub = "วังน้ำเย็น";
+                    else targetSub = "คลองหินปูน";
                 }
 
-                if (village && village !== 'undefined' && village !== 'null' && !village.includes('หมู่บ้าน')) {
-                    parsedList.push({
-                        village: village,
-                        subdistrict: subdistrict,
-                        jun: junVal,
-                        jul: julVal
-                    });
+                if (villagesBySubdistrict[targetSub]) {
+                    // ป้องกันการใส่ชื่อหมู่บ้านซ้ำ
+                    if (!villagesBySubdistrict[targetSub].some(v => v.village === village)) {
+                        villagesBySubdistrict[targetSub].push({
+                            village: village,
+                            subdistrict: targetSub,
+                            jun: isNaN(junVal) ? 0 : junVal,
+                            jul: isNaN(julVal) ? 0 : julVal
+                        });
+                    }
                 }
             }
 
-            return parsedList.length > 0 ? parsedList : defaultHiSheet2Master;
+            return villagesBySubdistrict;
         }
 
         function findColumnIndexes() {
             let colIndexes = { onset: -1, sub: -1, village: -1, death: -1, age: -1, diag: -1, occ: -1 };
-            
             for (let r = 0; r < Math.min(5, rawSheetData.length); r++) {
                 if (!Array.isArray(rawSheetData[r])) continue;
-                
                 rawSheetData[r].forEach((head, idx) => {
                     let hText = String(head || '').trim();
                     let hTextLower = hText.toLowerCase();
-
-                    if (hText === 'วัน/เดือน/ปี') {
-                        colIndexes.onset = idx;
-                    } else if (colIndexes.onset === -1 && (hTextLower.includes('วันเริ่มป่วย') || hTextLower.includes('เริ่มป่วย') || hTextLower.includes('onset'))) {
-                        colIndexes.onset = idx;
+                    if (hText === 'วัน/เดือน/ปี' || hTextLower.includes('วันเริ่มป่วย') || hTextLower.includes('เริ่มป่วย') || hTextLower.includes('onset')) {
+                        if (colIndexes.onset === -1) colIndexes.onset = idx;
                     }
-
                     if (hTextLower.includes('ตำบล') || hTextLower.includes('subdistrict')) {
                         if (colIndexes.sub === -1) colIndexes.sub = idx;
                     }
@@ -725,7 +685,6 @@
                         if (colIndexes.occ === -1) colIndexes.occ = idx;
                     }
                 });
-                
                 if (colIndexes.onset !== -1) break;
             }
             return colIndexes;
@@ -734,7 +693,6 @@
         function getMedianFromSheet3() {
             let medianMonthly = Array(12).fill(null);
             if (!rawSheet3Data || rawSheet3Data.length <= 1) return medianMonthly;
-
             let medianColIdx = -1;
             let header = rawSheet3Data[0];
             for (let c = 0; c < header.length; c++) {
@@ -745,30 +703,26 @@
                 }
             }
             if (medianColIdx === -1) medianColIdx = header.length - 1;
-
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-
             for (let i = 1; i < rawSheet3Data.length; i++) {
                 let row = rawSheet3Data[i];
                 if (!row || row.length === 0) continue;
-                
                 let monthText = String(row[0] || '').trim();
                 let monthIdx = -1;
-                
                 monthNames.forEach((mName, idx) => {
                     if (monthText.includes(mName)) monthIdx = idx;
                 });
-
                 if (monthIdx !== -1 && row[medianColIdx] !== undefined && String(row[medianColIdx]).trim() !== "") {
                     let val = parseFloat(row[medianColIdx]);
                     medianMonthly[monthIdx] = isNaN(val) ? null : val;
                 }
             }
-
             return medianMonthly;
         }
 
         function processAndRenderData() {
+            const sheet2VillagesMap = getHiDataSourceAndVillages();
+
             let processed = {
                 casesToday: 0,
                 casesMonthly: Array(12).fill(0),
@@ -785,10 +739,12 @@
                 occupations: {},
                 villageCasesMap: {},
                 subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
-                    const vList = villageMaster[s.name] || [];
+                    const vListFromSheet2 = sheet2VillagesMap[s.name] || [];
                     const vObj = {};
-                    vList.forEach(v => vObj[v] = { casesCum: 0, casesToday: 0 });
-                    return { ...s, casesCum: 0, casesToday: 0, deaths: 0, villages: vObj };
+                    vListFromSheet2.forEach(vItem => {
+                        vObj[vItem.village] = { casesCum: 0, casesToday: 0 };
+                    });
+                    return { ...s, casesCum: 0, casesToday: 0, deaths: 0, villages: vObj, villagesDataSheet2: vListFromSheet2 };
                 })
             };
 
@@ -798,9 +754,8 @@
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
-
                 const strRow = JSON.stringify(row);
-                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค') || strRow.includes('ทะเบียนคนไข้')) continue;
+                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
 
                 let onsetStr = "";
                 if (colIndexes.onset !== -1 && row[colIndexes.onset]) {
@@ -817,24 +772,17 @@
                 let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
                 let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
 
-                // 📌 บังคับระบุให้อยู่ใน 4 ตำบลหลักเท่านั้น (นอกนั้นปัดเข้าคลองหินปูน)
-                if (subNameFromCol.includes('วังน้ำเย็น')) {
-                    subNameFromCol = 'วังน้ำเย็น';
-                } else if (subNameFromCol.includes('ตาหลังใน')) {
-                    subNameFromCol = 'ตาหลังใน';
-                } else if (subNameFromCol.includes('ทุ่งมหาเจริญ')) {
-                    subNameFromCol = 'ทุ่งมหาเจริญ';
-                } else {
-                    subNameFromCol = 'คลองหินปูน';
-                }
+                if (subNameFromCol.includes('วังน้ำเย็น')) subNameFromCol = 'วังน้ำเย็น';
+                else if (subNameFromCol.includes('ตาหลังใน')) subNameFromCol = 'ตาหลังใน';
+                else if (subNameFromCol.includes('ทุ่งมหาเจริญ')) subNameFromCol = 'ทุ่งมหาเจริญ';
+                else subNameFromCol = 'คลองหินปูน';
 
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
-
                 if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let sub = processed.subdistricts.find(s => s.name === subNameFromCol);
-                if (!sub) sub = processed.subdistricts.find(s => s.name === 'คลองหินปูน'); // สำรองเข้าคลองหินปูน
+                if (!sub) sub = processed.subdistricts.find(s => s.name === 'คลองหินปูน');
 
                 sub.casesCum += 1;
                 if (onsetStr.includes(todayStr)) {
@@ -869,18 +817,6 @@
                     let aVal = parseInt(String(row[colIndexes.age]).trim(), 10);
                     if (!isNaN(aVal) && aVal >= 0 && aVal <= 100) parsedAge = aVal;
                 }
-                if (parsedAge === -1) {
-                    for (let c = 0; c < row.length; c++) {
-                        let cellVal = String(row[c] || '').trim();
-                        let numMatch = cellVal.match(/^(\d{1,3})(\s*ปี)?$/);
-                        if (numMatch) {
-                            let num = parseInt(numMatch[1], 10);
-                            if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
-                                parsedAge = num; break;
-                            }
-                        }
-                    }
-                }
                 if (parsedAge >= 0) {
                     if (parsedAge < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
                     else if (parsedAge < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
@@ -899,11 +835,10 @@
                 if (occStr && !occStr.includes('http') && occStr !== 'undefined') {
                     let cleanOcc = occStr;
                     if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("นิสิต")) cleanOcc = "นักเรียน";
-                    else if (cleanOcc.includes("เกษตร") || cleanOcc.includes("ทำนา") || cleanOcc.includes("ทำสวน")) cleanOcc = "เกษตรกร";
-                    else if (cleanOcc.includes("เด็ก") || cleanOcc.includes("ปกครอง")) cleanOcc = "เด็กในปกครอง";
+                    else if (cleanOcc.includes("เกษตร") || cleanOcc.includes("ทำนา")) cleanOcc = "เกษตรกร";
+                    else if (cleanOcc.includes("เด็ก")) cleanOcc = "เด็กในปกครอง";
                     else if (cleanOcc.includes("รับจ้าง")) cleanOcc = "รับจ้างทั่วไป";
-                    else if (cleanOcc.includes("ค้าขาย") || cleanOcc.includes("ธุรกิจ")) cleanOcc = "ค้าขาย / ธุรกิจส่วนตัว";
-                    
+                    else if (cleanOcc.includes("ค้าขาย")) cleanOcc = "ค้าขาย / ธุรกิจส่วนตัว";
                     processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
                 }
             }
@@ -932,10 +867,9 @@
             renderDiagChart(processed.diagTypes, totCases);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            renderHiSurveillanceTable(processed.villageCasesMap);
-
+            renderHiSurveillanceTable(sheet2VillagesMap, processed.villageCasesMap);
             renderMapMarkers(processed.subdistricts);
-            renderRiskMatrixAccordion(processed.subdistricts, processed.villageCasesMap);
+            renderRiskMatrixAccordion(processed.subdistricts, sheet2VillagesMap, processed.villageCasesMap);
         }
 
         function renderEpiCurveChart(monthlyData, medianData) {
@@ -943,47 +877,16 @@
             if (!ctx) return;
             if (epiChartInstance) epiChartInstance.destroy();
 
-            const subTitleEl = document.getElementById('epiCurveSubtitle');
-            if (subTitleEl) {
-                subTitleEl.innerText = `เปรียบเทียบผู้ป่วยจริงรายเดือน ปี พ.ศ. ${selectedYearFilter} กับ ค่ามัธยฐานปี 2564 - 2569 (ดึงตรงจาก Sheet 3)`;
-            }
-
             epiChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
                     datasets: [
-                        {
-                            label: `ปี พ.ศ. ${selectedYearFilter}`,
-                            data: monthlyData,
-                            borderColor: '#0d9488',
-                            backgroundColor: 'rgba(13, 148, 136, 0.15)',
-                            fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#0d9488',
-                            pointRadius: 5
-                        },
-                        {
-                            label: `มัธยฐานปี 2564 - 2569 [Sheet 3]`,
-                            data: medianData,
-                            borderColor: '#94a3b8',
-                            borderDash: [5, 5],
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#94a3b8'
-                        }
+                        { label: `ปี พ.ศ. ${selectedYearFilter}`, data: monthlyData, borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.15)', fill: true, tension: 0.3, pointRadius: 5 },
+                        { label: `มัธยฐานปี 2564 - 2569 [Sheet 3]`, data: medianData, borderColor: '#94a3b8', borderDash: [5, 5], fill: false, tension: 0.3, pointRadius: 4 }
                     ]
                 },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
-                        datalabels: { display: false }
-                    },
-                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end' }, datalabels: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
             });
         }
 
@@ -991,36 +894,11 @@
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
             if (ageChartInstance) ageChartInstance.destroy();
-
-            let values = Object.values(ageObj);
-
             ageChartInstance = new Chart(ctx, {
                 type: 'bar',
                 plugins: [ChartDataLabels],
-                data: {
-                    labels: Object.keys(ageObj),
-                    datasets: [{
-                        label: 'จำนวนผู้ป่วย (ราย)',
-                        data: values,
-                        backgroundColor: '#f97316',
-                        borderRadius: 6
-                    }]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { display: false },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            font: { weight: 'bold', size: 12, family: 'Prompt' },
-                            color: '#ea580c',
-                            formatter: function(value) { return value > 0 ? value : ''; }
-                        }
-                    },
-                    scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
-                }
+                data: { labels: Object.keys(ageObj), datasets: [{ data: Object.values(ageObj), backgroundColor: '#f97316', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, color: '#ea580c', formatter: v => v > 0 ? v : '' } }, scales: { y: { beginAtZero: true, grace: '20%' } } }
             });
         }
 
@@ -1028,36 +906,17 @@
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
             if (subdistrictChartInstance) subdistrictChartInstance.destroy();
-
-            const names = subdistricts.map(s => s.name);
-            const counts = subdistricts.map(s => s.casesCum);
-            const rates = subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1)));
-
             subdistrictChartInstance = new Chart(ctx, {
                 type: 'bar',
                 plugins: [ChartDataLabels],
                 data: {
-                    labels: names,
+                    labels: subdistricts.map(s => s.name),
                     datasets: [
-                        { label: 'จำนวนผู้ป่วย (ราย)', data: counts, backgroundColor: '#ef4444', borderRadius: 6 },
-                        { label: 'อัตราป่วย (ต่อแสน)', data: rates, backgroundColor: '#eab308', borderRadius: 6 }
+                        { label: 'จำนวนผู้ป่วย (ราย)', data: subdistricts.map(s => s.casesCum), backgroundColor: '#ef4444', borderRadius: 6 },
+                        { label: 'อัตราป่วย (ต่อแสน)', data: subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1))), backgroundColor: '#eab308', borderRadius: 6 }
                     ]
                 },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'top' },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            font: { weight: 'bold', size: 11, family: 'Prompt' },
-                            color: '#334155',
-                            formatter: function(value) { return value > 0 ? value : ''; }
-                        }
-                    },
-                    scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 11 }, color: '#334155', formatter: v => v > 0 ? v : '' } }, scales: { y: { beginAtZero: true, grace: '20%' } } }
             });
         }
 
@@ -1065,40 +924,13 @@
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
             if (diagChartInstance) diagChartInstance.destroy();
-
             const dfCount = diagObj["D.F. (ไข้เดงกี)"] || 0;
             const dhfCount = diagObj["D.H.F. (ไข้เลือดออก)"] || 0;
             const sum = dfCount + dhfCount || 1;
-
-            const dfPct = ((dfCount / sum) * 100).toFixed(1);
-            const dhfPct = ((dhfCount / sum) * 100).toFixed(1);
-
             diagChartInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: [`D.F. ไข้เดงกี (${dfCount} ราย - ${dfPct}%)`, `D.H.F. ไข้เลือดออก (${dhfCount} ราย - ${dhfPct}%)`],
-                    datasets: [{
-                        data: [dfCount, dhfCount],
-                        backgroundColor: ['#0d9488', '#f43f5e']
-                    }]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'bottom' },
-                        datalabels: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const val = context.raw || 0;
-                                    const pct = ((val / sum) * 100).toFixed(1);
-                                    return ` ${context.label.split('(')[0]}: ${val} ราย (${pct}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
+                data: { labels: [`D.F. ไข้เดงกี (${dfCount})`, `D.H.F. ไข้เลือดออก (${dhfCount})`], datasets: [{ data: [dfCount, dhfCount], backgroundColor: ['#0d9488', '#f43f5e'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { display: false } } }
             });
         }
 
@@ -1106,20 +938,14 @@
             const container = document.getElementById('occupationList');
             if (!container) return;
             container.innerHTML = '';
-
-            let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
-
-            items.sort((a, b) => b.count - a.count);
-            items = items.slice(0, 5);
-
+            let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] })).sort((a, b) => b.count - a.count).slice(0, 5);
             if (items.length === 0) {
                 container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพประจำปี ${selectedYearFilter}</p>`;
                 return;
             }
-
             items.forEach(item => {
                 const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : "0.0";
-                const rowHtml = `
+                container.innerHTML += `
                     <div class="space-y-1">
                         <div class="flex justify-between items-center text-xs">
                             <span class="font-semibold text-slate-700">${item.name}</span>
@@ -1128,24 +954,28 @@
                         <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                             <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
                         </div>
-                    </div>
-                `;
-                container.innerHTML += rowHtml;
+                    </div>`;
             });
         }
 
-        function renderHiSurveillanceTable(vCasesMap = {}) {
+        // 📌 แสดงผลตารางดัชนีลูกน้ำยุงลายจาก Sheet 2
+        function renderHiSurveillanceTable(sheet2Map, vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
             if (!accordionContainer) return;
 
             let safeTot = 0, riskTot = 0, outbreakTot = 0;
-            const hiDataSource = getHiDataSource();
+            accordionContainer.innerHTML = '';
 
-            const subdistrictGroups = defaultSubdistricts.map(sub => {
-                const subVillages = hiDataSource.filter(item => item.subdistrict === sub.name).map(v => {
+            defaultSubdistricts.forEach((sub, idx) => {
+                const accId = `hi-acc-${idx}`;
+                const villages = sheet2Map[sub.name] || [];
+                
+                let totalHiSum = 0;
+                const processedVillages = villages.map(v => {
                     const hiVal = selectedMonth === 'jul' ? v.jul : v.jun;
-                    
+                    totalHiSum += hiVal;
+
                     let caseCnt = 0;
                     for (let vKey in vCasesMap) {
                         if (vKey.includes(v.village) || v.village.includes(vKey)) {
@@ -1154,163 +984,106 @@
                     }
 
                     let status = "พื้นที่เฝ้าระวัง";
-                    if (hiVal > 10) { 
-                        status = "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด"; 
-                        outbreakTot++; 
-                    } else if (hiVal > 5) { 
-                        status = "พื้นที่เสี่ยง"; 
-                        riskTot++; 
-                    } else { 
-                        safeTot++; 
-                    }
+                    if (hiVal > 10) { status = "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด"; outbreakTot++; }
+                    else if (hiVal > 5) { status = "พื้นที่เสี่ยง"; riskTot++; }
+                    else { safeTot++; }
 
                     return { ...v, hiVal, caseCnt, status };
                 });
 
-                const totalHiSum = subVillages.reduce((acc, curr) => acc + curr.hiVal, 0);
-                const avgHi = subVillages.length > 0 ? (totalHiSum / subVillages.length) : 0;
+                const avgHi = villages.length > 0 ? (totalHiSum / villages.length) : 0;
+                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
+                if (avgHi > 10) subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
+                else if (avgHi > 5) subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยง)</span>`;
 
-                return {
-                    subName: sub.name,
-                    villages: subVillages,
-                    avgHi: avgHi
-                };
-            });
-
-            const safeCountEl = document.getElementById('hiSafeCount');
-            const riskCountEl = document.getElementById('hiRiskCount');
-            const outbreakCountEl = document.getElementById('hiOutbreakCount');
-
-            if (safeCountEl) safeCountEl.innerText = safeTot;
-            if (riskCountEl) riskCountEl.innerText = riskTot;
-            if (outbreakCountEl) outbreakCountEl.innerText = outbreakTot;
-
-            accordionContainer.innerHTML = '';
-
-            subdistrictGroups.forEach((group, idx) => {
-                const accId = `hi-acc-${idx}`;
-                
-                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
-                if (group.avgHi > 10) {
-                    subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
-                } else if (group.avgHi > 5) {
-                    subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยง)</span>`;
-                }
-
-                const cardHtml = `
+                accordionContainer.innerHTML += `
                     <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
                         <div onclick="toggleHiAccordion('${accId}')" class="p-4 bg-slate-50 hover:bg-slate-100 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 transition">
                             <div class="flex items-center gap-2">
                                 <i id="icon-${accId}" class="fa-solid fa-chevron-right text-xs text-slate-400 transition-transform"></i>
-                                <span class="font-bold text-slate-800 text-base">📌 ตำบล${group.subName}</span>
-                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${group.villages.length} หมู่บ้าน/ชุมชน)</span>
+                                <span class="font-bold text-slate-800 text-base">📌 ตำบล${sub.name}</span>
+                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${villages.length} หมู่บ้าน/ชุมชน)</span>
                             </div>
-                            <div class="flex items-center gap-3">
-                                ${subBadge}
-                            </div>
+                            <div>${subBadge}</div>
                         </div>
-
                         <div id="${accId}" class="hidden border-t border-slate-200 p-3 bg-white">
-                            ${group.villages.length > 0 ? `
+                            ${villages.length > 0 ? `
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-xs md:text-sm">
                                         <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                                             <tr>
-                                                <th class="p-2.5">หมู่บ้าน / ชุมชน</th>
-                                                <th class="p-2.5 text-center">ค่า HI (%) [Sheet 2]</th>
+                                                <th class="p-2.5">หมู่บ้าน / ชุมชน (Sheet 2)</th>
+                                                <th class="p-2.5 text-center">ค่า HI (%)</th>
                                                 <th class="p-2.5 text-center">ผู้ป่วยสะสม [Sheet 1]</th>
                                                 <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-100">
-                                            ${group.villages.map(v => {
-                                                let badgeBg = "bg-emerald-600 text-white";
-                                                let textCol = "text-emerald-600";
-                                                if (v.status === "พื้นที่เสี่ยง") { badgeBg = "bg-amber-500 text-white"; textCol = "text-amber-600"; }
-                                                else if (v.status === "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด") { badgeBg = "bg-rose-600 text-white"; textCol = "text-rose-600"; }
-
-                                                return `
-                                                    <tr class="hover:bg-slate-50 transition">
-                                                        <td class="p-2.5 font-semibold text-slate-800">📍 ${v.village}</td>
-                                                        <td class="p-2.5 text-center font-bold ${textCol}">${v.hiVal.toFixed(2)}%</td>
-                                                        <td class="p-2.5 text-center font-bold text-slate-700">${v.caseCnt} ราย</td>
-                                                        <td class="p-2.5 text-center">
-                                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold inline-block ${badgeBg}">
-                                                                ${v.status}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                `;
-                                            }).join('')}
+                                            ${processedVillages.map(v => `
+                                                <tr class="hover:bg-slate-50 transition">
+                                                    <td class="p-2.5 font-semibold text-slate-800">📍 ${v.village}</td>
+                                                    <td class="p-2.5 text-center font-bold ${v.hiVal > 10 ? 'text-rose-600' : (v.hiVal > 5 ? 'text-amber-600' : 'text-emerald-600')}">${v.hiVal.toFixed(2)}%</td>
+                                                    <td class="p-2.5 text-center font-bold text-slate-700">${v.caseCnt} ราย</td>
+                                                    <td class="p-2.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${v.status === 'พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด' ? 'bg-rose-600 text-white' : (v.status === 'พื้นที่เสี่ยง' ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white')}">${v.status}</span></td>
+                                                </tr>
+                                            `).join('')}
                                         </tbody>
                                     </table>
                                 </div>
-                            ` : `<p class="text-xs text-slate-400 text-center py-3">ไม่มีข้อมูลหมู่บ้านในตำบลนี้</p>`}
+                            ` : `<p class="text-xs text-slate-400 text-center py-3">ไม่มีข้อมูลหมู่บ้านใน Sheet 2 สำหรับตำบลนี้</p>`}
                         </div>
-                    </div>
-                `;
-                accordionContainer.innerHTML += cardHtml;
+                    </div>`;
             });
+
+            document.getElementById('hiSafeCount').innerText = safeTot;
+            document.getElementById('hiRiskCount').innerText = riskTot;
+            document.getElementById('hiOutbreakCount').innerText = outbreakTot;
         }
 
         function toggleHiAccordion(id) {
             const content = document.getElementById(id);
             const icon = document.getElementById(`icon-${id}`);
             if (content && icon) {
-                if (content.classList.contains('hidden')) {
-                    content.classList.remove('hidden');
-                    icon.classList.add('rotate-90');
-                } else {
-                    content.classList.add('hidden');
-                    icon.classList.remove('rotate-90');
-                }
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-90');
             }
         }
 
-        function renderRiskMatrixAccordion(subdistricts, vCasesMap = {}) {
+        // 📌 แสดงผลตารางความเสี่ยงและดึงหมู่บ้านจาก Sheet 2
+        function renderRiskMatrixAccordion(subdistricts, sheet2Map, vCasesMap = {}) {
             const tbody = document.getElementById('riskTableBody');
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const hiDataSource = getHiDataSource();
-
             subdistricts.forEach((sub, idx) => {
                 const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
                 const subId = `sub-row-${idx}`;
+                const villages = sheet2Map[sub.name] || [];
 
-                const subVillages = hiDataSource.filter(item => item.subdistrict === sub.name);
-                const totalHiSum = subVillages.reduce((acc, curr) => acc + (selectedMonth === 'jul' ? curr.jul : curr.jun), 0);
-                const avgHi = subVillages.length > 0 ? (totalHiSum / subVillages.length) : 0;
+                let totalHiSum = villages.reduce((acc, curr) => acc + (selectedMonth === 'jul' ? curr.jul : curr.jun), 0);
+                const avgHi = villages.length > 0 ? (totalHiSum / villages.length) : 0;
 
                 const mainTr = document.createElement('tr');
                 mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
-                
-                mainTr.onclick = () => {
-                    toggleVillageRow(subId);
-                    focusSubdistrictMap(sub.name);
-                };
+                mainTr.onclick = () => { toggleVillageRow(subId); focusSubdistrictMap(sub.name); };
 
-                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
-                if (sub.casesCum > 30 || avgHi > 10) {
-                    badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-rose-500 animate-pulse"></i> เสี่ยงสูงมาก</span>';
-                } else if (sub.casesCum > 10 || avgHi > 5) {
-                    badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-orange-500"></i> เสี่ยงสูง</span>';
-                }
+                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium">ปกติ</span>';
+                if (sub.casesCum > 30 || avgHi > 10) badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium animate-pulse">เสี่ยงสูงมาก</span>';
+                else if (sub.casesCum > 10 || avgHi > 5) badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium">เสี่ยงสูง</span>';
 
                 mainTr.innerHTML = `
                     <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
                         <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
                         <span class="font-bold">📌 ต.${sub.name}</span>
-                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${villages.length})</span>
                     </td>
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
                     <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi > 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
                     <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
                     <td class="p-2.5 text-center text-slate-600">${morb}</td>
-                    <td class="p-2.5 text-center">${badge}</td>
-                `;
+                    <td class="p-2.5 text-center">${badge}</td>`;
                 tbody.appendChild(mainTr);
 
                 const subTr = document.createElement('tr');
@@ -1318,26 +1091,21 @@
                 subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
 
                 let villageListHtml = `<td colspan="7" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
-
-                Object.keys(sub.villages).forEach(vName => {
-                    const vData = sub.villages[vName];
-                    const hasCase = vData.casesCum > 0;
-
-                    const vHiMatch = hiDataSource.find(h => vName.includes(h.village) || h.village.includes(vName));
-                    const vHiVal = vHiMatch ? (selectedMonth === 'jul' ? vHiMatch.jul : vHiMatch.jun) : 0;
-                    
+                villages.forEach(v => {
+                    const vHiVal = selectedMonth === 'jul' ? v.jul : v.jun;
+                    let caseCnt = 0;
+                    for (let vKey in vCasesMap) {
+                        if (vKey.includes(v.village) || v.village.includes(vKey)) caseCnt += vCasesMap[vKey];
+                    }
                     villageListHtml += `
-                        <div onclick="focusVillageMap('${sub.name}', '${vName}', event)" 
-                             class="flex items-center justify-between p-2 rounded-lg border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase || vHiVal > 10 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
-                            <span class="${hasCase ? 'font-semibold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
+                        <div class="flex items-center justify-between p-2 rounded-lg border bg-white border-slate-200">
+                            <span class="font-semibold text-slate-800">📍 ${v.village}</span>
                             <div class="text-right">
                                 <span class="text-[11px] block font-semibold ${vHiVal > 10 ? 'text-rose-600' : 'text-slate-500'}">HI: ${vHiVal.toFixed(1)}%</span>
-                                <span class="${hasCase ? 'text-rose-600 font-bold' : 'text-slate-400'}">${vData.casesCum} ราย</span>
+                                <span class="${caseCnt > 0 ? 'text-rose-600 font-bold' : 'text-slate-400'}">${caseCnt} ราย</span>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-
                 villageListHtml += `</div></td>`;
                 subTr.innerHTML = villageListHtml;
                 tbody.appendChild(subTr);
@@ -1348,13 +1116,8 @@
             const row = document.getElementById(rowId);
             const icon = document.getElementById(`icon-${rowId}`);
             if (row && icon) {
-                if (row.classList.contains('hidden')) {
-                    row.classList.remove('hidden');
-                    icon.classList.add('rotate-90');
-                } else {
-                    row.classList.add('hidden');
-                    icon.classList.remove('rotate-90');
-                }
+                row.classList.toggle('hidden');
+                icon.classList.toggle('rotate-90');
             }
         }
 
@@ -1362,24 +1125,11 @@
             if (!map) return;
             mapMarkers.forEach(m => map.removeLayer(m));
             mapMarkers = [];
-
             subdistricts.forEach(sub => {
                 let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
-                
-                const circleMarker = L.circleMarker([sub.lat, sub.lng], {
-                    color: color,
-                    fillColor: color,
-                    fillOpacity: 0.85,
-                    radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6
-                }).addTo(map).bindPopup(`
-                    <div class="text-xs p-1">
-                        <b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br>
-                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
-                        <span class="text-rose-600 font-semibold">ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span>
-                    </div>
-                `);
-
-                mapMarkers.push(circleMarker);
+                const m = L.circleMarker([sub.lat, sub.lng], { color: color, fillColor: color, fillOpacity: 0.85, radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6 }).addTo(map)
+                    .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br><span>ผู้ป่วยสะสม: ${sub.casesCum} ราย</span></div>`);
+                mapMarkers.push(m);
             });
         }
 
@@ -1391,50 +1141,31 @@
             activeMarker = L.marker([sub.lat, sub.lng]).addTo(map).bindPopup(`<b>📍 ตำบล${sub.name}</b>`).openPopup();
         }
 
-        function focusVillageMap(subName, villageName, event) {
-            if (event) event.stopPropagation();
-            const sub = defaultSubdistricts.find(s => s.name === subName);
-            if (!sub || !map) return;
-            if (activeMarker) map.removeLayer(activeMarker);
-
-            let hash = 0;
-            for (let i = 0; i < villageName.length; i++) hash = villageName.charCodeAt(i) + ((hash << 5) - hash);
-            const latOffset = ((hash % 100) / 4000) - 0.01;
-            const lngOffset = (((hash >> 2) % 100) / 4000) - 0.01;
-
-            map.flyTo([sub.lat + latOffset, sub.lng + lngOffset], 14, { duration: 1.2 });
-            activeMarker = L.marker([sub.lat + latOffset, sub.lng + lngOffset]).addTo(map).bindPopup(`<b>📍 ${villageName}</b>`).openPopup();
-        }
-
         function updateVillageDropdown(subName) {
             const select = document.getElementById('villageSelect');
             if (!select) return;
             select.innerHTML = '';
-            const list = villageMaster[subName] || [];
+            const sheet2VillagesMap = getHiDataSourceAndVillages();
+            const list = sheet2VillagesMap[subName] || [];
             list.forEach(v => {
                 const opt = document.createElement('option');
-                opt.value = v;
-                opt.innerText = v;
+                opt.value = v.village;
+                opt.innerText = v.village;
                 select.appendChild(opt);
             });
         }
 
         function updateYearEndSummaryCard(processedData, totalCases, currentYear) {
-            const lblYear = document.getElementById('summaryYearLabel');
-            const lblTotal = document.getElementById('summaryTotalCases');
-            const lblHotspot = document.getElementById('summaryHotspotSub');
-            if (lblYear) lblYear.innerText = currentYear;
-            if (lblTotal) lblTotal.innerText = totalCases;
-
+            document.getElementById('summaryYearLabel').innerText = currentYear;
+            document.getElementById('summaryTotalCases').innerText = totalCases;
             let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
-            if (lblHotspot) lblHotspot.innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
+            document.getElementById('summaryHotspotSub').innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
         }
 
         async function submitToGoogleSheet(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
             if (btn) { btn.disabled = true; btn.innerText = "กำลังบันทึก..."; }
-
             const payload = {
                 fullName: document.getElementById('fullName')?.value || '',
                 onsetDate: document.getElementById('onsetDate')?.value || '',
@@ -1443,15 +1174,8 @@
                 diag: document.getElementById('diag')?.value || '',
                 status: document.getElementById('status')?.value || ''
             };
-
             try {
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+                await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
                 closeAddDataModal();
                 fetchDataFromAppsScript();
@@ -1463,7 +1187,7 @@
         }
 
         function downloadDataCSV() {
-            if (!rawSheetData || rawSheetData.length === 0) { alert("ไม่มีข้อมูลสำหรับดาวน์โหลด"); return; }
+            if (!rawSheetData || rawSheetData.length === 0) { alert("ไม่มีข้อมูล"); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             rawSheetData.forEach(row => { csvContent += row.join(",") + "\n"; });
             const link = document.createElement("a");
@@ -1474,15 +1198,8 @@
             document.body.removeChild(link);
         }
 
-        function openAddDataModal() {
-            const m = document.getElementById('addPatientModal');
-            if (m) m.classList.remove('hidden');
-        }
-
-        function closeAddDataModal() {
-            const m = document.getElementById('addPatientModal');
-            if (m) m.classList.add('hidden');
-        }
+        function openAddDataModal() { document.getElementById('addPatientModal').classList.remove('hidden'); }
+        function closeAddDataModal() { document.getElementById('addPatientModal').classList.add('hidden'); }
     </script>
 </body>
 </html>
