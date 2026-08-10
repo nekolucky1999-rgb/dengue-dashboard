@@ -96,7 +96,7 @@
 
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
             
-            <!-- 📌 สรุปภาพรวมเมื่อสิ้นสุดปี (Banner) -->
+            <!-- 📌 สรุปภาพรวมประจำปี (Banner) -->
             <section id="yearEndSummaryCard" class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white rounded-2xl p-5 shadow-lg border border-teal-500/30 animate-fade-in relative overflow-hidden">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
                     <div class="space-y-1.5 max-w-3xl">
@@ -501,6 +501,21 @@
             processAndRenderData();
         }
 
+        // แปลงวันที่ DD/MM/YYYY เป็นดัชนีเดือน (0-11)
+        function getMonthFromDateStr(dateStr) {
+            if (!dateStr) return -1;
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    const m = parseInt(parts[1], 10) - 1;
+                    if (m >= 0 && m <= 11) return m;
+                }
+            }
+            const d = new Date(dateStr);
+            if (!isNaN(d.getTime())) return d.getMonth();
+            return -1;
+        }
+
         function processAndRenderData() {
             let processed = {
                 casesToday: 0,
@@ -533,23 +548,31 @@
                 const strRow = JSON.stringify(row);
                 if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
 
-                const subName = String(row[10] || row[2] || '').trim();
-                const villageName = String(row[9] || row[3] || '').trim();
+                // 📌 อ้างอิงตามดัชนีคอลัมน์ของฐานข้อมูลจริง (0:ลำดับ, 1:ชื่อโรค, 4:อายุ, 6:อาชีพ, 9:ชื่อหมู่บ้าน, 10:ตำบล, 12:วันเริ่มป่วย, 14:วันเสียชีวิต)
+                const diagStrFromCol = String(row[1] || '').trim();
+                const subNameFromCol = String(row[10] || '').trim();
+                const villageNameFromCol = String(row[9] || '').trim();
                 const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
                 const deathDate = String(row[14] || '').trim();
 
-                // 📌 กรองตามปีอย่างเคร่งครัด (ตัดข้อมูลที่ไม่มีวันที่ หรือปีไม่ตรงออก)
+                // 📌 1. กรองเฉพาะปีที่เลือก
                 const yearBE = String(selectedYearFilter);
                 const yearAD = String(parseInt(selectedYearFilter) - 543);
                 if (!onsetDate || (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD))) {
                     continue;
                 }
 
-                // 📌 กรองเฉพาะผู้ป่วยที่อยู่ในพื้นที่ อ.วังน้ำเย็น
-                let sub = processed.subdistricts.find(s => subName.includes(s.name));
+                // 📌 2. ค้นหาตำบลในพื้นที่ อ.วังน้ำเย็น
+                let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name));
                 if (!sub) {
-                    continue;
+                    for (let c = 0; c < row.length; c++) {
+                        let cellVal = String(row[c] || '');
+                        let foundSub = processed.subdistricts.find(s => cellVal.includes(s.name));
+                        if (foundSub) { sub = foundSub; break; }
+                    }
                 }
+
+                if (!sub) continue; // ตัดข้อมูลนอกพื้นที่ออก
 
                 sub.casesCum += 1;
                 if (onsetDate && onsetDate.includes(todayStr)) {
@@ -561,9 +584,10 @@
                     processed.deathsCum += 1;
                 }
 
+                // นับหมู่บ้าน
                 if (sub.villages) {
                     for (let vKey in sub.villages) {
-                        if (villageName && (vKey.includes(villageName) || villageName.includes(vKey))) {
+                        if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey))) {
                             sub.villages[vKey].casesCum += 1;
                             if (onsetDate && onsetDate.includes(todayStr)) sub.villages[vKey].casesToday += 1;
                             break;
@@ -571,24 +595,29 @@
                     }
                 }
 
-                if (onsetDate) {
-                    const dateObj = new Date(onsetDate);
-                    if (!isNaN(dateObj.getTime())) {
-                        processed.casesMonthly[dateObj.getMonth()] += 1;
-                    }
+                // สถิติรายเดือน
+                const monthIdx = getMonthFromDateStr(onsetDate);
+                if (monthIdx >= 0 && monthIdx <= 11) {
+                    processed.casesMonthly[monthIdx] += 1;
                 }
 
-                // 📌 สแกนกลุ่มอายุ
+                // 📌 3. สแกนกลุ่มอายุ
                 let parsedAge = -1;
-                for (let c = 0; c < row.length; c++) {
-                    let cellVal = String(row[c] || '').trim();
-                    if (!cellVal) continue;
-                    let numMatch = cellVal.match(/^(\d{1,3})(\s*ปี)?$/);
-                    if (numMatch) {
-                        let num = parseInt(numMatch[1], 10);
-                        if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
-                            parsedAge = num;
-                            if ([4, 5, 6, 7].includes(c)) break;
+                if (row[4] !== undefined && row[4] !== null && String(row[4]).trim() !== '') {
+                    let aVal = parseInt(String(row[4]).trim(), 10);
+                    if (!isNaN(aVal) && aVal >= 0 && aVal <= 100) parsedAge = aVal;
+                }
+
+                if (parsedAge === -1) {
+                    for (let c = 0; c < row.length; c++) {
+                        let cellVal = String(row[c] || '').trim();
+                        let numMatch = cellVal.match(/^(\d{1,3})(\s*ปี)?$/);
+                        if (numMatch) {
+                            let num = parseInt(numMatch[1], 10);
+                            if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
+                                parsedAge = num;
+                                break;
+                            }
                         }
                     }
                 }
@@ -602,11 +631,19 @@
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // 📌 จำแนกชนิดโรคตามรหัสทางการแพทย์
-                let rowDiagStr = String(row[8] || row[7] || row[5] || '').toLowerCase();
-                if (!rowDiagStr || rowDiagStr === 'undefined') rowDiagStr = strRow.toLowerCase();
+                // 📌 4. จำแนกชนิดของโรคจากคอลัมน์ชื่อโรค (row[1]) แม่นยำ 100%
+                let upperDiag = diagStrFromCol.toUpperCase();
+                let isDHF = upperDiag.includes("26") || upperDiag.includes("D.H.F") || upperDiag.includes("DHF") || upperDiag.includes("ไข้เลือดออก");
 
-                let isDHF = rowDiagStr.includes("26") || rowDiagStr.includes("d.h.f") || rowDiagStr.includes("ไข้เลือดออก") || rowDiagStr.includes("dhf");
+                if (!isDHF) {
+                    for (let c = 0; c < row.length; c++) {
+                        let cellText = String(row[c] || '').toUpperCase();
+                        if (cellText.includes("26.D.H.F") || cellText.includes("D.H.F.") || cellText.includes("ไข้เลือดออก")) {
+                            isDHF = true;
+                            break;
+                        }
+                    }
+                }
 
                 if (isDHF) {
                     processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
@@ -614,15 +651,8 @@
                     processed.diagTypes["D.F. (ไข้เดงกี)"]++;
                 }
 
-                // 📌 สแกนกลุ่มอาชีพ
-                let occStr = "";
-                for (let idx of [11, 7, 5, 4, 3, 6, 8, 9]) {
-                    const val = String(row[idx] || '').trim();
-                    if (val && ['นักเรียน', 'รับจ้าง', 'เกษตร', 'เด็ก', 'ข้าราชการ', 'ค้าขาย', 'แม่บ้าน', 'ในปกครอง'].some(k => val.includes(k))) {
-                        occStr = val;
-                        break;
-                    }
-                }
+                // 📌 5. จำแนกอาชีพ
+                let occStr = String(row[6] || '').trim();
                 if (!occStr) occStr = String(row[11] || row[7] || row[5] || '').trim();
 
                 if (occStr && !occStr.includes('http') && occStr !== 'undefined') {
