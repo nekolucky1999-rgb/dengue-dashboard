@@ -116,13 +116,13 @@
                         </h3>
 
                         <p id="summaryDetailText" class="text-xs md:text-sm text-slate-300 leading-relaxed">
-                            กำลังประมวลผลสรุปข้อมูลประจำปี 4 ตำบลหลัก...
+                            กำลังประมวลผลสรุปข้อมูลประจำปีจากฐานข้อมูล...
                         </p>
                     </div>
 
                     <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shrink-0 self-start md:self-auto">
                         <div class="text-center px-2">
-                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวม 4 ตำบล</p>
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวมทุกตำบล</p>
                             <p class="text-sm font-bold text-teal-300 font-heading mt-0.5">71,500 คน</p>
                         </div>
                         <div class="w-px h-8 bg-white/20"></div>
@@ -144,7 +144,7 @@
                     </div>
                 </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
-                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมประจำปี (4 ตำบล)</p>
+                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมประจำปี</p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span id="kpiCumCases" class="text-3xl font-bold text-rose-600">0</span>
                         <span class="text-xs text-slate-500">ราย</span>
@@ -182,7 +182,7 @@
 
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกราย 4 ตำบลหลัก
+                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล (จาก Sheet 2)
                     </h3>
                     <p class="text-xs text-slate-500 mb-2">เปรียบเทียบจำนวนผู้ป่วย (ราย) และอัตราป่วย (ต่อแสนประชากร)</p>
                     <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
@@ -230,14 +230,14 @@
 
             </section>
 
-            <!-- 🏡 3. รายงานดัชนีลูกน้ำยุงลาย HI/CI (4 ตำบลหลัก + เจาะลึกรายหมู่บ้านพร้อมป้ายแดง) -->
+            <!-- 🏡 3. รายงานดัชนีลูกน้ำยุงลาย HI/CI -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกราย 4 ตำบลหลัก
+                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน (จาก Sheet 2 แบบ 100%)
                         </h3>
-                        <p class="text-xs text-slate-500">แสดงข้อมูล 4 ตำบลหลัก (วังน้ำเย็น, ตาหลังใน, คลองหินปูน, ทุ่งมหาเจริญ) พร้อมรายละเอียดรายหมู่บ้านและติดป้ายแดงหมู่บ้านที่มีผู้ป่วย</p>
+                        <p class="text-xs text-slate-500">ดึงข้อมูลและรายชื่อตำบล/หมู่บ้านตรงตาม Sheet 2 พร้อมป้ายแดงแสดงหมู่บ้านที่พบผู้ป่วย</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <select id="hiMonthSelect" onchange="processAndRenderData()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
@@ -284,7 +284,7 @@
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS 4 ตำบลหลัก
+                            <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS
                         </span>
                         <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">จุดระบาดระดับตำบล GIS</span>
                     </div>
@@ -294,9 +294,9 @@
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยง 4 ตำบลหลัก
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงตามตำบล (Sheet 2)
                         </span>
-                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายรายหมู่บ้าน</span>
+                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายดูรายหมู่บ้าน</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl border border-slate-200">
@@ -347,10 +347,6 @@
                     <div>
                         <label class="block font-medium mb-1 text-slate-700">ตำบล</label>
                         <select id="subdistrict" onchange="updateVillageDropdown(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
-                            <option value="วังน้ำเย็น">วังน้ำเย็น</option>
-                            <option value="ตาหลังใน">ตาหลังใน</option>
-                            <option value="คลองหินปูน">คลองหินปูน</option>
-                            <option value="ทุ่งมหาเจริญ">ทุ่งมหาเจริญ</option>
                         </select>
                     </div>
                     <div>
@@ -400,13 +396,6 @@
         let ageChartInstance = null;
         let diagChartInstance = null;
 
-        const defaultSubdistricts = [
-            { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500 },
-            { name: "ตาหลังใน", lat: 13.4331, lng: 102.2543, pop: 13200 },
-            { name: "คลองหินปูน", lat: 13.5580, lng: 102.1311, pop: 18700 },
-            { name: "ทุ่งมหาเจริญ", lat: 13.3812, lng: 102.1231, pop: 18100 }
-        ];
-
         const wnyBoundaryCoords = [
             [13.5900, 102.1300],
             [13.5700, 102.2300],
@@ -422,13 +411,12 @@
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 showDashboard();
             }
-            updateVillageDropdown("วังน้ำเย็น");
         });
 
         function handleMainLogin(e) {
             e.preventDefault();
             const u = document.getElementById('loginUser') ? document.getElementById('loginUser').value.trim() : '';
-            const p = document.getElementById('loginPass') ? document.getElementById('loginPass').value.trim() : '';
+            const p = document.getElementById('loginPass') ? document.getElementById('loginPass'].value.trim() : '';
             
             if ((u === 'admin' || u === 'wny001') && p === 'wny1234') {
                 sessionStorage.setItem('isLoggedIn', 'true');
@@ -477,7 +465,7 @@
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-teal-600 font-medium">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผล 4 ตำบลหลักจาก Sheet 2...
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลจาก Sheet 2 แบบ 100%...
                 </td></tr>`;
             }
 
@@ -584,34 +572,33 @@
             return null;
         }
 
-        // 📌 ฟังก์ชันแกะรอย Sheet 2 แบบบล็อก 3 คอลัมน์ และจำแนกลง 4 ตำบลหลัก
+        // 📌 ฟังก์ชันอ่านข้อมูล Sheet 2 แบบไดนามิก 100% ตรงตาม Sheet ทุกประการ
         function getHiDataSourceAndVillages() {
-            let villagesBySubdistrict = {
-                "วังน้ำเย็น": [],
-                "ตาหลังใน": [],
-                "คลองหินปูน": [],
-                "ทุ่งมหาเจริญ": []
-            };
-
+            let villagesBySubdistrict = {};
             if (!rawSheet2Data || rawSheet2Data.length === 0) return villagesBySubdistrict;
 
-            let currentSubdistrict = "วังน้ำเย็น";
+            let currentSubdistrict = "วังน้ำเย็น"; // ค่าเริ่มต้น
 
             for (let i = 0; i < rawSheet2Data.length; i++) {
                 let row = rawSheet2Data[i];
                 if (!row || row.length === 0) continue;
 
-                let firstCell = String(row[0] || '').trim();
-
-                if (firstCell.includes('ตำบล') || firstCell.includes('ต.')) {
-                    let subRaw = firstCell.replace(/^(ต\.|ตำบล)\s*/g, '').trim();
-                    if (subRaw.includes('ตาหลัง')) currentSubdistrict = "ตาหลังใน";
-                    else if (subRaw.includes('ทุ่งมหา')) currentSubdistrict = "ทุ่งมหาเจริญ";
-                    else if (subRaw.includes('คลองหิน')) currentSubdistrict = "คลองหินปูน";
-                    else currentSubdistrict = "วังน้ำเย็น";
-                    continue;
+                // ตรวจสอบทุกเซลล์ในแถวเพื่อหาชื่อตำบล
+                for (let c = 0; c < row.length; c++) {
+                    let cellVal = String(row[c] || '').trim();
+                    if (cellVal.includes('ตำบล') || cellVal.includes('ต.')) {
+                        let cleanSub = cellVal.replace(/^(ต\.|ตำบล)\s*/g, '').trim();
+                        if (cleanSub && cleanSub !== 'หมู่บ้าน') {
+                            currentSubdistrict = cleanSub;
+                        }
+                    }
                 }
 
+                if (!villagesBySubdistrict[currentSubdistrict]) {
+                    villagesBySubdistrict[currentSubdistrict] = [];
+                }
+
+                // วนลูปอ่านข้อมูลบล็อกละ 3 คอลัมน์ (ชื่อหมู่บ้าน, มิ.ย., ก.ค.)
                 for (let c = 0; c < row.length; c += 3) {
                     let villageCell = row[c];
                     let junCell = row[c + 1];
@@ -619,29 +606,18 @@
 
                     if (villageCell !== undefined && villageCell !== null) {
                         let village = String(villageCell).trim();
-                        if (!village || village === 'undefined' || village === 'null' || village.includes('หมู่บ้าน') || village.includes('ประจำเดือน') || village.includes('มิ.ย.') || village.includes('ก.ค.')) {
+                        if (!village || village === 'undefined' || village === 'null' || village.includes('หมู่บ้าน') || village.includes('ประจำเดือน') || village.includes('มิ.ย.') || village.includes('ก.ค.') || village.includes('ตำบล') || village.includes('ต.')) {
                             continue;
                         }
 
                         let junVal = parseFloat(junCell);
                         let julVal = parseFloat(julCell);
 
-                        // ตรวจสอบชื่อหมู่บ้านเพิ่มเติมเพื่อจัดหมวดหมู่ตำบลให้แม่นยำ
-                        let targetSub = currentSubdistrict;
-                        let vLower = village.toLowerCase();
-                        if (vLower.includes('ตาหลัง')) targetSub = "ตาหลังใน";
-                        else if (vLower.includes('ทุ่งมหา')) targetSub = "ทุ่งมหาเจริญ";
-                        else if (vLower.includes('คลองหิน')) targetSub = "คลองหินปูน";
-                        else if (vLower.includes('วังน้ำเย็น') || vLower.includes('วังแดง') || vLower.includes('วังจำปี')) targetSub = "วังน้ำเย็น";
-
-                        if (!villagesBySubdistrict[targetSub]) {
-                            villagesBySubdistrict[targetSub] = [];
-                        }
-
-                        if (!villagesBySubdistrict[targetSub].some(v => v.village === village)) {
-                            villagesBySubdistrict[targetSub].push({
+                        // ป้องกันหมู่บ้านซ้ำในตำบลเดียวกัน
+                        if (!villagesBySubdistrict[currentSubdistrict].some(v => v.village === village)) {
+                            villagesBySubdistrict[currentSubdistrict].push({
                                 village: village,
-                                subdistrict: targetSub,
+                                subdistrict: currentSubdistrict,
                                 jun: isNaN(junVal) ? 0 : junVal,
                                 jul: isNaN(julVal) ? 0 : julVal
                             });
@@ -719,6 +695,37 @@
 
         function processAndRenderData() {
             const sheet2VillagesMap = getHiDataSourceAndVillages();
+            const subdistrictNames = Object.keys(sheet2VillagesMap);
+
+            let dynamicSubdistricts = subdistrictNames.map(subName => {
+                const vList = sheet2VillagesMap[subName] || [];
+                const vObj = {};
+                vList.forEach(v => vObj[v.village] = { casesCum: 0, casesToday: 0 });
+                
+                let popEst = 15000;
+                let lat = 13.4600, lng = 102.1700;
+                if (subName.includes("วังน้ำเย็น")) { popEst = 21500; lat = 13.5015; lng = 102.1812; }
+                else if (subName.includes("ตาหลังใน")) { popEst = 13200; lat = 13.4331; lng = 102.2543; }
+                else if (subName.includes("คลองหินปูน")) { popEst = 10200; lat = 13.5580; lng = 102.1311; }
+                else if (subName.includes("ทุ่งมหาเจริญ")) { popEst = 18100; lat = 13.3812; lng = 102.1231; }
+
+                return {
+                    name: subName,
+                    lat: lat,
+                    lng: lng,
+                    pop: popEst,
+                    casesCum: 0,
+                    casesToday: 0,
+                    deaths: 0,
+                    villages: vObj
+                };
+            });
+
+            if (dynamicSubdistricts.length === 0) {
+                dynamicSubdistricts = [
+                    { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500, casesCum: 0, casesToday: 0, deaths: 0, villages: {} }
+                ];
+            }
 
             let processed = {
                 casesToday: 0,
@@ -735,14 +742,7 @@
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
                 occupations: {},
                 villageCasesMap: {},
-                subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
-                    const vListFromSheet2 = sheet2VillagesMap[s.name] || [];
-                    const vObj = {};
-                    vListFromSheet2.forEach(vItem => {
-                        vObj[vItem.village] = { casesCum: 0, casesToday: 0 };
-                    });
-                    return { ...s, casesCum: 0, casesToday: 0, deaths: 0, villages: vObj, villagesDataSheet2: vListFromSheet2 };
-                })
+                subdistricts: dynamicSubdistricts
             };
 
             const todayStr = new Date().toISOString().split('T')[0];
@@ -769,17 +769,15 @@
                 let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
                 let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
 
-                if (subNameFromCol.includes('วังน้ำเย็น')) subNameFromCol = 'วังน้ำเย็น';
-                else if (subNameFromCol.includes('ตาหลังใน')) subNameFromCol = 'ตาหลังใน';
-                else if (subNameFromCol.includes('ทุ่งมหาเจริญ')) subNameFromCol = 'ทุ่งมหาเจริญ';
-                else subNameFromCol = 'คลองหินปูน';
+                subNameFromCol = subNameFromCol.replace(/^(ต\.|ตำบล)\s*/g, '').trim();
 
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
                 if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
-                let sub = processed.subdistricts.find(s => s.name === subNameFromCol);
-                if (!sub) sub = processed.subdistricts.find(s => s.name === 'คลองหินปูน');
+                let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name) || s.name.includes(subNameFromCol));
+                if (!sub && processed.subdistricts.length > 0) sub = processed.subdistricts[0];
+                if (!sub) continue;
 
                 sub.casesCum += 1;
                 if (onsetStr.includes(todayStr)) {
@@ -841,10 +839,11 @@
             }
 
             const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
+            const totalPopAll = processed.subdistricts.reduce((a, b) => a + b.pop, 0);
 
             document.getElementById('kpiTodayCases').innerText = `+${processed.casesToday}`;
             document.getElementById('kpiCumCases').innerText = totCases;
-            document.getElementById('kpiMorbidity').innerText = ((totCases / 71500) * 100000).toFixed(1);
+            document.getElementById('kpiMorbidity').innerText = ((totCases / totalPopAll) * 100000).toFixed(1);
             document.getElementById('kpiCumDeaths').innerText = processed.deathsCum;
             document.getElementById('kpiCFR').innerText = totCases > 0 ? `${((processed.deathsCum / totCases) * 100).toFixed(2)}%` : "0.00%";
 
@@ -861,6 +860,7 @@
             renderHiSurveillanceTable(sheet2VillagesMap, processed.villageCasesMap);
             renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts, sheet2VillagesMap, processed.villageCasesMap);
+            updateSubdistrictDropdown(subdistrictNames);
         }
 
         function renderEpiCurveChart(monthlyData, medianData) {
@@ -948,7 +948,7 @@
             });
         }
 
-        // 📌 แสดงผลตาราง HI/CI พร้อมติดป้ายแดงหมู่บ้านที่มีผู้ป่วย
+        // 📌 แสดงผลตาราง HI/CI พร้อมติดป้ายแดงหมู่บ้านที่พบผู้ป่วย
         function renderHiSurveillanceTable(sheet2Map, vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
@@ -957,9 +957,9 @@
             let safeTot = 0, riskTot = 0, outbreakTot = 0;
             accordionContainer.innerHTML = '';
 
-            defaultSubdistricts.forEach((sub, idx) => {
+            Object.keys(sheet2Map).forEach((subName, idx) => {
                 const accId = `hi-acc-${idx}`;
-                const villages = sheet2Map[sub.name] || [];
+                const villages = sheet2Map[subName] || [];
                 
                 let totalHiSum = 0;
                 const processedVillages = villages.map(v => {
@@ -983,7 +983,7 @@
 
                 const avgHi = villages.length > 0 ? (totalHiSum / villages.length) : 0;
                 let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
-                if (avgHi > 10) subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
+                if (avgHi > 10) subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200 animate-pulse">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
                 else if (avgHi > 5) subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยง)</span>`;
 
                 accordionContainer.innerHTML += `
@@ -991,7 +991,7 @@
                         <div onclick="toggleHiAccordion('${accId}')" class="p-4 bg-slate-50 hover:bg-slate-100 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 transition">
                             <div class="flex items-center gap-2">
                                 <i id="icon-${accId}" class="fa-solid fa-chevron-right text-xs text-slate-400 transition-transform"></i>
-                                <span class="font-bold text-slate-800 text-base">📌 ตำบล${sub.name}</span>
+                                <span class="font-bold text-slate-800 text-base">📌 ${subName}</span>
                                 <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${villages.length} หมู่บ้าน/ชุมชน)</span>
                             </div>
                             <div>${subBadge}</div>
@@ -1067,7 +1067,7 @@
                 mainTr.innerHTML = `
                     <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
                         <i id="icon-${subId}" class="fa-solid fa-chevron-right text-[10px] transition-transform text-slate-400"></i>
-                        <span class="font-bold">📌 ต.${sub.name}</span>
+                        <span class="font-bold">📌 ${sub.name}</span>
                         <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${villages.length})</span>
                     </td>
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
@@ -1123,17 +1123,35 @@
             subdistricts.forEach(sub => {
                 let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
                 const m = L.circleMarker([sub.lat, sub.lng], { color: color, fillColor: color, fillOpacity: 0.85, radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6 }).addTo(map)
-                    .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br><span>ผู้ป่วยสะสม: ${sub.casesCum} ราย</span></div>`);
+                    .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ${sub.name}</b><br><span>ผู้ป่วยสะสม: ${sub.casesCum} ราย</span></div>`);
                 mapMarkers.push(m);
             });
         }
 
         function focusSubdistrictMap(subName) {
-            const sub = defaultSubdistricts.find(s => s.name === subName);
-            if (!sub || !map) return;
+            let lat = 13.460, lng = 102.170;
+            if (subName.includes("วังน้ำเย็น")) { lat = 13.5015; lng = 102.1812; }
+            else if (subName.includes("ตาหลังใน")) { lat = 13.4331; lng = 102.2543; }
+            else if (subName.includes("คลองหินปูน")) { lat = 13.5580; lng = 102.1311; }
+            else if (subName.includes("ทุ่งมหาเจริญ")) { lat = 13.3812; lng = 102.1231; }
+
+            if (!map) return;
             if (activeMarker) map.removeLayer(activeMarker);
-            map.flyTo([sub.lat, sub.lng], 13, { duration: 1.2 });
-            activeMarker = L.marker([sub.lat, sub.lng]).addTo(map).bindPopup(`<b>📍 ตำบล${sub.name}</b>`).openPopup();
+            map.flyTo([lat, lng], 13, { duration: 1.2 });
+            activeMarker = L.marker([lat, lng]).addTo(map).bindPopup(`<b>📍 ${subName}</b>`).openPopup();
+        }
+
+        function updateSubdistrictDropdown(subNames) {
+            const select = document.getElementById('subdistrict');
+            if (!select) return;
+            select.innerHTML = '';
+            subNames.forEach(sName => {
+                const opt = document.createElement('option');
+                opt.value = sName;
+                opt.innerText = sName;
+                select.appendChild(opt);
+            });
+            if (subNames.length > 0) updateVillageDropdown(subNames[0]);
         }
 
         function updateVillageDropdown(subName) {
@@ -1154,7 +1172,7 @@
             document.getElementById('summaryYearLabel').innerText = currentYear;
             document.getElementById('summaryTotalCases').innerText = totalCases;
             let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
-            document.getElementById('summaryHotspotSub').innerText = (hotspot && hotspot.casesCum > 0) ? `ต.${hotspot.name}` : 'ไม่มีการระบาด';
+            document.getElementById('summaryHotspotSub').innerText = (hotspot && hotspot.casesCum > 0) ? `${hotspot.name}` : 'ไม่มีการระบาด';
         }
 
         async function submitToGoogleSheet(e) {
