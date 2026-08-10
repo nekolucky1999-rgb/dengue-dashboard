@@ -202,9 +202,9 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน
+                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) และผู้ป่วยสะสมรายปี
                         </h3>
-                        <p class="text-xs text-slate-500">ดึงข้อมูลและรายชื่อตำบล/หมู่บ้านตรงตาม Sheet 2 พร้อมป้ายแดงแสดงหมู่บ้านที่พบผู้ป่วยสะสมของปีที่เลือก</p>
+                        <p class="text-xs text-slate-500">แสดงรายชื่อตำบล/หมู่บ้าน พร้อมจำนวนผู้ป่วยสะสมแยกตามปี พ.ศ. ที่เลือก</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <select id="hiMonthSelect" onchange="processAndRenderData()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
@@ -679,13 +679,13 @@
                 },
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
                 occupations: {},
-                villageCasesMap: {},
                 subdistricts: dynamicSubdistricts
             };
 
             const todayStr = new Date().toISOString().split('T')[0];
             const colIndexes = findColumnIndexes();
 
+            // 📌 กรองและนับเฉพาะข้อมูลผู้ป่วยของปีที่เลือก (selectedYearFilter) เท่านั้น
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
@@ -704,7 +704,7 @@
 
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
-                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
+                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue; // 🔒 กรองเฉพาะปีที่เลือก
 
                 let subNameFromCol = colIndexes.sub !== -1 ? String(row[colIndexes.sub] || '').trim() : String(row[10] || '').trim();
                 let villageNameFromCol = colIndexes.village !== -1 ? String(row[colIndexes.village] || '').trim() : String(row[9] || '').trim();
@@ -727,13 +727,10 @@
                     processed.deathsCum += 1;
                 }
 
-                if (villageNameFromCol) {
-                    processed.villageCasesMap[villageNameFromCol] = (processed.villageCasesMap[villageNameFromCol] || 0) + 1;
-                }
-
+                // บันทึกจำนวนผู้ป่วยลงในหมู่บ้านเฉพาะปีที่เลือก
                 if (sub.villages) {
                     for (let vKey in sub.villages) {
-                        if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey))) {
+                        if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey) || villageNameFromCol.replace(/[^0-9]/g, '') === vKey.replace(/[^0-9]/g, ''))) {
                             sub.villages[vKey].casesCum += 1;
                             if (onsetStr.includes(todayStr)) sub.villages[vKey].casesToday += 1;
                             break;
@@ -794,9 +791,9 @@
             renderDiagChart(processed.diagTypes, totCases);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            renderHiSurveillanceTable(sheet2VillagesMap, processed.villageCasesMap);
+            renderHiSurveillanceTable(processed.subdistricts, sheet2VillagesMap);
             renderMapMarkers(processed.subdistricts);
-            renderRiskMatrixAccordion(processed.subdistricts, sheet2VillagesMap, processed.villageCasesMap);
+            renderRiskMatrixAccordion(processed.subdistricts, sheet2VillagesMap);
             updateSubdistrictDropdown(subdistrictNames);
         }
 
@@ -885,7 +882,7 @@
             });
         }
 
-        function renderHiSurveillanceTable(sheet2Map, vCasesMap = {}) {
+        function renderHiSurveillanceTable(subdistricts, sheet2Map) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
             if (!accordionContainer) return;
@@ -893,20 +890,19 @@
             let safeTot = 0, riskTot = 0, outbreakTot = 0;
             accordionContainer.innerHTML = '';
 
-            Object.keys(sheet2Map).forEach((subName, idx) => {
+            subdistricts.forEach((sub, idx) => {
                 const accId = `hi-acc-${idx}`;
-                const villages = sheet2Map[subName] || [];
+                const rawVillages = sheet2Map[sub.name] || [];
                 
                 let totalHiSum = 0;
-                const processedVillages = villages.map(v => {
+                const processedVillages = rawVillages.map(v => {
                     const hiVal = selectedMonth === 'jul' ? v.jul : v.jun;
                     totalHiSum += hiVal;
 
+                    // ดึงจำนวนผู้ป่วยสะสมของหมู่บ้านนี้เฉพาะปีที่เลือก
                     let caseCnt = 0;
-                    for (let vKey in vCasesMap) {
-                        if (vKey.includes(v.village) || v.village.includes(vKey)) {
-                            caseCnt += vCasesMap[vKey];
-                        }
+                    if (sub.villages && sub.villages[v.village]) {
+                        caseCnt = sub.villages[v.village].casesCum;
                     }
 
                     let status = "พื้นที่เฝ้าระวัง";
@@ -917,7 +913,7 @@
                     return { ...v, hiVal, caseCnt, status };
                 });
 
-                const avgHi = villages.length > 0 ? (totalHiSum / villages.length) : 0;
+                const avgHi = rawVillages.length > 0 ? (totalHiSum / rawVillages.length) : 0;
                 let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
                 if (avgHi > 10) subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200 animate-pulse">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
                 else if (avgHi > 5) subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยง)</span>`;
@@ -927,13 +923,13 @@
                         <div onclick="toggleHiAccordion('${accId}')" class="p-4 bg-slate-50 hover:bg-slate-100 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 transition">
                             <div class="flex items-center gap-2">
                                 <i id="icon-${accId}" class="fa-solid fa-chevron-right text-xs text-slate-400 transition-transform"></i>
-                                <span class="font-bold text-slate-800 text-base">📌 ${subName}</span>
-                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${villages.length} หมู่บ้าน/ชุมชน)</span>
+                                <span class="font-bold text-slate-800 text-base">📌 ${sub.name}</span>
+                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${rawVillages.length} หมู่บ้าน/ชุมชน)</span>
                             </div>
                             <div>${subBadge}</div>
                         </div>
                         <div id="${accId}" class="hidden border-t border-slate-200 p-3 bg-white">
-                            ${villages.length > 0 ? `
+                            ${rawVillages.length > 0 ? `
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-xs md:text-sm">
                                         <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
@@ -949,7 +945,7 @@
                                                 <tr class="hover:bg-slate-50 transition">
                                                     <td class="p-2.5 font-semibold text-slate-800 flex items-center gap-2">
                                                         📍 ${v.village}
-                                                        ${v.caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">พบผู้ป่วย ${v.caseCnt} ราย</span>` : ''}
+                                                        ${v.caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">ป่วย ${v.caseCnt} ราย</span>` : ''}
                                                     </td>
                                                     <td class="p-2.5 text-center font-bold ${v.hiVal > 10 ? 'text-rose-600' : (v.hiVal > 5 ? 'text-amber-600' : 'text-emerald-600')}">${v.hiVal.toFixed(2)}%</td>
                                                     <td class="p-2.5 text-center font-bold ${v.caseCnt > 0 ? 'text-rose-600' : 'text-slate-500'}">${v.caseCnt} ราย</td>
@@ -978,7 +974,7 @@
             }
         }
 
-        function renderRiskMatrixAccordion(subdistricts, sheet2Map, vCasesMap = {}) {
+        function renderRiskMatrixAccordion(subdistricts, sheet2Map) {
             const tbody = document.getElementById('riskTableBody');
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             if (!tbody) return;
@@ -1020,8 +1016,8 @@
                 let villageListHtml = `<td colspan="6" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
                 villages.forEach(v => {
                     let caseCnt = 0;
-                    for (let vKey in vCasesMap) {
-                        if (vKey.includes(v.village) || v.village.includes(vKey)) caseCnt += vCasesMap[vKey];
+                    if (sub.villages && sub.villages[v.village]) {
+                        caseCnt = sub.villages[v.village].casesCum;
                     }
                     villageListHtml += `
                         <div class="flex items-center justify-between p-2 rounded-lg border bg-white border-slate-200 ${caseCnt > 0 ? 'border-rose-300 bg-rose-50/40' : ''}">
