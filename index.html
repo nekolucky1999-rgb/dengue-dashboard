@@ -8,7 +8,6 @@
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 📌 เพิ่ม Plugin สำหรับแสดงตัวเลขบนหัวแท่งกราฟ -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Kanit:wght@400;600&display=swap" rel="stylesheet">
@@ -238,21 +237,22 @@
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน
                         </h3>
-                        <p class="text-xs text-slate-500">จัดกลุ่มข้อมูลระดับตำบลเป็นหลัก และสามารถคลิกขยายดูรายละเอียดรายหมู่บ้านได้ (ซิ้งค์ข้อมูล Sheet 1 และ Sheet 2)</p>
+                        <p class="text-xs text-slate-500">ดึงข้อมูลหมู่บ้านและค่า HI ตรงจาก Sheet 2 ประจำปี 2569 จัดกลุ่มคำนวณแยกรายตำบล</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
-                            <option value="jul" selected>เดือน กรกฎาคม (ก.ค.)</option>
-                            <option value="jun">เดือน มิถุนายน (มิ.ย.)</option>
+                            <option value="jul" selected>เดือน กรกฎาคม (ก.ค. 69)</option>
+                            <option value="jun">เดือน มิถุนายน (มิ.ย. 69)</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- 📌 การ์ดสรุปสถานการณ์ HI ใหม่ตามเกณฑ์ที่กำหนด -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
-                            <span>หมู่บ้านเฝ้าระวัง (HI < 5%)</span>
+                            <span>พื้นที่เฝ้าระวัง (HI ≤ 5%)</span>
                         </div>
                         <span id="hiSafeCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
@@ -260,7 +260,7 @@
                     <div class="bg-amber-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-amber-200 rounded-full inline-block animate-pulse"></span>
-                            <span>หมู่บ้านเสี่ยง (HI 5 - 10%)</span>
+                            <span>พื้นที่เสี่ยง (HI ≤ 10%)</span>
                         </div>
                         <span id="hiRiskCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
@@ -268,7 +268,7 @@
                     <div class="bg-rose-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-rose-300 rounded-full inline-block animate-pulse"></span>
-                            <span>หมู่บ้านระบาด (HI > 10%)</span>
+                            <span>พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด (HI > 10%)</span>
                         </div>
                         <span id="hiOutbreakCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
@@ -294,7 +294,7 @@
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน (Sync HI/CI)
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน (Sync HI Sheet 2)
                         </span>
                         <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายรายหมู่บ้าน</span>
                     </div>
@@ -392,7 +392,7 @@
         let mapMarkers = [];
         let activeMarker = null;
         let rawSheetData = [];       // Sheet 1 Data
-        let rawSheet2Data = [];      // Sheet 2 Data
+        let rawSheet2Data = [];      // Sheet 2 Data (HI/CI)
         let rawSheet3Data = [];      // Sheet 3 Data (Median 2564-2569)
         let selectedYearFilter = "2569";
 
@@ -606,7 +606,6 @@
             processAndRenderData();
         }
 
-        // แกะวันที่โดยยึดตามรูปแบบ DD/MM/YYYY ของไทย
         function parseThaiDateStrictJS(dateVal) {
             if (!dateVal) return null;
             let str = String(dateVal).trim();
@@ -636,6 +635,59 @@
                 }
             }
             return null;
+        }
+
+        // 🚀 อ่านและสกัดข้อมูลดัชนีลูกน้ำยุงลาย (HI/CI) จาก Sheet 2 โดยตรง
+        function getHiDataSource() {
+            if (!rawSheet2Data || rawSheet2Data.length <= 1) {
+                return defaultHiSheet2Master;
+            }
+
+            let villageIdx = -1, subIdx = -1, junIdx = -1, julIdx = -1;
+            let header = rawSheet2Data[0];
+
+            for (let c = 0; c < header.length; c++) {
+                let hText = String(header[c] || '').trim().toLowerCase();
+                if (hText.includes('หมู่') || hText.includes('ชุมชน') || hText.includes('village')) villageIdx = c;
+                if (hText.includes('ตำบล') || hText.includes('subdistrict')) subIdx = c;
+                if (hText.includes('มิ.ย') || hText.includes('jun')) junIdx = c;
+                if (hText.includes('ก.ค') || hText.includes('jul')) julIdx = c;
+            }
+
+            if (villageIdx === -1) villageIdx = 0;
+            if (subIdx === -1) subIdx = 1;
+            if (junIdx === -1) junIdx = 2;
+            if (julIdx === -1) julIdx = 3;
+
+            let parsedList = [];
+            for (let i = 1; i < rawSheet2Data.length; i++) {
+                let row = rawSheet2Data[i];
+                if (!row || row.length === 0) continue;
+
+                let village = String(row[villageIdx] || '').trim();
+                let subdistrict = String(row[subIdx] || '').trim();
+                let junVal = parseFloat(row[junIdx]) || 0;
+                let julVal = parseFloat(row[julIdx]) || 0;
+
+                if (village && village !== 'undefined' && village !== 'null' && !village.includes('หมู่บ้าน')) {
+                    if (!subdistrict) {
+                        for (let sKey in villageMaster) {
+                            if (villageMaster[sKey].some(v => v.includes(village) || village.includes(v))) {
+                                subdistrict = sKey;
+                                break;
+                            }
+                        }
+                    }
+                    parsedList.push({
+                        village: village,
+                        subdistrict: subdistrict || "วังน้ำเย็น",
+                        jun: junVal,
+                        jul: julVal
+                    });
+                }
+            }
+
+            return parsedList.length > 0 ? parsedList : defaultHiSheet2Master;
         }
 
         function findColumnIndexes() {
@@ -925,14 +977,13 @@
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
-                        datalabels: { display: false } // ไม่แสดงตัวเลขลอยบนกราฟเส้น
+                        datalabels: { display: false }
                     },
                     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         }
 
-        // 📌 กราฟกลุ่มอายุ (แสดงตัวเลขบนหัวแท่ง)
         function renderAgeChart(ageObj, total) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
@@ -962,9 +1013,7 @@
                             align: 'top',
                             font: { weight: 'bold', size: 12, family: 'Prompt' },
                             color: '#ea580c',
-                            formatter: function(value) {
-                                return value > 0 ? value : ''; // แสดงเฉพาะค่ามากกว่า 0
-                            }
+                            formatter: function(value) { return value > 0 ? value : ''; }
                         }
                     },
                     scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
@@ -972,7 +1021,6 @@
             });
         }
 
-        // 📌 กราฟผู้ป่วยจำแนกรายตำบล (แสดงตัวเลขบนหัวแท่ง)
         function renderSubdistrictChart(subdistricts) {
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
@@ -1002,9 +1050,7 @@
                             align: 'top',
                             font: { weight: 'bold', size: 11, family: 'Prompt' },
                             color: '#334155',
-                            formatter: function(value) {
-                                return value > 0 ? value : ''; // แสดงเฉพาะค่ามากกว่า 0
-                            }
+                            formatter: function(value) { return value > 0 ? value : ''; }
                         }
                     },
                     scales: { y: { beginAtZero: true, grace: '20%', ticks: { precision: 0 } } }
@@ -1085,13 +1131,14 @@
             });
         }
 
+        // 📌 คำนวณตารางรายงานดัชนีลูกน้ำยุงลาย (HI/CI) ตามเกณฑ์ความเสี่ยงใหม่
         function renderHiSurveillanceTable(vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
             if (!accordionContainer) return;
 
             let safeTot = 0, riskTot = 0, outbreakTot = 0;
-            const hiDataSource = defaultHiSheet2Master;
+            const hiDataSource = getHiDataSource();
 
             const subdistrictGroups = defaultSubdistricts.map(sub => {
                 const subVillages = hiDataSource.filter(item => item.subdistrict === sub.name).map(v => {
@@ -1104,10 +1151,17 @@
                         }
                     }
 
-                    let status = "เฝ้าระวัง";
-                    if (hiVal > 10) { status = "ระบาด"; outbreakTot++; }
-                    else if (hiVal >= 5) { status = "เสี่ยง"; riskTot++; }
-                    else { safeTot++; }
+                    // 📌 คำนวณเกณฑ์ประเมินระดับความเสี่ยงตามที่ระบุ
+                    let status = "พื้นที่เฝ้าระวัง";
+                    if (hiVal > 10) { 
+                        status = "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด"; 
+                        outbreakTot++; 
+                    } else if (hiVal > 5) { 
+                        status = "พื้นที่เสี่ยง"; 
+                        riskTot++; 
+                    } else { 
+                        safeTot++; 
+                    }
 
                     return { ...v, hiVal, caseCnt, status };
                 });
@@ -1135,10 +1189,10 @@
             subdistrictGroups.forEach((group, idx) => {
                 const accId = `hi-acc-${idx}`;
                 
-                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (ปกติ)</span>`;
+                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
                 if (group.avgHi > 10) {
                     subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
-                } else if (group.avgHi >= 5) {
+                } else if (group.avgHi > 5) {
                     subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${group.avgHi.toFixed(2)}% (เสี่ยง)</span>`;
                 }
 
@@ -1171,8 +1225,8 @@
                                             ${group.villages.map(v => {
                                                 let badgeBg = "bg-emerald-600 text-white";
                                                 let textCol = "text-emerald-600";
-                                                if (v.status === "เสี่ยง") { badgeBg = "bg-amber-500 text-white"; textCol = "text-amber-600"; }
-                                                else if (v.status === "ระบาด") { badgeBg = "bg-rose-600 text-white"; textCol = "text-rose-600"; }
+                                                if (v.status === "พื้นที่เสี่ยง") { badgeBg = "bg-amber-500 text-white"; textCol = "text-amber-600"; }
+                                                else if (v.status === "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด") { badgeBg = "bg-rose-600 text-white"; textCol = "text-rose-600"; }
 
                                                 return `
                                                     <tr class="hover:bg-slate-50 transition">
@@ -1218,7 +1272,7 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const hiDataSource = defaultHiSheet2Master;
+            const hiDataSource = getHiDataSource();
 
             subdistricts.forEach((sub, idx) => {
                 const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
@@ -1239,7 +1293,7 @@
                 let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
                 if (sub.casesCum > 30 || avgHi > 10) {
                     badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-rose-500 animate-pulse"></i> เสี่ยงสูงมาก</span>';
-                } else if (sub.casesCum > 10 || avgHi >= 5) {
+                } else if (sub.casesCum > 10 || avgHi > 5) {
                     badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-orange-500"></i> เสี่ยงสูง</span>';
                 }
 
@@ -1250,7 +1304,7 @@
                         <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
                     </td>
                     <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
-                    <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi >= 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
+                    <td class="p-2.5 text-center font-bold ${avgHi > 10 ? 'text-rose-600' : (avgHi > 5 ? 'text-amber-600' : 'text-emerald-600')}">${avgHi.toFixed(1)}%</td>
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
                     <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
                     <td class="p-2.5 text-center text-slate-600">${morb}</td>
