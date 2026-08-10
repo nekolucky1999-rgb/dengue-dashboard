@@ -116,13 +116,13 @@
                         </h3>
 
                         <p id="summaryDetailText" class="text-xs md:text-sm text-slate-300 leading-relaxed">
-                            กำลังประมวลผลสรุปข้อมูลประจำปี...
+                            กำลังประมวลผลสรุปข้อมูลประจำปี 4 ตำบลหลัก...
                         </p>
                     </div>
 
                     <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shrink-0 self-start md:self-auto">
                         <div class="text-center px-2">
-                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวม อ.วังน้ำเย็น</p>
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวม 4 ตำบล</p>
                             <p class="text-sm font-bold text-teal-300 font-heading mt-0.5">71,500 คน</p>
                         </div>
                         <div class="w-px h-8 bg-white/20"></div>
@@ -144,7 +144,7 @@
                     </div>
                 </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
-                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมประจำปี</p>
+                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมประจำปี (4 ตำบล)</p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span id="kpiCumCases" class="text-3xl font-bold text-rose-600">0</span>
                         <span class="text-xs text-slate-500">ราย</span>
@@ -182,7 +182,7 @@
 
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
+                        <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกราย 4 ตำบลหลัก
                     </h3>
                     <p class="text-xs text-slate-500 mb-2">เปรียบเทียบจำนวนผู้ป่วย (ราย) และอัตราป่วย (ต่อแสนประชากร)</p>
                     <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
@@ -235,9 +235,9 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกรายตำบลและหมู่บ้าน
+                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) จำแนกราย 4 ตำบลหลัก
                         </h3>
-                        <p class="text-xs text-slate-500">ดึงข้อมูลหมู่บ้านและค่า HI ตรงจาก Sheet 2 ประจำปี 2569 จัดกลุ่มคำนวณแยกรายตำบล</p>
+                        <p class="text-xs text-slate-500">ดึงข้อมูลหมู่บ้านและค่า HI ตรงจาก Sheet 2 ประจำปี 2569 จัดกลุ่มคำนวณเฉพาะ 4 ตำบล</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <select id="hiMonthSelect" onchange="renderHiSurveillanceTable()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
@@ -247,7 +247,7 @@
                     </div>
                 </div>
 
-                <!-- 📌 การ์ดสรุปสถานการณ์ HI ใหม่ตามเกณฑ์ที่กำหนด -->
+                <!-- 📌 การ์ดสรุปสถานการณ์ HI -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
@@ -284,7 +284,7 @@
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS อ.วังน้ำเย็น
+                            <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS 4 ตำบลหลัก
                         </span>
                         <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">จุดระบาดระดับตำบล GIS</span>
                     </div>
@@ -294,7 +294,7 @@
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน (Sync HI Sheet 2)
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยง 4 ตำบลหลัก
                         </span>
                         <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายรายหมู่บ้าน</span>
                     </div>
@@ -351,7 +351,6 @@
                             <option value="ตาหลังใน">ตาหลังใน</option>
                             <option value="คลองหินปูน">คลองหินปูน</option>
                             <option value="ทุ่งมหาเจริญ">ทุ่งมหาเจริญ</option>
-                            <option value="คลองตาสูตร">คลองตาสูตร</option>
                         </select>
                     </div>
                     <div>
@@ -444,20 +443,19 @@
             { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0.00, jul: 0.00 }
         ];
 
+        // 📌 กำหนดเฉพาะ 4 ตำบลหลัก และรวมหมู่บ้านของคลองตาสูตรไว้ในคลองหินปูน
         const villageMaster = {
             "วังน้ำเย็น": ["ม.1 บ้านวังน้ำเย็น", "ม.2 บ้านวังแดง", "ม.3 บ้านวังเจริญ", "ม.4 บ้านวังใหม่", "ม.5 บ้านวังศิลา", "ม.6 บ้านซับสมบูรณ์", "ม.7 บ้านวังชมภู", "ม.8 บ้านวังบูรพา", "ม.9 บ้านวังสมบูรณ์", "ม.10 บ้านวังศรีทอง", "ม.11 บ้านวังสุวรรณ", "ม.12 บ้านวังเตียง", "ม.13 บ้านวังน้ำฝน", "ม.14 บ้านวังจำปี", "ม.15 บ้านวังมงคล", "ม.16 บ้านซับใหญ่", "ม.17 บ้านวังทอง", "ม.18 บ้านวังพัฒนา", "ม.19 บ้านวังศิลาพัฒนา"],
             "ตาหลังใน": ["ม.1 บ้านตาหลังใน", "ม.2 บ้านทรัพย์นิมิต", "ม.3 บ้านเพชรพัฒนา", "ม.4 บ้านตาม่วง", "ม.5 บ้านไร่สามศรี", "ม.6 บ้านเกาะจาน", "ม.7 บ้านคลองทราย", "ม.8 บ้านด่านชัยพัฒนา", "ม.9 บ้านศรีเพชรพัฒนา", "ม.10 บ้านหนองศาลา", "ม.11 บ้านวังสมบูรณ์", "ม.12 บ้านมิตรสัมพันธ์", "ม.13 บ้านคลองทรายสามัคคี", "ม.14 บ้านเนินงาม", "ม.15 บ้านหนองปรือ", "ม.16 บ้านทุ่งรวงทอง", "ม.17 บ้านตาม่วงพัฒนา", "ม.18 บ้านเพชรศิลา", "ม.19 บ้านทรัพย์เจริญ", "ม.20 บ้านตาหลังในพัฒนา", "ม.21 บ้านคลองทรายทอง"],
-            "คลองหินปูน": ["ม.1 บ้านคลองหินปูน", "ม.2 บ้านคลองหินปูนเหนือ", "ม.3 บ้านคลองผักกาด", "ม.4 บ้านคลองเพชร", "ม.5 บ้านเจริญสุข", "ม.6 บ้านคลองสำราญ", "ม.7 บ้านคลองพัฒนา", "ม.8 บ้านคลองหินปูนใต้", "ม.9 บ้านคลองตาสูตร", "ม.10 บ้านคลองร่วม", "ม.11 บ้านซับเจริญ", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองอุดม", "ม.14 บ้านคลองเจริญ", "ม.15 บ้านซับสมบูรณ์", "ม.16 บ้านคลองหินปูนใหม่"],
-            "ทุ่งมหาเจริญ": ["ม.1 บ้านทุ่งมหาเจริญ", "ม.2 บ้านชัยมงคล", "ม.3 บ้านสวนป่า", "ม.4 บ้านสะพานสาม", "ม.5 บ้านคลองพรหม", "ม.6 บ้านทุ่งสว่าง", "ม.7 บ้านท่าเกษม", "ม.8 บ้านคลองตาสูตร", "ม.9 บ้านเกาะไม้ซาง", "ม.10 บ้านหนองเจริญ", "ม.11 บ้านคลองร่วม", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองเตย", "ม.14 บ้านคลองหาด", "ม.15 บ้านซับเจริญ", "ม.16 บ้านวังทอง", "ม.17 บ้านทุ่งร่วมใจ", "ม.18 บ้านสะพานสี่", "ม.19 บ้านคลองตาสูตรพัฒนา", "ม.20 บ้านทุ่งพัฒนา", "ม.21 บ้านหนองเจริญพัฒนา", "ม.22 บ้านชัยมงคลพัฒนา", "ม.23 บ้านทุ่งมหาเจริญพัฒนา", "ม.24 บ้านคลองหาดพัฒนา", "ม.25 บ้านทุ่งสว่างพัฒนา", "ม.26 บ้านท่าเกษมพัฒนา", "ม.27 บ้านคลองร่วมพัฒนา", "ม.28 บ้านคลองเตยพัฒนา", "ม.29 บ้านซับเจริญพัฒนา"],
-            "คลองตาสูตร": ["ม.1 บ้านคลองตาสูตร", "ม.2 บ้านคลองตาสูตรพัฒนา", "ม.3 บ้านคลองร่วม", "ม.4 บ้านซับกองทอง", "ม.5 บ้านคลองพรหม", "ม.6 บ้านคลองเตย", "ม.7 บ้านหนองเจริญ", "ม.8 บ้านสวนป่า", "ม.9 บ้านชัยมงคล", "ม.10 บ้านทุ่งพัฒนา"]
+            "คลองหินปูน": ["ม.1 บ้านคลองหินปูน", "ม.2 บ้านคลองหินปูนเหนือ", "ม.3 บ้านคลองผักกาด", "ม.4 บ้านคลองเพชร", "ม.5 บ้านเจริญสุข", "ม.6 บ้านคลองสำราญ", "ม.7 บ้านคลองพัฒนา", "ม.8 บ้านคลองหินปูนใต้", "ม.9 บ้านคลองตาสูตร", "ม.10 บ้านคลองร่วม", "ม.11 บ้านซับเจริญ", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองอุดม", "ม.14 บ้านคลองเจริญ", "ม.15 บ้านซับสมบูรณ์", "ม.16 บ้านคลองหินปูนใหม่", "ตำบลคลองตาสูตร"],
+            "ทุ่งมหาเจริญ": ["ม.1 บ้านทุ่งมหาเจริญ", "ม.2 บ้านชัยมงคล", "ม.3 บ้านสวนป่า", "ม.4 บ้านสะพานสาม", "ม.5 บ้านคลองพรหม", "ม.6 บ้านทุ่งสว่าง", "ม.7 บ้านท่าเกษม", "ม.9 บ้านเกาะไม้ซาง", "ม.10 บ้านหนองเจริญ", "ม.11 บ้านคลองร่วม", "ม.12 บ้านซับกองทอง", "ม.13 บ้านคลองเตย", "ม.14 บ้านคลองหาด", "ม.15 บ้านซับเจริญ", "ม.16 บ้านวังทอง", "ม.17 บ้านทุ่งร่วมใจ", "ม.18 บ้านสะพานสี่", "ม.20 บ้านทุ่งพัฒนา", "ม.21 บ้านหนองเจริญพัฒนา", "ม.22 บ้านชัยมงคลพัฒนา", "ม.23 บ้านทุ่งมหาเจริญพัฒนา", "ม.24 บ้านคลองหาดพัฒนา", "ม.25 บ้านทุ่งสว่างพัฒนา", "ม.26 บ้านท่าเกษมพัฒนา", "ม.27 บ้านคลองร่วมพัฒนา", "ม.28 บ้านคลองเตยพัฒนา", "ม.29 บ้านซับเจริญพัฒนา"]
         };
 
         const defaultSubdistricts = [
             { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500 },
             { name: "ตาหลังใน", lat: 13.4331, lng: 102.2543, pop: 13200 },
-            { name: "คลองหินปูน", lat: 13.5580, lng: 102.1311, pop: 10200 },
-            { name: "ทุ่งมหาเจริญ", lat: 13.3812, lng: 102.1231, pop: 18100 },
-            { name: "คลองตาสูตร", lat: 13.4600, lng: 102.1400, pop: 8500 }
+            { name: "คลองหินปูน", lat: 13.5580, lng: 102.1311, pop: 18700 },
+            { name: "ทุ่งมหาเจริญ", lat: 13.3812, lng: 102.1231, pop: 18100 }
         ];
 
         const wnyBoundaryCoords = [
@@ -637,7 +635,6 @@
             return null;
         }
 
-        // 🚀 อ่านและสกัดข้อมูลดัชนีลูกน้ำยุงลาย (HI/CI) จาก Sheet 2 โดยตรง
         function getHiDataSource() {
             if (!rawSheet2Data || rawSheet2Data.length <= 1) {
                 return defaultHiSheet2Master;
@@ -669,18 +666,21 @@
                 let junVal = parseFloat(row[junIdx]) || 0;
                 let julVal = parseFloat(row[julIdx]) || 0;
 
+                // 📌 จัดกลุ่มบังคับลง 4 ตำบลหลัก (ถ้าไม่อยู่ใน 3 ตำบลแรก ให้รวมเข้าคลองหินปูน)
+                if (subdistrict.includes('วังน้ำเย็น')) {
+                    subdistrict = 'วังน้ำเย็น';
+                } else if (subdistrict.includes('ตาหลังใน')) {
+                    subdistrict = 'ตาหลังใน';
+                } else if (subdistrict.includes('ทุ่งมหาเจริญ')) {
+                    subdistrict = 'ทุ่งมหาเจริญ';
+                } else {
+                    subdistrict = 'คลองหินปูน';
+                }
+
                 if (village && village !== 'undefined' && village !== 'null' && !village.includes('หมู่บ้าน')) {
-                    if (!subdistrict) {
-                        for (let sKey in villageMaster) {
-                            if (villageMaster[sKey].some(v => v.includes(village) || village.includes(v))) {
-                                subdistrict = sKey;
-                                break;
-                            }
-                        }
-                    }
                     parsedList.push({
                         village: village,
-                        subdistrict: subdistrict || "วังน้ำเย็น",
+                        subdistrict: subdistrict,
                         jun: junVal,
                         jul: julVal
                     });
@@ -817,21 +817,24 @@
                 let deathDate = colIndexes.death !== -1 ? String(row[colIndexes.death] || '').trim() : String(row[14] || '').trim();
                 let diagStr = colIndexes.diag !== -1 ? String(row[colIndexes.diag] || '').trim() : String(row[1] || '').trim();
 
+                // 📌 บังคับระบุให้อยู่ใน 4 ตำบลหลักเท่านั้น (นอกนั้นปัดเข้าคลองหินปูน)
+                if (subNameFromCol.includes('วังน้ำเย็น')) {
+                    subNameFromCol = 'วังน้ำเย็น';
+                } else if (subNameFromCol.includes('ตาหลังใน')) {
+                    subNameFromCol = 'ตาหลังใน';
+                } else if (subNameFromCol.includes('ทุ่งมหาเจริญ')) {
+                    subNameFromCol = 'ทุ่งมหาเจริญ';
+                } else {
+                    subNameFromCol = 'คลองหินปูน';
+                }
+
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
 
                 if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
-                let sub = processed.subdistricts.find(s => subNameFromCol.includes(s.name));
-                if (!sub) {
-                    for (let c = 0; c < row.length; c++) {
-                        let cellVal = String(row[c] || '');
-                        let foundSub = processed.subdistricts.find(s => cellVal.includes(s.name));
-                        if (foundSub) { sub = foundSub; break; }
-                    }
-                }
-
-                if (!sub) continue;
+                let sub = processed.subdistricts.find(s => s.name === subNameFromCol);
+                if (!sub) sub = processed.subdistricts.find(s => s.name === 'คลองหินปูน'); // สำรองเข้าคลองหินปูน
 
                 sub.casesCum += 1;
                 if (onsetStr.includes(todayStr)) {
@@ -1131,7 +1134,6 @@
             });
         }
 
-        // 📌 คำนวณตารางรายงานดัชนีลูกน้ำยุงลาย (HI/CI) ตามเกณฑ์ความเสี่ยงใหม่
         function renderHiSurveillanceTable(vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
@@ -1151,7 +1153,6 @@
                         }
                     }
 
-                    // 📌 คำนวณเกณฑ์ประเมินระดับความเสี่ยงตามที่ระบุ
                     let status = "พื้นที่เฝ้าระวัง";
                     if (hiVal > 10) { 
                         status = "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด"; 
