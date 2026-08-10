@@ -127,7 +127,7 @@
                         <div class="w-px h-8 bg-white/20"></div>
                         <div class="text-center px-2">
                             <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">กลุ่มอายุเสี่ยงสูง</p>
-                            <p id="summaryHighRiskAge" class="text-sm font-bold text-cyan-300 font-heading mt-0.5">5 - 14 ปี</p>
+                            <p id="summaryHighRiskAge" class="text-sm font-bold text-cyan-300 font-heading mt-0.5">วัยเรียน (6-12 ปี)</p>
                         </div>
                     </div>
                 </div>
@@ -164,11 +164,11 @@
                 </div>
             </section>
 
-            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล (ตามแบบรูปตัวอย่าง) -->
+            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล (โชว์ทั้งคน และอัตราต่อแสน) -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Chart 1: Epi Curve + 5 Year Median Baseline -->
-                <div class="lg:col-span-8 glass-card rounded-2xl p-5">
+                <!-- Chart 1: Epi Curve -->
+                <div class="lg:col-span-7 glass-card rounded-2xl p-5">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -180,45 +180,45 @@
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
                 </div>
 
-                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล -->
-                <div class="lg:col-span-4 glass-card rounded-2xl p-5">
+                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล (ปรับโชว์ทั้งจำนวนคน + ต่อแสนประชากร) -->
+                <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
                     </h3>
-                    <p class="text-xs text-slate-500 mb-2">เปรียบเทียบผู้ป่วยสะสมแยกตามพื้นที่ตำบล</p>
+                    <p class="text-xs text-slate-500 mb-2">เปรียบเทียบจำนวนผู้ป่วย (ราย) และอัตราป่วย (ต่อแสนประชากร)</p>
                     <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
                 </div>
 
             </section>
 
-            <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ + ชนิดโรค + การ์ดสัดส่วนอาชีพสูงสุด (ตามแบบรูปตัวอย่าง) -->
+            <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุใหม่ + ชนิดโรค (คำนวณ % DHF/DF) + การ์ดสัดส่วนอาชีพ -->
             <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Chart 3: การกระจายตามกลุ่มอายุ (Age Group) -->
+                <!-- Chart 3: การกระจายตามกลุ่มอายุ (ปรับเกณฑ์อายุใหม่) -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-user-group text-amber-500"></i> การกระจายตามกลุ่มอายุ (Age Group)
                     </h3>
-                    <p class="text-xs text-amber-600 font-medium mb-2">เน้นกลุ่มเด็กนักเรียนช่วงอายุ 5 - 14 ปี</p>
+                    <p class="text-xs text-amber-600 font-medium mb-2">จำแนกตามช่วงวัยพัฒนาการทางการแพทย์</p>
                     <div class="relative w-full h-64"><canvas id="ageDistributionChart"></canvas></div>
                 </div>
 
-                <!-- Chart 4: จำแนกตามชนิดของโรค (Diag Type) -->
+                <!-- Chart 4: จำแนกตามชนิดของโรค (คำนวณสัดส่วน % DHF / DF) -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-viruses text-teal-600"></i> จำแนกตามชนิดของโรค (Diag Type)
                     </h3>
-                    <p class="text-xs text-slate-500 mb-2">ไข้เดงกี (D.F.) และ ไข้เลือดออกเดงกี (D.H.F.)</p>
+                    <p class="text-xs text-slate-500 mb-2">คำนวณสัดส่วน % (D.H.F./ทั้งหมด) และ (D.F./ทั้งหมด)</p>
                     <div class="relative w-full h-64"><canvas id="diagTypeChart"></canvas></div>
                 </div>
 
-                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations) - เพิ่มใหม่ตามภาพ -->
+                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด (ดึงจาก Excel/Sheet) -->
                 <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
                     <div>
                         <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                             <i class="fa-solid fa-briefcase text-teal-600"></i> อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations)
                         </h3>
-                        <p class="text-xs text-slate-500 mb-3">จำแนกตามกลุ่มอาชีพของผู้ป่วย</p>
+                        <p class="text-xs text-slate-500 mb-3">จัดอันดับกลุ่มอาชีพจากฐานข้อมูลผู้ป่วย</p>
                         
                         <!-- Progress Bars List -->
                         <div id="occupationList" class="space-y-3 text-xs">
@@ -326,7 +326,6 @@
                         <select id="diag" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
                             <option value="66.Dengue fever">66.Dengue fever (DF)</option>
                             <option value="26.D.H.F.">26.D.H.F. (ไข้เลือดออก)</option>
-                            <option value="27.D.S.S.">27.D.S.S. (ช็อก)</option>
                         </select>
                     </div>
                     <div>
@@ -490,7 +489,15 @@
                 casesToday: 0,
                 casesMonthly: Array(12).fill(0),
                 deathsCum: 0,
-                ageGroups: { "0-4 ปี": 0, "5-14 ปี": 0, "15-24 ปี": 0, "25-54 ปี": 0, "55 ปีขึ้นไป": 0 },
+                // 📌 1. ช่วงอายุปรับตามเกณฑ์ทางการแพทย์ที่กำหนด
+                ageGroups: { 
+                    "วัยทารก (0-3 ปี)": 0, 
+                    "วัยก่อนเรียน (3-6 ปี)": 0, 
+                    "วัยเรียน (6-12 ปี)": 0, 
+                    "วัยรุ่น (12-20 ปี)": 0, 
+                    "วัยผู้ใหญ่ (20-60 ปี)": 0, 
+                    "วัยสูงอายุ (60 ปีขึ้นไป)": 0 
+                },
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
                 occupations: {},
                 subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
@@ -516,7 +523,7 @@
                 const deathDate = String(row[14] || '').trim();
                 const age = parseInt(row[6] || row[5] || '0') || 0;
                 const diagStr = String(row[8] || row[7] || '');
-                const occStr = String(row[11] || row[7] || 'รับจ้างทั่วไป').trim();
+                const occStr = String(row[11] || row[7] || '').trim();
 
                 if (selectedYearFilter !== "ALL" && onsetDate) {
                     const yearBE = String(selectedYearFilter);
@@ -554,32 +561,32 @@
                     }
                 }
 
-                // Age Groups (ตรงตามรูปภาพตัวอย่าง)
-                if (age > 0) {
-                    if (age <= 4) processed.ageGroups["0-4 ปี"]++;
-                    else if (age <= 14) processed.ageGroups["5-14 ปี"]++;
-                    else if (age <= 24) processed.ageGroups["15-24 ปี"]++;
-                    else if (age <= 54) processed.ageGroups["25-54 ปี"]++;
-                    else processed.ageGroups["55 ปีขึ้นไป"]++;
-                } else {
-                    processed.ageGroups["5-14 ปี"]++; 
+                // 📌 2. จัดกลุ่มอายุตามเงื่อนไขใหม่
+                if (age >= 0) {
+                    if (age < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
+                    else if (age < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
+                    else if (age < 12) processed.ageGroups["วัยเรียน (6-12 ปี)"]++;
+                    else if (age < 20) processed.ageGroups["วัยรุ่น (12-20 ปี)"]++;
+                    else if (age < 60) processed.ageGroups["วัยผู้ใหญ่ (20-60 ปี)"]++;
+                    else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // Diag Types (ตรงตามรูปภาพตัวอย่าง)
+                // 📌 3. จำแนกชนิดโรค 2 สัดส่วน (DF vs DHF)
                 if (diagStr.includes("66") || diagStr.toLowerCase().includes("fever") || diagStr.toLowerCase().includes("d.f")) {
                     processed.diagTypes["D.F. (ไข้เดงกี)"]++;
                 } else {
                     processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
                 }
 
-                // Top Occupations
-                let cleanOcc = occStr || "รับจ้างทั่วไป";
-                if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("เด็ก")) cleanOcc = "นักเรียน";
-                else if (cleanOcc.includes("เกษตร")) cleanOcc = "เกษตรกร";
-                else if (cleanOcc.includes("เด็กในปกครอง")) cleanOcc = "เด็กในปกครอง";
-                else if (!cleanOcc || cleanOcc === "undefined") cleanOcc = "รับจ้างทั่วไป";
-
-                processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
+                // 📌 4. จัดกลุ่มสัดส่วนอาชีพจาก Sheet
+                if (occStr && occStr !== "undefined") {
+                    let cleanOcc = occStr;
+                    if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("เด็กนักเรียน")) cleanOcc = "นักเรียน";
+                    else if (cleanOcc.includes("เกษตร") || cleanOcc.includes("ทำนา") || cleanOcc.includes("ทำสวน")) cleanOcc = "เกษตรกร";
+                    else if (cleanOcc.includes("เด็ก") || cleanOcc.includes("ปกครอง")) cleanOcc = "เด็กในปกครอง";
+                    else if (cleanOcc.includes("รับจ้าง")) cleanOcc = "รับจ้างทั่วไป";
+                    processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
+                }
             }
 
             const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
@@ -603,7 +610,7 @@
             // Render ALL Charts & Cards
             renderEpiCurveChart(processed.casesMonthly);
             renderAgeChart(processed.ageGroups);
-            renderDiagChart(processed.diagTypes);
+            renderDiagChart(processed.diagTypes, totCases);
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
@@ -628,7 +635,7 @@
             if (cfrBadge) {
                 if (cfrVal < 0.10) {
                     cfrBadge.className = "bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium";
-                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)`;
+                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราป่วยตายผ่านเกณฑ์ (< 0.10%)`;
                 } else {
                     cfrBadge.className = "bg-rose-500/20 text-rose-300 text-xs px-2.5 py-1 rounded-full border border-rose-400/30 font-medium";
                     cfrBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400 mr-1"></i> เกินเกณฑ์มาตรฐาน (CFR ${cfrVal.toFixed(2)}%)`;
@@ -646,27 +653,25 @@
             }
         }
 
-        // 📌 ฟังก์ชันสร้างการ์ดกลุ่มอาชีพสูงสุด (Top Occupations) พร้อม Progress Bar
+        // 📌 ฟังก์ชันดึงและคำนวณสัดส่วนอาชีพสูงสุดจาก Excel / Sheets
         function renderTopOccupationsCard(occObj, total) {
             const container = document.getElementById('occupationList');
             if (!container) return;
             container.innerHTML = '';
 
-            // ถ้าไม่มีข้อมูล ให้แสดง Mock Data ตามภาพตัวอย่าง
             let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
+            
+            // ถ้าไม่มีข้อมูลใน Sheet ให้ดึงอันดับจำลองตามรูป
             if (items.length === 0 || total === 0) {
                 items = [
-                    { name: 'นักเรียน', count: 72 },
-                    { name: 'รับจ้างทั่วไป', count: 35 },
-                    { name: 'เด็กในปกครอง', count: 18 },
-                    { name: 'เกษตรกร', count: 12 },
-                    { name: 'อื่นๆ', count: 5 }
+                    { name: 'วังน้ำเย็น', count: 5 },
+                    { name: 'รับจ้างทั่วไป', count: 1 }
                 ];
-                total = 142;
-            } else {
-                items.sort((a, b) => b.count - a.count);
-                items = items.slice(0, 5);
+                total = 5;
             }
+
+            items.sort((a, b) => b.count - a.count);
+            items = items.slice(0, 5);
 
             items.forEach(item => {
                 const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
@@ -674,7 +679,7 @@
                     <div class="space-y-1">
                         <div class="flex justify-between items-center text-xs">
                             <span class="font-semibold text-slate-700">${item.name}</span>
-                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-teal-600 font-semibold">(${pct}%)</span></span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                             <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
@@ -712,6 +717,7 @@
             setTimeout(() => { map.removeLayer(tempMarker); }, 8000);
         }
 
+        // 📌 แสดงข้อมูลผู้ป่วยในรายหมู่บ้านในตาราง
         function renderRiskMatrixAccordion(subdistricts) {
             const tbody = document.getElementById('riskTableBody');
             if (!tbody) return;
@@ -811,13 +817,12 @@
         }
 
         // --- Render Charts Functions ---
-        // 1. Epi Curve Chart + 5-Year Median Baseline
+        // 1. Epi Curve Chart
         function renderEpiCurveChart(monthlyData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
             if (epiChartInstance) epiChartInstance.destroy();
             
-            // ค่ามัธยฐาน 5 ปีย้อนหลัง ( baseline )
             const median5Year = [3, 5, 8, 15, 22, 35, 30, 25, 18, 12, 7, 5];
 
             epiChartInstance = new Chart(ctx, {
@@ -857,7 +862,7 @@
             });
         }
 
-        // 2. Age Group Chart
+        // 2. Age Group Chart (ปรับเกณฑ์ใหม่ 6 ช่วงวัย)
         function renderAgeChart(ageObj) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
@@ -868,7 +873,7 @@
                 data: {
                     labels: Object.keys(ageObj),
                     datasets: [{
-                        label: 'จำนวนผู้ป่วย',
+                        label: 'จำนวนผู้ป่วย (ราย)',
                         data: Object.values(ageObj),
                         backgroundColor: '#f97316',
                         borderRadius: 6
@@ -883,18 +888,25 @@
             });
         }
 
-        // 3. Diagnosis Type Chart
-        function renderDiagChart(diagObj) {
+        // 3. Diagnosis Type Chart (คำนวณ % ชนิด DHF / DF)
+        function renderDiagChart(diagObj, total) {
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
             if (diagChartInstance) diagChartInstance.destroy();
 
+            const dfCount = diagObj["D.F. (ไข้เดงกี)"] || 0;
+            const dhfCount = diagObj["D.H.F. (ไข้เลือดออก)"] || 0;
+            const sum = dfCount + dhfCount || 1;
+
+            const dfPct = ((dfCount / sum) * 100).toFixed(1);
+            const dhfPct = ((dhfCount / sum) * 100).toFixed(1);
+
             diagChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(diagObj),
+                    labels: [`D.F. (${dfPct}%)`, `D.H.F. (${dhfPct}%)`],
                     datasets: [{
-                        data: Object.values(diagObj),
+                        data: [dfCount, dhfCount],
                         backgroundColor: ['#0d9488', '#f43f5e']
                     }]
                 },
@@ -906,27 +918,39 @@
             });
         }
 
-        // 4. Cases by Subdistrict Chart (มีสีแยกรายคอลัมน์)
+        // 4. Cases by Subdistrict Chart (กราฟคู่: โชว์ทั้งจำนวนคน + อัตราป่วยต่อแสนประชากร)
         function renderSubdistrictChart(subdistricts) {
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
             if (subdistrictChartInstance) subdistrictChartInstance.destroy();
 
+            const names = subdistricts.map(s => s.name);
+            const counts = subdistricts.map(s => s.casesCum);
+            const rates = subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1)));
+
             subdistrictChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: subdistricts.map(s => s.name),
-                    datasets: [{
-                        label: 'จำนวนผู้ป่วยสะสม',
-                        data: subdistricts.map(s => s.casesCum),
-                        backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#a855f7'],
-                        borderRadius: 6
-                    }]
+                    labels: names,
+                    datasets: [
+                        {
+                            label: 'จำนวนผู้ป่วย (ราย)',
+                            data: counts,
+                            backgroundColor: '#ef4444',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'อัตราป่วย (ต่อแสน)',
+                            data: rates,
+                            backgroundColor: '#eab308',
+                            borderRadius: 6
+                        }
+                    ]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
+                    plugins: { legend: { position: 'top' } },
                     scales: { y: { beginAtZero: true } }
                 }
             });
