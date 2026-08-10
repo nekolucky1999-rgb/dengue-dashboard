@@ -69,8 +69,7 @@
                         <div class="flex items-center gap-2">
                             <span class="text-xs bg-teal-800 text-teal-200 px-2.5 py-0.5 rounded-full border border-teal-700">เลือกปีข้อมูล:</span>
                             <select id="yearFilter" onchange="filterDataByYear(this.value)" class="bg-slate-800 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-400/40 focus:outline-none font-semibold cursor-pointer">
-                                <option value="ALL">ทุกปีย้อนหลัง (ทั้งหมด)</option>
-                                <option value="2569">ปี 2569</option>
+                                <option value="2569" selected>ปี 2569</option>
                                 <option value="2568">ปี 2568</option>
                                 <option value="2567">ปี 2567</option>
                                 <option value="2566">ปี 2566</option>
@@ -103,7 +102,7 @@
                     <div class="space-y-1.5 max-w-3xl">
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="bg-teal-500/20 text-teal-300 text-xs px-3 py-1 rounded-full font-semibold border border-teal-400/30 flex items-center gap-1.5">
-                                <i class="fa-solid fa-award text-amber-400"></i> สรุปสถานการณ์ภาพรวมประจำปี <span id="summaryYearLabel" class="text-amber-300 font-bold">ทั้งหมด</span>
+                                <i class="fa-solid fa-award text-amber-400"></i> สรุปสถานการณ์ภาพรวมประจำปี พ.ศ. <span id="summaryYearLabel" class="text-amber-300 font-bold">2569</span>
                             </span>
                             <span id="cfrStatusBadge" class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium">
                                 <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)
@@ -143,7 +142,7 @@
                     </div>
                 </div>
                 <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
-                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสม (เลือกปี)</p>
+                    <p class="text-xs font-semibold text-slate-500">ผู้ป่วยสะสมประจำปี</p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span id="kpiCumCases" class="text-3xl font-bold text-rose-600">0</span>
                         <span class="text-xs text-slate-500">ราย</span>
@@ -180,7 +179,7 @@
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
                 </div>
 
-                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล (เปรียบเทียบจำนวนคน + อัตราต่อแสน) -->
+                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
@@ -194,7 +193,7 @@
             <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ + ชนิดโรค + การ์ดสัดส่วนอาชีพ -->
             <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Chart 3: การกระจายตามกลุ่มอายุ (6 ช่วงวัยทางการแพทย์) -->
+                <!-- Chart 3: การกระจายตามกลุ่มอายุ -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-user-group text-amber-500"></i> การกระจายตามกลุ่มอายุ (Age Group)
@@ -234,16 +233,16 @@
 
             </section>
 
-            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS ขอบเขตวังน้ำเย็น + ตารางความเสี่ยง -->
+            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                <!-- แผนที่ GIS ขอบเขตวังน้ำเย็น (คลิกแล้วค่อยปักหมุด) -->
+                <!-- แผนที่ GIS (แสดงจุดแดงตำบล) -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS อ.วังน้ำเย็น
                         </span>
-                        <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">คลิกพื้นที่เพื่อปักหมุด GIS</span>
+                        <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">จุดระบาดระดับตำบล GIS</span>
                     </div>
                     <div id="map" class="shadow-inner border border-slate-200"></div>
                 </div>
@@ -347,9 +346,10 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
 
         let map = null;
+        let mapMarkers = [];
         let activeMarker = null;
         let rawSheetData = [];
-        let selectedYearFilter = "ALL";
+        let selectedYearFilter = "2569"; // ตั้งต้นเป็นปี 2569
 
         // Chart instances
         let epiChartInstance = null;
@@ -373,7 +373,6 @@
             { name: "คลองตาสูตร", lat: 13.4600, lng: 102.1400, pop: 8500 }
         ];
 
-        // พิกัดเส้นขอบเขตอำเภอวังน้ำเย็น (District Boundary Outline)
         const wnyBoundaryCoords = [
             [13.5900, 102.1300],
             [13.5700, 102.2300],
@@ -431,7 +430,6 @@
                 attribution: '© OpenStreetMap | อ.วังน้ำเย็น จ.สระแก้ว'
             }).addTo(map);
 
-            // วาดเส้นขอบเขตอำเภอวังน้ำเย็น (Outline)
             L.polygon(wnyBoundaryCoords, {
                 color: '#0d9488',
                 weight: 2.5,
@@ -540,34 +538,38 @@
                 const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
                 const deathDate = String(row[14] || '').trim();
 
-                if (selectedYearFilter !== "ALL" && onsetDate) {
-                    const yearBE = String(selectedYearFilter);
-                    const yearAD = String(parseInt(selectedYearFilter) - 543);
-                    if (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD)) continue;
+                // 📌 กรองตามปีอย่างเคร่งครัด (ตัดข้อมูลที่ไม่มีวันที่ หรือปีไม่ตรงออก)
+                const yearBE = String(selectedYearFilter);
+                const yearAD = String(parseInt(selectedYearFilter) - 543);
+                if (!onsetDate || (!onsetDate.includes(yearBE) && !onsetDate.includes(yearAD))) {
+                    continue;
                 }
 
+                // 📌 กรองเฉพาะผู้ป่วยที่อยู่ในพื้นที่ อ.วังน้ำเย็น
+                let sub = processed.subdistricts.find(s => subName.includes(s.name));
+                if (!sub) {
+                    continue;
+                }
+
+                sub.casesCum += 1;
                 if (onsetDate && onsetDate.includes(todayStr)) {
+                    sub.casesToday += 1;
                     processed.casesToday += 1;
                 }
+                if (deathDate) {
+                    sub.deaths += 1;
+                    processed.deathsCum += 1;
+                }
 
-                let sub = processed.subdistricts.find(s => subName.includes(s.name));
-                if (sub) {
-                    sub.casesCum += 1;
-                    if (onsetDate && onsetDate.includes(todayStr)) sub.casesToday += 1;
-                    if (deathDate) sub.deaths += 1;
-
-                    if (sub.villages) {
-                        for (let vKey in sub.villages) {
-                            if (villageName && (vKey.includes(villageName) || villageName.includes(vKey))) {
-                                sub.villages[vKey].casesCum += 1;
-                                if (onsetDate && onsetDate.includes(todayStr)) sub.villages[vKey].casesToday += 1;
-                                break;
-                            }
+                if (sub.villages) {
+                    for (let vKey in sub.villages) {
+                        if (villageName && (vKey.includes(villageName) || villageName.includes(vKey))) {
+                            sub.villages[vKey].casesCum += 1;
+                            if (onsetDate && onsetDate.includes(todayStr)) sub.villages[vKey].casesToday += 1;
+                            break;
                         }
                     }
                 }
-
-                if (deathDate) processed.deathsCum += 1;
 
                 if (onsetDate) {
                     const dateObj = new Date(onsetDate);
@@ -576,25 +578,21 @@
                     }
                 }
 
-                // 📌 1. สแกนหาตัวเลขอายุที่ถูกต้องจากทุกคอลัมน์ (แก้ปัญหากองอยู่ที่ 0-3 ปี)
+                // 📌 สแกนกลุ่มอายุ
                 let parsedAge = -1;
                 for (let c = 0; c < row.length; c++) {
                     let cellVal = String(row[c] || '').trim();
                     if (!cellVal) continue;
-                    
-                    // สแกนหาเฉพาะตัวเลข
                     let numMatch = cellVal.match(/^(\d{1,3})(\s*ปี)?$/);
                     if (numMatch) {
                         let num = parseInt(numMatch[1], 10);
-                        // กรองเฉพาะช่วงอายุ 0 - 100 (ไม่เอาระดับปี พ.ศ. เช่น 2567 หรือ รหัสหมู่บ้าน)
                         if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
                             parsedAge = num;
-                            if ([4, 5, 6, 7].includes(c)) break; // ให้ความสำคัญคอลัมน์กลุ่มอายุ
+                            if ([4, 5, 6, 7].includes(c)) break;
                         }
                     }
                 }
 
-                // จำแนกกลุ่มอายุอย่างถูกต้อง
                 if (parsedAge >= 0) {
                     if (parsedAge < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
                     else if (parsedAge < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
@@ -604,22 +602,19 @@
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // 📌 2. ชนิดโรค
-                let isDF = false;
-                for (let col of row) {
-                    const val = String(col || '').toLowerCase();
-                    if (val.includes("66") || val.includes("d.f") || val.includes("dengue fever") || val.includes("ไข้เดงกี")) {
-                        isDF = true;
-                        break;
-                    }
-                }
-                if (isDF) {
-                    processed.diagTypes["D.F. (ไข้เดงกี)"]++;
-                } else {
+                // 📌 จำแนกชนิดโรคตามรหัสทางการแพทย์
+                let rowDiagStr = String(row[8] || row[7] || row[5] || '').toLowerCase();
+                if (!rowDiagStr || rowDiagStr === 'undefined') rowDiagStr = strRow.toLowerCase();
+
+                let isDHF = rowDiagStr.includes("26") || rowDiagStr.includes("d.h.f") || rowDiagStr.includes("ไข้เลือดออก") || rowDiagStr.includes("dhf");
+
+                if (isDHF) {
                     processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
+                } else {
+                    processed.diagTypes["D.F. (ไข้เดงกี)"]++;
                 }
 
-                // 📌 3. อาชีพ
+                // 📌 สแกนกลุ่มอาชีพ
                 let occStr = "";
                 for (let idx of [11, 7, 5, 4, 3, 6, 8, 9]) {
                     const val = String(row[idx] || '').trim();
@@ -666,7 +661,8 @@
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            // Render Table
+            // Render Map Markers & Table
+            renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts);
         }
 
@@ -677,7 +673,7 @@
             const cfrBadge = document.getElementById('cfrStatusBadge');
             const detailText = document.getElementById('summaryDetailText');
 
-            if (lblYear) lblYear.innerText = currentYear === 'ALL' ? 'ทุกปีย้อนหลัง' : currentYear;
+            if (lblYear) lblYear.innerText = currentYear;
             if (lblTotal) lblTotal.innerText = totalCases;
 
             let hotspot = processedData.subdistricts.reduce((max, sub) => sub.casesCum > max.casesCum ? sub : max, processedData.subdistricts[0]);
@@ -696,7 +692,7 @@
 
             if (detailText) {
                 const morbRate = ((totalCases / 71500) * 100000).toFixed(1);
-                let text = `สรุปข้อมูลพบผู้ป่วยไข้เลือดออกรวม ${totalCases} ราย คิดเป็นอัตราป่วย ${morbRate} ต่อแสนประชากร `;
+                let text = `สรุปข้อมูลพบผู้ป่วยไข้เลือดออกประจำปี พ.ศ. ${currentYear} รวม ${totalCases} ราย คิดเป็นอัตราป่วย ${morbRate} ต่อแสนประชากร `;
                 if (hotspot && hotspot.casesCum > 0) {
                     text += `โดยพบการระบาดหนาแน่นที่สุดในพื้นที่ <strong>ต.${hotspot.name} (${hotspot.casesCum} ราย)</strong> `;
                 }
@@ -712,18 +708,13 @@
 
             let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
 
-            if (items.length === 0 || total === 0) {
-                items = [
-                    { name: 'นักเรียน', count: 52 },
-                    { name: 'รับจ้างทั่วไป', count: 24 },
-                    { name: 'เด็กในปกครอง', count: 12 },
-                    { name: 'เกษตรกร', count: 9 }
-                ];
-                total = 97;
-            }
-
             items.sort((a, b) => b.count - a.count);
             items = items.slice(0, 5);
+
+            if (items.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-center py-4">ไม่พบข้อมูลอาชีพประจำปี ${selectedYearFilter}</p>`;
+                return;
+            }
 
             items.forEach(item => {
                 const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : "0.0";
@@ -742,7 +733,31 @@
             });
         }
 
-        // 📍 ฟังก์ชันปักหมุดเมื่อคลิกตำบล
+        function renderMapMarkers(subdistricts) {
+            if (!map) return;
+            mapMarkers.forEach(m => map.removeLayer(m));
+            mapMarkers = [];
+
+            subdistricts.forEach(sub => {
+                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
+                
+                const circleMarker = L.circleMarker([sub.lat, sub.lng], {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.85,
+                    radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6
+                }).addTo(map).bindPopup(`
+                    <div class="text-xs p-1">
+                        <b class="text-teal-800 font-bold text-sm">📍 ต.${sub.name}</b><br>
+                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
+                        <span class="text-rose-600 font-semibold">ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span>
+                    </div>
+                `);
+
+                mapMarkers.push(circleMarker);
+            });
+        }
+
         function focusSubdistrictMap(subName) {
             const sub = defaultSubdistricts.find(s => s.name === subName);
             if (!sub || !map) return;
@@ -762,7 +777,6 @@
                 .openPopup();
         }
 
-        // 📍 ฟังก์ชันปักหมุดเมื่อคลิกหมู่บ้าน
         function focusVillageMap(subName, villageName, event) {
             if (event) event.stopPropagation();
             const sub = defaultSubdistricts.find(s => s.name === subName);
@@ -803,7 +817,6 @@
                 const mainTr = document.createElement('tr');
                 mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
                 
-                // เมื่อคลิกตำบล ให้เปิด Accordion พร้อมทั้งปักหมุดแผนที่
                 mainTr.onclick = () => {
                     toggleVillageRow(subId);
                     focusSubdistrictMap(sub.name);
@@ -884,7 +897,6 @@
         }
 
         // --- Render Charts Functions ---
-        // 1. Epi Curve Chart
         function renderEpiCurveChart(monthlyData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
@@ -898,7 +910,7 @@
                     labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
                     datasets: [
                         {
-                            label: `ปี ${selectedYearFilter === 'ALL' ? '2567' : selectedYearFilter}`,
+                            label: `ปี พ.ศ. ${selectedYearFilter}`,
                             data: monthlyData,
                             borderColor: '#0d9488',
                             backgroundColor: 'rgba(13, 148, 136, 0.15)',
@@ -929,26 +941,12 @@
             });
         }
 
-        // 2. Age Group Chart (สแกนกลุ่มอายุแท้จริง)
         function renderAgeChart(ageObj, total) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
             if (ageChartInstance) ageChartInstance.destroy();
 
-            // ตัวอย่างข้อมูลสำรองหากสแกนไม่พบอายุ
             let values = Object.values(ageObj);
-            const sumValues = values.reduce((a, b) => a + b, 0);
-            if (sumValues === 0) {
-                ageObj = {
-                    "วัยทารก (0-3 ปี)": 4,
-                    "วัยก่อนเรียน (3-6 ปี)": 12,
-                    "วัยเรียน (6-12 ปี)": 48,
-                    "วัยรุ่น (12-20 ปี)": 20,
-                    "วัยผู้ใหญ่ (20-60 ปี)": 11,
-                    "วัยสูงอายุ (60 ปีขึ้นไป)": 2
-                };
-                values = Object.values(ageObj);
-            }
 
             ageChartInstance = new Chart(ctx, {
                 type: 'bar',
@@ -970,7 +968,6 @@
             });
         }
 
-        // 3. Diagnosis Type Chart
         function renderDiagChart(diagObj, total) {
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
@@ -1011,7 +1008,6 @@
             });
         }
 
-        // 4. Cases by Subdistrict Chart
         function renderSubdistrictChart(subdistricts) {
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
