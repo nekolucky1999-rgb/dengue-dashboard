@@ -197,47 +197,41 @@
 
             </section>
 
-            <!-- 🏡 3. รายงานดัชนีลูกน้ำยุงลาย HI/CI -->
+            <!-- 🏡 3. รายงานสถานการณ์และผู้ป่วยสะสมรายปี (ตามประชากรในพื้นที่) -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span class="text-xl">🏡</span> รายงานดัชนีลูกน้ำยุงลาย (HI/CI) และผู้ป่วยสะสมรายปี
+                            <span class="text-xl">🏡</span> รายงานสถานการณ์และผู้ป่วยสะสมรายปี (คำนวณความเสี่ยงตามประชากรในพื้นที่)
                         </h3>
-                        <p class="text-xs text-slate-500">แสดงรายชื่อตำบล/หมู่บ้าน พร้อมจำนวนผู้ป่วยสะสมแยกตามปี พ.ศ. ที่เลือก</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <select id="hiMonthSelect" onchange="processAndRenderData()" class="px-3 py-1.5 text-xs font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-800 focus:outline-none cursor-pointer">
-                            <option value="jul" selected>เดือน กรกฎาคม (ก.ค. 69)</option>
-                            <option value="jun">เดือน มิถุนายน (มิ.ย. 69)</option>
-                        </select>
+                        <p class="text-xs text-slate-500">แสดงรายชื่อตำบล/หมู่บ้าน พร้อมจำนวนผู้ป่วยสะสมแยกตามปี พ.ศ. ที่เลือก และระดับความเสี่ยงตามประชากร</p>
                     </div>
                 </div>
 
-                <!-- 📌 การ์ดสรุปสถานการณ์ HI -->
+                <!-- 📌 การ์ดสรุปสถานการณ์ความเสี่ยงตามประชากร -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
-                            <span>พื้นที่เฝ้าระวัง (HI ≤ 5%)</span>
+                            <span>พื้นที่ปกติ / เฝ้าระวัง (0 ราย)</span>
                         </div>
-                        <span id="hiSafeCount" class="text-3xl font-extrabold font-heading">0</span>
+                        <span id="riskSafeCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
 
                     <div class="bg-amber-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-amber-200 rounded-full inline-block animate-pulse"></span>
-                            <span>พื้นที่เสี่ยง (HI ≤ 10%)</span>
+                            <span>พื้นที่เสี่ยง (อัตราป่วย ≤ 50 ต่อแสน)</span>
                         </div>
-                        <span id="hiRiskCount" class="text-3xl font-extrabold font-heading">0</span>
+                        <span id="riskModerateCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
 
                     <div class="bg-rose-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-sm md:text-base">
                             <span class="w-3 h-3 bg-rose-300 rounded-full inline-block animate-pulse"></span>
-                            <span>พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด (HI > 10%)</span>
+                            <span>พื้นที่เสี่ยงสูงมาก (อัตราป่วย > 50 ต่อแสน)</span>
                         </div>
-                        <span id="hiOutbreakCount" class="text-3xl font-extrabold font-heading">0</span>
+                        <span id="riskHighCount" class="text-3xl font-extrabold font-heading">0</span>
                     </div>
                 </div>
 
@@ -261,7 +255,7 @@
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยง (แสดงผู้ป่วยสะสมเฉพาะปีที่เลือก)
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยง (คำนวณตามประชากรในพื้นที่)
                         </span>
                         <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายดูรายหมู่บ้าน</span>
                     </div>
@@ -361,7 +355,7 @@
         let mapMarkers = [];
         let activeMarker = null;
         let rawSheetData = [];       // Sheet 1 Data
-        let rawSheet2Data = [];      // Sheet 2 Data (HI/CI)
+        let rawSheet2Data = [];      // Sheet 2 Data (Structure/Villages)
         let rawSheet3Data = [];      // Sheet 3 Data (Median 2564-2569)
         let selectedYearFilter = "2569";
 
@@ -407,7 +401,7 @@
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-teal-600 font-medium">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลตามปี ${selectedYearFilter}...
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลความเสี่ยงตามประชากร...
                 </td></tr>`;
             }
 
@@ -514,7 +508,7 @@
             return null;
         }
 
-        function getHiDataSourceAndVillages() {
+        function getVillagesFromSheet2() {
             let villagesBySubdistrict = {};
             if (!rawSheet2Data || rawSheet2Data.length === 0) return villagesBySubdistrict;
 
@@ -540,30 +534,18 @@
 
                 for (let c = 0; c < row.length; c += 3) {
                     let villageCell = row[c];
-                    let junCell = row[c + 1];
-                    let julCell = row[c + 2];
-
                     if (villageCell !== undefined && villageCell !== null) {
                         let village = String(villageCell).trim();
                         if (!village || village === 'undefined' || village === 'null' || village.includes('หมู่บ้าน') || village.includes('ประจำเดือน') || village.includes('มิ.ย.') || village.includes('ก.ค.') || village.includes('ตำบล') || village.includes('ต.')) {
                             continue;
                         }
 
-                        let junVal = parseFloat(junCell);
-                        let julVal = parseFloat(julCell);
-
-                        if (!villagesBySubdistrict[currentSubdistrict].some(v => v.village === village)) {
-                            villagesBySubdistrict[currentSubdistrict].push({
-                                village: village,
-                                subdistrict: currentSubdistrict,
-                                jun: isNaN(junVal) ? 0 : junVal,
-                                jul: isNaN(julVal) ? 0 : julVal
-                            });
+                        if (!villagesBySubdistrict[currentSubdistrict].includes(village)) {
+                            villagesBySubdistrict[currentSubdistrict].push(village);
                         }
                     }
                 }
             }
-
             return villagesBySubdistrict;
         }
 
@@ -631,14 +613,25 @@
             return medianMonthly;
         }
 
+        function calculatePopulationRisk(cases, pop) {
+            const morb = pop > 0 ? (cases / pop) * 100000 : 0;
+            if (cases === 0) {
+                return { level: "ปกติ / เฝ้าระวัง", badge: '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium">ปกติ / เฝ้าระวัง</span>', type: 'safe' };
+            } else if (morb <= 50) {
+                return { level: "เสี่ยง", badge: '<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full text-xs font-medium">เสี่ยง</span>', type: 'moderate' };
+            } else {
+                return { level: "เสี่ยงสูงมาก", badge: '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium animate-pulse">เสี่ยงสูงมาก</span>', type: 'high' };
+            }
+        }
+
         function processAndRenderData() {
-            const sheet2VillagesMap = getHiDataSourceAndVillages();
-            const subdistrictNames = Object.keys(sheet2VillagesMap);
+            const sheet2VillagesMap = getVillagesFromSheet2();
+            const subdistrictNames = Object.keys(sheet2VillagesMap).length > 0 ? Object.keys(sheet2VillagesMap) : Object.keys(subdistrictPopulations);
 
             let dynamicSubdistricts = subdistrictNames.map(subName => {
                 const vList = sheet2VillagesMap[subName] || [];
                 const vObj = {};
-                vList.forEach(v => vObj[v.village] = { casesCum: 0, casesToday: 0 });
+                vList.forEach(v => vObj[v] = { casesCum: 0, casesToday: 0 });
                 
                 let popEst = subdistrictPopulations[subName] || 10000;
                 let lat = 13.4600, lng = 102.1700;
@@ -670,11 +663,10 @@
                 casesMonthly: Array(12).fill(0),
                 deathsCum: 0,
                 ageGroups: { 
-                    "วัยทารก (0-3 ปี)": 0, 
-                    "วัยก่อนเรียน (3-6 ปี)": 0, 
-                    "วัยเรียน (6-12 ปี)": 0, 
-                    "วัยรุ่น (12-20 ปี)": 0, 
-                    "วัยผู้ใหญ่ (20-60 ปี)": 0, 
+                    "เด็กปฐมวัย (0-5 ปี)": 0, 
+                    "วัยเรียน (6-14 ปี)": 0, 
+                    "วัยรุ่น (15-21 ปี)": 0, 
+                    "วัยทำงาน (22-59 ปี)": 0, 
                     "วัยสูงอายุ (60 ปีขึ้นไป)": 0 
                 },
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
@@ -685,7 +677,6 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const colIndexes = findColumnIndexes();
 
-            // 📌 กรองและนับเฉพาะข้อมูลผู้ป่วยของปีที่เลือก (selectedYearFilter) เท่านั้น
             for (let i = 0; i < rawSheetData.length; i++) {
                 const row = rawSheetData[i];
                 if (!row || !Array.isArray(row) || row.length === 0) continue;
@@ -704,7 +695,7 @@
 
                 const dateObj = parseThaiDateStrictJS(onsetStr);
                 if (!dateObj) continue;
-                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue; // 🔒 กรองเฉพาะปีที่เลือก
+                if (String(dateObj.yearBE) !== String(selectedYearFilter)) continue;
 
                 let subNameFromCol = colIndexes.sub !== -1 ? String(row[colIndexes.sub] || '').trim() : String(row[10] || '').trim();
                 let villageNameFromCol = colIndexes.village !== -1 ? String(row[colIndexes.village] || '').trim() : String(row[9] || '').trim();
@@ -727,7 +718,6 @@
                     processed.deathsCum += 1;
                 }
 
-                // บันทึกจำนวนผู้ป่วยลงในหมู่บ้านเฉพาะปีที่เลือก
                 if (sub.villages) {
                     for (let vKey in sub.villages) {
                         if (villageNameFromCol && (vKey.includes(villageNameFromCol) || villageNameFromCol.includes(vKey) || villageNameFromCol.replace(/[^0-9]/g, '') === vKey.replace(/[^0-9]/g, ''))) {
@@ -748,11 +738,10 @@
                     if (!isNaN(aVal) && aVal >= 0 && aVal <= 100) parsedAge = aVal;
                 }
                 if (parsedAge >= 0) {
-                    if (parsedAge < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
-                    else if (parsedAge < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
-                    else if (parsedAge < 12) processed.ageGroups["วัยเรียน (6-12 ปี)"]++;
-                    else if (parsedAge < 20) processed.ageGroups["วัยรุ่น (12-20 ปี)"]++;
-                    else if (parsedAge < 60) processed.ageGroups["วัยผู้ใหญ่ (20-60 ปี)"]++;
+                    if (parsedAge <= 5) processed.ageGroups["เด็กปฐมวัย (0-5 ปี)"]++;
+                    else if (parsedAge <= 14) processed.ageGroups["วัยเรียน (6-14 ปี)"]++;
+                    else if (parsedAge <= 21) processed.ageGroups["วัยรุ่น (15-21 ปี)"]++;
+                    else if (parsedAge < 60) processed.ageGroups["วัยทำงาน (22-59 ปี)"]++;
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
@@ -791,7 +780,7 @@
             renderDiagChart(processed.diagTypes, totCases);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            renderHiSurveillanceTable(processed.subdistricts, sheet2VillagesMap);
+            renderPopulationRiskSurveillance(processed.subdistricts, sheet2VillagesMap);
             renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts, sheet2VillagesMap);
             updateSubdistrictDropdown(subdistrictNames);
@@ -882,41 +871,40 @@
             });
         }
 
-        function renderHiSurveillanceTable(subdistricts, sheet2Map) {
-            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
+        function renderPopulationRiskSurveillance(subdistricts, sheet2Map) {
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
             if (!accordionContainer) return;
 
-            let safeTot = 0, riskTot = 0, outbreakTot = 0;
+            let safeTot = 0, moderateTot = 0, highTot = 0;
             accordionContainer.innerHTML = '';
 
             subdistricts.forEach((sub, idx) => {
-                const accId = `hi-acc-${idx}`;
+                const accId = `pop-acc-${idx}`;
                 const rawVillages = sheet2Map[sub.name] || [];
                 
-                let totalHiSum = 0;
-                const processedVillages = rawVillages.map(v => {
-                    const hiVal = selectedMonth === 'jul' ? v.jul : v.jun;
-                    totalHiSum += hiVal;
-
-                    // ดึงจำนวนผู้ป่วยสะสมของหมู่บ้านนี้เฉพาะปีที่เลือก
+                let subCasesSum = 0;
+                const processedVillages = rawVillages.map(vName => {
                     let caseCnt = 0;
-                    if (sub.villages && sub.villages[v.village]) {
-                        caseCnt = sub.villages[v.village].casesCum;
+                    if (sub.villages && sub.villages[vName]) {
+                        caseCnt = sub.villages[vName].casesCum;
                     }
+                    subCasesSum += caseCnt;
 
-                    let status = "พื้นที่เฝ้าระวัง";
-                    if (hiVal > 10) { status = "พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด"; outbreakTot++; }
-                    else if (hiVal > 5) { status = "พื้นที่เสี่ยง"; riskTot++; }
-                    else { safeTot++; }
+                    const vRisk = calculatePopulationRisk(caseCnt, Math.round(sub.pop / Math.max(1, rawVillages.length)));
+                    if (vRisk.type === 'safe') safeTot++;
+                    else if (vRisk.type === 'moderate') moderateTot++;
+                    else highTot++;
 
-                    return { ...v, hiVal, caseCnt, status };
+                    return { village: vName, caseCnt, risk: vRisk };
                 });
 
-                const avgHi = rawVillages.length > 0 ? (totalHiSum / rawVillages.length) : 0;
-                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เฝ้าระวัง)</span>`;
-                if (avgHi > 10) subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200 animate-pulse">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยงสูง)</span>`;
-                else if (avgHi > 5) subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">ค่า HI เฉลี่ย: ${avgHi.toFixed(2)}% (เสี่ยง)</span>`;
+                const subRisk = calculatePopulationRisk(sub.casesCum, sub.pop);
+                let subBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-bold border border-emerald-200">สถานะ: ปกติ</span>`;
+                if (subRisk.type === 'high') {
+                    subBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-xs font-bold border border-rose-200 animate-pulse">สถานะ: เสี่ยงสูงมาก</span>`;
+                } else if (subRisk.type === 'moderate') {
+                    subBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200">สถานะ: เสี่ยง</span>`;
+                }
 
                 accordionContainer.innerHTML += `
                     <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
@@ -924,7 +912,7 @@
                             <div class="flex items-center gap-2">
                                 <i id="icon-${accId}" class="fa-solid fa-chevron-right text-xs text-slate-400 transition-transform"></i>
                                 <span class="font-bold text-slate-800 text-base">📌 ${sub.name}</span>
-                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${rawVillages.length} หมู่บ้าน/ชุมชน)</span>
+                                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-medium">(${rawVillages.length} หมู่บ้าน/ชุมชน | ป่วยสะสม ${sub.casesCum} ราย)</span>
                             </div>
                             <div>${subBadge}</div>
                         </div>
@@ -935,9 +923,8 @@
                                         <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                                             <tr>
                                                 <th class="p-2.5">หมู่บ้าน / ชุมชน</th>
-                                                <th class="p-2.5 text-center">ค่า HI (%)</th>
                                                 <th class="p-2.5 text-center">ผู้ป่วยสะสมปี ${selectedYearFilter}</th>
-                                                <th class="p-2.5 text-center">สถานะความเสี่ยง</th>
+                                                <th class="p-2.5 text-center">สถานะความเสี่ยง (ตามประชากร)</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-100">
@@ -945,11 +932,10 @@
                                                 <tr class="hover:bg-slate-50 transition">
                                                     <td class="p-2.5 font-semibold text-slate-800 flex items-center gap-2">
                                                         📍 ${v.village}
-                                                        ${v.caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">ป่วย ${v.caseCnt} ราย</span>` : ''}
+                                                        ${v.caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">ป่วย ${v.caseCnt} ราย</span>` : ''}
                                                     </td>
-                                                    <td class="p-2.5 text-center font-bold ${v.hiVal > 10 ? 'text-rose-600' : (v.hiVal > 5 ? 'text-amber-600' : 'text-emerald-600')}">${v.hiVal.toFixed(2)}%</td>
                                                     <td class="p-2.5 text-center font-bold ${v.caseCnt > 0 ? 'text-rose-600' : 'text-slate-500'}">${v.caseCnt} ราย</td>
-                                                    <td class="p-2.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${v.status === 'พื้นที่เสี่ยงสูง ต่อการแพร่ระบาด' ? 'bg-rose-600 text-white' : (v.status === 'พื้นที่เสี่ยง' ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white')}">${v.status}</span></td>
+                                                    <td class="p-2.5 text-center">${v.risk.badge}</td>
                                                 </tr>
                                             `).join('')}
                                         </tbody>
@@ -960,9 +946,9 @@
                     </div>`;
             });
 
-            document.getElementById('hiSafeCount').innerText = safeTot;
-            document.getElementById('hiRiskCount').innerText = riskTot;
-            document.getElementById('hiOutbreakCount').innerText = outbreakTot;
+            document.getElementById('riskSafeCount').innerText = safeTot;
+            document.getElementById('riskModerateCount').innerText = moderateTot;
+            document.getElementById('riskHighCount').innerText = highTot;
         }
 
         function toggleHiAccordion(id) {
@@ -976,7 +962,6 @@
 
         function renderRiskMatrixAccordion(subdistricts, sheet2Map) {
             const tbody = document.getElementById('riskTableBody');
-            const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             if (!tbody) return;
             tbody.innerHTML = '';
 
@@ -985,16 +970,11 @@
                 const subId = `sub-row-${idx}`;
                 const villages = sheet2Map[sub.name] || [];
 
-                let totalHiSum = villages.reduce((acc, curr) => acc + (selectedMonth === 'jul' ? curr.jul : curr.jun), 0);
-                const avgHi = villages.length > 0 ? (totalHiSum / villages.length) : 0;
-
                 const mainTr = document.createElement('tr');
                 mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
                 mainTr.onclick = () => { toggleVillageRow(subId); focusSubdistrictMap(sub.name); };
 
-                let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium">ปกติ</span>';
-                if (sub.casesCum > 30 || avgHi > 10) badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium animate-pulse">เสี่ยงสูงมาก</span>';
-                else if (sub.casesCum > 10 || avgHi > 5) badge = '<span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-medium">เสี่ยงสูง</span>';
+                const subRisk = calculatePopulationRisk(sub.casesCum, sub.pop);
 
                 mainTr.innerHTML = `
                     <td class="p-2.5 text-teal-800 flex items-center gap-1.5">
@@ -1006,7 +986,7 @@
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
                     <td class="p-2.5 text-center font-bold text-rose-600">${sub.casesCum}</td>
                     <td class="p-2.5 text-center text-slate-600">${morb}</td>
-                    <td class="p-2.5 text-center">${badge}</td>`;
+                    <td class="p-2.5 text-center">${subRisk.badge}</td>`;
                 tbody.appendChild(mainTr);
 
                 const subTr = document.createElement('tr');
@@ -1014,19 +994,21 @@
                 subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
 
                 let villageListHtml = `<td colspan="6" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
-                villages.forEach(v => {
+                villages.forEach(vName => {
                     let caseCnt = 0;
-                    if (sub.villages && sub.villages[v.village]) {
-                        caseCnt = sub.villages[v.village].casesCum;
+                    if (sub.villages && sub.villages[vName]) {
+                        caseCnt = sub.villages[vName].casesCum;
                     }
+                    const vRisk = calculatePopulationRisk(caseCnt, Math.round(sub.pop / Math.max(1, villages.length)));
                     villageListHtml += `
                         <div class="flex items-center justify-between p-2 rounded-lg border bg-white border-slate-200 ${caseCnt > 0 ? 'border-rose-300 bg-rose-50/40' : ''}">
                             <span class="font-semibold text-slate-800 flex items-center gap-1.5">
-                                📍 ${v.village}
+                                📍 ${vName}
                                 ${caseCnt > 0 ? `<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">ป่วย ${caseCnt}</span>` : ''}
                             </span>
-                            <div class="text-right">
+                            <div class="text-right flex items-center gap-2">
                                 <span class="${caseCnt > 0 ? 'text-rose-600 font-bold' : 'text-slate-400'}">${caseCnt} ราย</span>
+                                ${vRisk.badge}
                             </div>
                         </div>`;
                 });
@@ -1050,7 +1032,7 @@
             mapMarkers.forEach(m => map.removeLayer(m));
             mapMarkers = [];
             subdistricts.forEach(sub => {
-                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
+                let color = sub.casesCum > 10 ? "#ef4444" : (sub.casesCum > 0 ? "#f97316" : "#22c55e");
                 const m = L.circleMarker([sub.lat, sub.lng], { color: color, fillColor: color, fillOpacity: 0.85, radius: sub.casesCum > 0 ? Math.min(18, 8 + sub.casesCum) : 6 }).addTo(map)
                     .bindPopup(`<div class="text-xs p-1"><b class="text-teal-800 font-bold text-sm">📍 ${sub.name}</b><br><span>ผู้ป่วยสะสมปี ${selectedYearFilter}: ${sub.casesCum} ราย</span></div>`);
                 mapMarkers.push(m);
@@ -1087,12 +1069,12 @@
             const select = document.getElementById('villageSelect');
             if (!select) return;
             select.innerHTML = '';
-            const sheet2VillagesMap = getHiDataSourceAndVillages();
+            const sheet2VillagesMap = getVillagesFromSheet2();
             const list = sheet2VillagesMap[subName] || [];
             list.forEach(v => {
                 const opt = document.createElement('option');
-                opt.value = v.village;
-                opt.innerText = v.village;
+                opt.value = v;
+                opt.innerText = v;
                 select.appendChild(opt);
             });
         }
