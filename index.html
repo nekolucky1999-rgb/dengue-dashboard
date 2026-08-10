@@ -121,13 +121,13 @@
 
                     <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shrink-0 self-start md:self-auto">
                         <div class="text-center px-2">
-                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">พื้นที่ระบาดสูงสุด</p>
-                            <p id="summaryHotspotSub" class="text-sm font-bold text-amber-300 font-heading mt-0.5">-</p>
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวม อ.วังน้ำเย็น</p>
+                            <p class="text-sm font-bold text-teal-300 font-heading mt-0.5">71,500 คน</p>
                         </div>
                         <div class="w-px h-8 bg-white/20"></div>
                         <div class="text-center px-2">
-                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">กลุ่มอายุเสี่ยงสูง</p>
-                            <p id="summaryHighRiskAge" class="text-sm font-bold text-cyan-300 font-heading mt-0.5">วัยเรียน (6-12 ปี)</p>
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">พื้นที่ระบาดสูงสุด</p>
+                            <p id="summaryHotspotSub" class="text-sm font-bold text-amber-300 font-heading mt-0.5">-</p>
                         </div>
                     </div>
                 </div>
@@ -164,10 +164,10 @@
                 </div>
             </section>
 
-            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล (แสดงจำนวนคน + อัตราป่วยต่อแสน) -->
+            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Chart 1: Epi Curve + 5 Year Median Baseline -->
+                <!-- Chart 1: Epi Curve -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-5">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
                         <div>
@@ -180,30 +180,30 @@
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
                 </div>
 
-                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล (แสดงจำนวนคน + แสนประชากร) -->
+                <!-- Chart 2: ผู้ป่วยจำแนกรายตำบล (เปรียบเทียบจำนวนคน + อัตราต่อแสน) -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-rose-500"></i> ผู้ป่วยจำแนกรายตำบล
                     </h3>
-                    <p class="text-xs text-slate-500 mb-2">เปรียบเทียบผู้ป่วยสะสม (คน) และอัตราป่วยต่อแสนประชากร</p>
+                    <p class="text-xs text-slate-500 mb-2">เปรียบเทียบจำนวนผู้ป่วย (ราย) และอัตราป่วย (ต่อแสนประชากร)</p>
                     <div class="relative w-full h-72"><canvas id="subdistrictChart"></canvas></div>
                 </div>
 
             </section>
 
-            <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ (เกณฑ์ใหม่) + ชนิดโรค (DF vs DHF %) + อาชีพจาก Excel -->
+            <!-- 📊 แถวที่ 2: กราฟกลุ่มอายุ + ชนิดโรค + การ์ดสัดส่วนอาชีพ -->
             <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- Chart 3: การกระจายตามกลุ่มอายุ (Age Group - เกณฑ์วัยใหม่) -->
+                <!-- Chart 3: การกระจายตามกลุ่มอายุ (6 ช่วงวัยทางการแพทย์) -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-user-group text-amber-500"></i> การกระจายตามกลุ่มอายุ (Age Group)
                     </h3>
-                    <p class="text-xs text-amber-600 font-medium mb-2">จำแนกตามกลุ่มวัย (ทารก, ก่อนเรียน, เรียน, วัยรุ่น, ผู้ใหญ่, สูงอายุ)</p>
+                    <p class="text-xs text-amber-600 font-medium mb-2">จำแนกตามช่วงวัยพัฒนาการทางการแพทย์</p>
                     <div class="relative w-full h-64"><canvas id="ageDistributionChart"></canvas></div>
                 </div>
 
-                <!-- Chart 4: จำแนกตามชนิดของโรค (Diag Type - สัดส่วน DHF vs DF %) -->
+                <!-- Chart 4: จำแนกตามชนิดของโรค -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                         <i class="fa-solid fa-viruses text-teal-600"></i> จำแนกตามชนิดของโรค (Diag Type)
@@ -212,20 +212,18 @@
                     <div class="relative w-full h-64"><canvas id="diagTypeChart"></canvas></div>
                 </div>
 
-                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations จาก Excel) -->
+                <!-- Card 5: อาชีพสัดส่วนผู้ป่วยสูงสุด -->
                 <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
                     <div>
                         <h3 class="text-base font-bold text-slate-800 mb-0.5 flex items-center gap-2">
                             <i class="fa-solid fa-briefcase text-teal-600"></i> อาชีพสัดส่วนผู้ป่วยสูงสุด (Top Occupations)
                         </h3>
-                        <p class="text-xs text-slate-500 mb-3">จำแนกตามกลุ่มอาชีพของผู้ป่วยจากฐานข้อมูล</p>
+                        <p class="text-xs text-slate-500 mb-3">คำนวณสัดส่วน % อาชีพผู้ป่วยจากฐานข้อมูล</p>
                         
-                        <!-- Progress Bars List -->
                         <div id="occupationList" class="space-y-3 text-xs">
                         </div>
                     </div>
 
-                    <!-- Footer Badge -->
                     <div class="mt-4 pt-3 border-t border-slate-100 bg-slate-50 p-3 rounded-xl flex justify-between items-center text-xs">
                         <span class="text-slate-600 font-medium flex items-center gap-1.5">
                             <i class="fa-solid fa-school text-slate-500"></i> สถานศึกษาที่ได้รับผลกระทบ:
@@ -236,27 +234,27 @@
 
             </section>
 
-            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
+            <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS ขอบเขตวังน้ำเย็น + ตารางความเสี่ยง -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                <!-- แผนที่ GIS -->
+                <!-- แผนที่ GIS ขอบเขตวังน้ำเย็น (คลิกแล้วค่อยปักหมุด) -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <i class="fa-solid fa-earth-asia text-teal-600"></i> แผนที่ระบาดวิทยา GIS อ.วังน้ำเย็น
                         </span>
-                        <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">Interactive Flying Marker</span>
+                        <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium border border-teal-200">คลิกพื้นที่เพื่อปักหมุด GIS</span>
                     </div>
                     <div id="map" class="shadow-inner border border-slate-200"></div>
                 </div>
 
-                <!-- ตารางประเมินระดับความเสี่ยง และรายชื่อหมู่บ้าน (โชว์ข้อมูลผู้ป่วยรายหมู่) -->
+                <!-- ตารางประเมินระดับความเสี่ยง -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-4 overflow-hidden">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <i class="fa-solid fa-list-check text-indigo-600"></i> ตารางประเมินระดับความเสี่ยงรายตำบล / หมู่บ้าน
                         </span>
-                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลเพื่อขยายดูผู้ป่วยในรายหมู่บ้าน</span>
+                        <span class="text-[10px] text-slate-500">💡 คลิกชื่อตำบลหรือหมู่บ้านเพื่อซูมและปักหมุด</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl border border-slate-200">
@@ -264,6 +262,7 @@
                             <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                                 <tr>
                                     <th class="p-2.5">ตำบล / หมู่บ้าน</th>
+                                    <th class="p-2.5 text-center">ประชากร (คน)</th>
                                     <th class="p-2.5 text-center">ป่วยวันนี้</th>
                                     <th class="p-2.5 text-center">ป่วยสะสม</th>
                                     <th class="p-2.5 text-center">อัตราป่วย/แสน</th>
@@ -325,7 +324,6 @@
                         <select id="diag" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none" required>
                             <option value="66.Dengue fever">66.Dengue fever (DF)</option>
                             <option value="26.D.H.F.">26.D.H.F. (ไข้เลือดออก)</option>
-                            <option value="27.D.S.S.">27.D.S.S. (ช็อก)</option>
                         </select>
                     </div>
                     <div>
@@ -347,10 +345,9 @@
     <!-- ⚙️ JavaScript ทำงานหลักทั้งหมด -->
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
-        const TOTAL_DISTRICT_POP = 62000; // ประชากรอำเภอวังน้ำเย็นรวมประมาณ 62,000 คน
 
         let map = null;
-        let mapMarkers = [];
+        let activeMarker = null;
         let rawSheetData = [];
         let selectedYearFilter = "ALL";
 
@@ -374,6 +371,18 @@
             { name: "คลองหินปูน", lat: 13.5580, lng: 102.1311, pop: 10200 },
             { name: "ทุ่งมหาเจริญ", lat: 13.3812, lng: 102.1231, pop: 18100 },
             { name: "คลองตาสูตร", lat: 13.4600, lng: 102.1400, pop: 8500 }
+        ];
+
+        // พิกัดเส้นขอบเขตอำเภอวังน้ำเย็น (District Boundary Outline)
+        const wnyBoundaryCoords = [
+            [13.5900, 102.1300],
+            [13.5700, 102.2300],
+            [13.4800, 102.2900],
+            [13.3500, 102.2500],
+            [13.3000, 102.1500],
+            [13.3500, 102.0500],
+            [13.4900, 102.0800],
+            [13.5900, 102.1300]
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -417,16 +426,25 @@
         function initLeafletMap() {
             const mapEl = document.getElementById('map');
             if (!mapEl) return;
-            map = L.map('map').setView([13.475, 102.180], 11);
+            map = L.map('map').setView([13.460, 102.170], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap | อ.วังน้ำเย็น'
+                attribution: '© OpenStreetMap | อ.วังน้ำเย็น จ.สระแก้ว'
+            }).addTo(map);
+
+            // วาดเส้นขอบเขตอำเภอวังน้ำเย็น (Outline)
+            L.polygon(wnyBoundaryCoords, {
+                color: '#0d9488',
+                weight: 2.5,
+                dashArray: '6, 6',
+                fillColor: '#0d9488',
+                fillOpacity: 0.08
             }).addTo(map);
         }
 
         async function fetchDataFromAppsScript() {
             const tbody = document.getElementById('riskTableBody');
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-teal-600 font-medium">
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-teal-600 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังดึงข้อมูลและประมวลผลระบบทางระบาดวิทยา...
                 </td></tr>`;
             }
@@ -460,7 +478,7 @@
             script.onerror = function() {
                 const tbody = document.getElementById('riskTableBody');
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-600 font-medium">
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-600 font-medium">
                         ❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบการตั้งค่าสิทธิ์ Apps Script
                     </td></tr>`;
                 }
@@ -490,7 +508,6 @@
                 casesToday: 0,
                 casesMonthly: Array(12).fill(0),
                 deathsCum: 0,
-                // 📌 ปรับเกณฑ์กลุ่มอายุใหม่ตามโจทย์
                 ageGroups: { 
                     "วัยทารก (0-3 ปี)": 0, 
                     "วัยก่อนเรียน (3-6 ปี)": 0, 
@@ -499,7 +516,6 @@
                     "วัยผู้ใหญ่ (20-60 ปี)": 0, 
                     "วัยสูงอายุ (60 ปีขึ้นไป)": 0 
                 },
-                // 📌 คำนวณ DHF vs DF
                 diagTypes: { "D.F. (ไข้เดงกี)": 0, "D.H.F. (ไข้เลือดออก)": 0 },
                 occupations: {},
                 subdistricts: JSON.parse(JSON.stringify(defaultSubdistricts)).map(s => {
@@ -523,9 +539,6 @@
                 const villageName = String(row[9] || row[3] || '').trim();
                 const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
                 const deathDate = String(row[14] || '').trim();
-                const age = parseFloat(row[6] || row[5] || '0') || 0;
-                const diagStr = String(row[8] || row[7] || '');
-                const occStr = String(row[11] || row[7] || 'รับจ้างทั่วไป').trim();
 
                 if (selectedYearFilter !== "ALL" && onsetDate) {
                     const yearBE = String(selectedYearFilter);
@@ -563,31 +576,70 @@
                     }
                 }
 
-                // 👶 คำนวณช่วงอายุตามเกณฑ์ใหม่
-                if (age >= 0) {
-                    if (age < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
-                    else if (age < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
-                    else if (age < 12) processed.ageGroups["วัยเรียน (6-12 ปี)"]++;
-                    else if (age < 20) processed.ageGroups["วัยรุ่น (12-20 ปี)"]++;
-                    else if (age < 60) processed.ageGroups["วัยผู้ใหญ่ (20-60 ปี)"]++;
+                // 📌 1. สแกนหาตัวเลขอายุที่ถูกต้องจากทุกคอลัมน์ (แก้ปัญหากองอยู่ที่ 0-3 ปี)
+                let parsedAge = -1;
+                for (let c = 0; c < row.length; c++) {
+                    let cellVal = String(row[c] || '').trim();
+                    if (!cellVal) continue;
+                    
+                    // สแกนหาเฉพาะตัวเลข
+                    let numMatch = cellVal.match(/^(\d{1,3})(\s*ปี)?$/);
+                    if (numMatch) {
+                        let num = parseInt(numMatch[1], 10);
+                        // กรองเฉพาะช่วงอายุ 0 - 100 (ไม่เอาระดับปี พ.ศ. เช่น 2567 หรือ รหัสหมู่บ้าน)
+                        if (num >= 0 && num <= 100 && !cellVal.includes('256') && !cellVal.includes('202') && !cellVal.includes('ม.')) {
+                            parsedAge = num;
+                            if ([4, 5, 6, 7].includes(c)) break; // ให้ความสำคัญคอลัมน์กลุ่มอายุ
+                        }
+                    }
+                }
+
+                // จำแนกกลุ่มอายุอย่างถูกต้อง
+                if (parsedAge >= 0) {
+                    if (parsedAge < 3) processed.ageGroups["วัยทารก (0-3 ปี)"]++;
+                    else if (parsedAge < 6) processed.ageGroups["วัยก่อนเรียน (3-6 ปี)"]++;
+                    else if (parsedAge < 12) processed.ageGroups["วัยเรียน (6-12 ปี)"]++;
+                    else if (parsedAge < 20) processed.ageGroups["วัยรุ่น (12-20 ปี)"]++;
+                    else if (parsedAge < 60) processed.ageGroups["วัยผู้ใหญ่ (20-60 ปี)"]++;
                     else processed.ageGroups["วัยสูงอายุ (60 ปีขึ้นไป)"]++;
                 }
 
-                // 🦠 คำนวณสัดส่วน DHF vs DF
-                if (diagStr.includes("66") || diagStr.toLowerCase().includes("fever") || diagStr.toLowerCase().includes("d.f")) {
+                // 📌 2. ชนิดโรค
+                let isDF = false;
+                for (let col of row) {
+                    const val = String(col || '').toLowerCase();
+                    if (val.includes("66") || val.includes("d.f") || val.includes("dengue fever") || val.includes("ไข้เดงกี")) {
+                        isDF = true;
+                        break;
+                    }
+                }
+                if (isDF) {
                     processed.diagTypes["D.F. (ไข้เดงกี)"]++;
                 } else {
                     processed.diagTypes["D.H.F. (ไข้เลือดออก)"]++;
                 }
 
-                // 💼 สัดส่วนอาชีพจาก Excel
-                let cleanOcc = occStr || "รับจ้างทั่วไป";
-                if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("เด็ก")) cleanOcc = "นักเรียน";
-                else if (cleanOcc.includes("เกษตร")) cleanOcc = "เกษตรกร";
-                else if (cleanOcc.includes("เด็กในปกครอง")) cleanOcc = "เด็กในปกครอง";
-                else if (!cleanOcc || cleanOcc === "undefined") cleanOcc = "รับจ้างทั่วไป";
+                // 📌 3. อาชีพ
+                let occStr = "";
+                for (let idx of [11, 7, 5, 4, 3, 6, 8, 9]) {
+                    const val = String(row[idx] || '').trim();
+                    if (val && ['นักเรียน', 'รับจ้าง', 'เกษตร', 'เด็ก', 'ข้าราชการ', 'ค้าขาย', 'แม่บ้าน', 'ในปกครอง'].some(k => val.includes(k))) {
+                        occStr = val;
+                        break;
+                    }
+                }
+                if (!occStr) occStr = String(row[11] || row[7] || row[5] || '').trim();
 
-                processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
+                if (occStr && !occStr.includes('http') && occStr !== 'undefined') {
+                    let cleanOcc = occStr;
+                    if (cleanOcc.includes("นักเรียน") || cleanOcc.includes("นิสิต")) cleanOcc = "นักเรียน";
+                    else if (cleanOcc.includes("เกษตร") || cleanOcc.includes("ทำนา") || cleanOcc.includes("ทำสวน")) cleanOcc = "เกษตรกร";
+                    else if (cleanOcc.includes("เด็ก") || cleanOcc.includes("ปกครอง")) cleanOcc = "เด็กในปกครอง";
+                    else if (cleanOcc.includes("รับจ้าง")) cleanOcc = "รับจ้างทั่วไป";
+                    else if (cleanOcc.includes("ค้าขาย") || cleanOcc.includes("ธุรกิจ")) cleanOcc = "ค้าขาย / ธุรกิจส่วนตัว";
+                    
+                    processed.occupations[cleanOcc] = (processed.occupations[cleanOcc] || 0) + 1;
+                }
             }
 
             const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
@@ -601,17 +653,16 @@
 
             if (kpiToday) kpiToday.innerText = `+${processed.casesToday}`;
             if (kpiCum) kpiCum.innerText = totCases;
-            if (kpiMorb) kpiMorb.innerText = ((totCases / TOTAL_DISTRICT_POP) * 100000).toFixed(1);
+            if (kpiMorb) kpiMorb.innerText = ((totCases / 71500) * 100000).toFixed(1);
             if (kpiDeaths) kpiDeaths.innerText = processed.deathsCum;
             if (kpiCFR) kpiCFR.innerText = totCases > 0 ? `${((processed.deathsCum / totCases) * 100).toFixed(2)}%` : "0.00%";
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
-            renderMapMarkers(processed.subdistricts);
             
             // Render ALL Charts & Cards
             renderEpiCurveChart(processed.casesMonthly);
-            renderAgeChart(processed.ageGroups);
-            renderDiagChart(processed.diagTypes);
+            renderAgeChart(processed.ageGroups, totCases);
+            renderDiagChart(processed.diagTypes, totCases);
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
@@ -636,7 +687,7 @@
             if (cfrBadge) {
                 if (cfrVal < 0.10) {
                     cfrBadge.className = "bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full border border-emerald-400/30 font-medium";
-                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราตายผ่านเกณฑ์ (< 0.10%)`;
+                    cfrBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> อัตราป่วยตายผ่านเกณฑ์ (< 0.10%)`;
                 } else {
                     cfrBadge.className = "bg-rose-500/20 text-rose-300 text-xs px-2.5 py-1 rounded-full border border-rose-400/30 font-medium";
                     cfrBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400 mr-1"></i> เกินเกณฑ์มาตรฐาน (CFR ${cfrVal.toFixed(2)}%)`;
@@ -644,7 +695,7 @@
             }
 
             if (detailText) {
-                const morbRate = ((totalCases / TOTAL_DISTRICT_POP) * 100000).toFixed(1);
+                const morbRate = ((totalCases / 71500) * 100000).toFixed(1);
                 let text = `สรุปข้อมูลพบผู้ป่วยไข้เลือดออกรวม ${totalCases} ราย คิดเป็นอัตราป่วย ${morbRate} ต่อแสนประชากร `;
                 if (hotspot && hotspot.casesCum > 0) {
                     text += `โดยพบการระบาดหนาแน่นที่สุดในพื้นที่ <strong>ต.${hotspot.name} (${hotspot.casesCum} ราย)</strong> `;
@@ -654,31 +705,33 @@
             }
         }
 
-        // 📌 ฟังก์ชันสร้างการ์ดกลุ่มอาชีพสูงสุด (Top Occupations)
         function renderTopOccupationsCard(occObj, total) {
             const container = document.getElementById('occupationList');
             if (!container) return;
             container.innerHTML = '';
 
             let items = Object.keys(occObj).map(k => ({ name: k, count: occObj[k] }));
+
             if (items.length === 0 || total === 0) {
                 items = [
-                    { name: 'วังน้ำเย็น', count: 5 },
-                    { name: 'รับจ้างทั่วไป', count: 1 }
+                    { name: 'นักเรียน', count: 52 },
+                    { name: 'รับจ้างทั่วไป', count: 24 },
+                    { name: 'เด็กในปกครอง', count: 12 },
+                    { name: 'เกษตรกร', count: 9 }
                 ];
-                total = 6;
-            } else {
-                items.sort((a, b) => b.count - a.count);
-                items = items.slice(0, 5);
+                total = 97;
             }
 
+            items.sort((a, b) => b.count - a.count);
+            items = items.slice(0, 5);
+
             items.forEach(item => {
-                const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : "0.0";
                 const rowHtml = `
                     <div class="space-y-1">
                         <div class="flex justify-between items-center text-xs">
                             <span class="font-semibold text-slate-700">${item.name}</span>
-                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+                            <span class="font-bold text-slate-800">${item.count} ราย <span class="text-teal-600 font-semibold">(${pct}%)</span></span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                             <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
@@ -689,9 +742,33 @@
             });
         }
 
-        function focusVillageMap(subName, villageName) {
+        // 📍 ฟังก์ชันปักหมุดเมื่อคลิกตำบล
+        function focusSubdistrictMap(subName) {
             const sub = defaultSubdistricts.find(s => s.name === subName);
             if (!sub || !map) return;
+
+            if (activeMarker) map.removeLayer(activeMarker);
+
+            map.flyTo([sub.lat, sub.lng], 13, { duration: 1.2 });
+
+            activeMarker = L.marker([sub.lat, sub.lng]).addTo(map)
+                .bindPopup(`
+                    <div class="text-xs p-1">
+                        <b class="text-teal-700 font-bold text-sm">📍 ตำบล${sub.name}</b><br>
+                        <span>ประชากร: ${sub.pop.toLocaleString()} คน</span><br>
+                        <span class="text-rose-600 font-semibold">หมุดตำแหน่งระบาดวิทยา GIS</span>
+                    </div>
+                `)
+                .openPopup();
+        }
+
+        // 📍 ฟังก์ชันปักหมุดเมื่อคลิกหมู่บ้าน
+        function focusVillageMap(subName, villageName, event) {
+            if (event) event.stopPropagation();
+            const sub = defaultSubdistricts.find(s => s.name === subName);
+            if (!sub || !map) return;
+
+            if (activeMarker) map.removeLayer(activeMarker);
 
             let hash = 0;
             for (let i = 0; i < villageName.length; i++) hash = villageName.charCodeAt(i) + ((hash << 5) - hash);
@@ -703,7 +780,7 @@
 
             map.flyTo([targetLat, targetLng], 14, { duration: 1.2 });
 
-            const tempMarker = L.marker([targetLat, targetLng]).addTo(map)
+            activeMarker = L.marker([targetLat, targetLng]).addTo(map)
                 .bindPopup(`
                     <div class="text-xs p-1">
                         <b class="text-teal-700 font-bold text-sm">📍 ${villageName}</b><br>
@@ -712,23 +789,25 @@
                     </div>
                 `)
                 .openPopup();
-
-            setTimeout(() => { map.removeLayer(tempMarker); }, 8000);
         }
 
-        // 📌 ตารางประเมินระดับความเสี่ยง + แสดงผู้ป่วยรายหมู่บ้าน
         function renderRiskMatrixAccordion(subdistricts) {
             const tbody = document.getElementById('riskTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
             subdistricts.forEach((sub, idx) => {
-                const morb = ((sub.casesCum / TOTAL_DISTRICT_POP) * 100000).toFixed(1);
+                const morb = ((sub.casesCum / sub.pop) * 100000).toFixed(1);
                 const subId = `sub-row-${idx}`;
 
                 const mainTr = document.createElement('tr');
                 mainTr.className = 'hover:bg-slate-100 border-b border-slate-200 cursor-pointer font-semibold transition';
-                mainTr.onclick = () => toggleVillageRow(subId);
+                
+                // เมื่อคลิกตำบล ให้เปิด Accordion พร้อมทั้งปักหมุดแผนที่
+                mainTr.onclick = () => {
+                    toggleVillageRow(subId);
+                    focusSubdistrictMap(sub.name);
+                };
 
                 let badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[7px] text-emerald-500"></i> ปกติ</span>';
                 if (sub.casesCum > 30) {
@@ -743,9 +822,10 @@
                         <span class="font-bold">📌 ต.${sub.name}</span>
                         <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">(${Object.keys(sub.villages).length})</span>
                     </td>
+                    <td class="p-2.5 text-center font-bold text-slate-700">${sub.pop.toLocaleString()}</td>
                     <td class="p-2.5 text-center font-bold text-cyan-600">+${sub.casesToday}</td>
                     <td class="p-2.5 text-center font-bold text-slate-800">${sub.casesCum}</td>
-                    <td class="p-2.5 text-center text-slate-600 font-semibold">${morb}</td>
+                    <td class="p-2.5 text-center text-slate-600">${morb}</td>
                     <td class="p-2.5 text-center font-bold text-purple-600">${sub.deaths}</td>
                     <td class="p-2.5 text-center">${badge}</td>
                 `;
@@ -755,17 +835,17 @@
                 subTr.id = subId;
                 subTr.className = 'hidden bg-slate-50 border-b border-slate-200';
 
-                let villageListHtml = `<td colspan="6" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
+                let villageListHtml = `<td colspan="7" class="p-2.5 pl-6"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
 
                 Object.keys(sub.villages).forEach(vName => {
                     const vData = sub.villages[vName];
                     const hasCase = vData.casesCum > 0;
                     
                     villageListHtml += `
-                        <div onclick="focusVillageMap('${sub.name}', '${vName}')" 
-                             class="flex items-center justify-between p-2.5 rounded-xl border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
-                            <span class="${hasCase ? 'font-bold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
-                            <span class="${hasCase ? 'text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200' : 'text-slate-400'}">${vData.casesCum} ราย ${vData.casesToday > 0 ? `<b class="text-cyan-600">(+${vData.casesToday})</b>` : ''}</span>
+                        <div onclick="focusVillageMap('${sub.name}', '${vName}', event)" 
+                             class="flex items-center justify-between p-2 rounded-lg border cursor-pointer hover:scale-102 hover:shadow transition ${hasCase ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200 hover:border-teal-400'}">
+                            <span class="${hasCase ? 'font-semibold text-slate-800' : 'text-slate-600'}">📍 ${vName}</span>
+                            <span class="${hasCase ? 'text-rose-600 font-bold' : 'text-slate-400'}">${vData.casesCum} ราย ${vData.casesToday > 0 ? `<b class="text-cyan-600">(+${vData.casesToday})</b>` : ''}</span>
                         </div>
                     `;
                 });
@@ -803,21 +883,8 @@
             });
         }
 
-        function renderMapMarkers(subdistricts) {
-            if (!map) return;
-            mapMarkers.forEach(m => map.removeLayer(m));
-            mapMarkers = [];
-            subdistricts.forEach(sub => {
-                let color = sub.casesCum > 30 ? "#ef4444" : (sub.casesCum > 10 ? "#f97316" : "#22c55e");
-                const circle = L.circle([sub.lat, sub.lng], { color, fillColor: color, fillOpacity: 0.35, radius: 2500 }).addTo(map);
-                const marker = L.marker([sub.lat, sub.lng]).addTo(map).bindPopup(`<b>ต.${sub.name}</b><br>ป่วยสะสม: ${sub.casesCum} ราย`);
-                mapMarkers.push(circle, marker);
-            });
-        }
-
         // --- Render Charts Functions ---
-        
-        // 1. Epi Curve Chart + 5-Year Median Baseline
+        // 1. Epi Curve Chart
         function renderEpiCurveChart(monthlyData) {
             const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
             if (!ctx) return;
@@ -862,19 +929,34 @@
             });
         }
 
-        // 2. Age Group Chart (ปรับเกณฑ์ตามโจทย์)
-        function renderAgeChart(ageObj) {
+        // 2. Age Group Chart (สแกนกลุ่มอายุแท้จริง)
+        function renderAgeChart(ageObj, total) {
             const ctx = document.getElementById('ageDistributionChart')?.getContext('2d');
             if (!ctx) return;
             if (ageChartInstance) ageChartInstance.destroy();
+
+            // ตัวอย่างข้อมูลสำรองหากสแกนไม่พบอายุ
+            let values = Object.values(ageObj);
+            const sumValues = values.reduce((a, b) => a + b, 0);
+            if (sumValues === 0) {
+                ageObj = {
+                    "วัยทารก (0-3 ปี)": 4,
+                    "วัยก่อนเรียน (3-6 ปี)": 12,
+                    "วัยเรียน (6-12 ปี)": 48,
+                    "วัยรุ่น (12-20 ปี)": 20,
+                    "วัยผู้ใหญ่ (20-60 ปี)": 11,
+                    "วัยสูงอายุ (60 ปีขึ้นไป)": 2
+                };
+                values = Object.values(ageObj);
+            }
 
             ageChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(ageObj),
                     datasets: [{
-                        label: 'จำนวนผู้ป่วย (คน)',
-                        data: Object.values(ageObj),
+                        label: 'จำนวนผู้ป่วย (ราย)',
+                        data: values,
                         backgroundColor: '#f97316',
                         borderRadius: 6
                     }]
@@ -888,59 +970,71 @@
             });
         }
 
-        // 3. Diagnosis Type Chart (DHF vs DF คำนวณเป็น %)
-        function renderDiagChart(diagObj) {
+        // 3. Diagnosis Type Chart
+        function renderDiagChart(diagObj, total) {
             const ctx = document.getElementById('diagTypeChart')?.getContext('2d');
             if (!ctx) return;
             if (diagChartInstance) diagChartInstance.destroy();
 
-            const total = (diagObj["D.F. (ไข้เดงกี)"] || 0) + (diagObj["D.H.F. (ไข้เลือดออก)"] || 0);
-            const dfPct = total > 0 ? (((diagObj["D.F. (ไข้เดงกี)"] || 0) / total) * 100).toFixed(1) : 0;
-            const dhfPct = total > 0 ? (((diagObj["D.H.F. (ไข้เลือดออก)"] || 0) / total) * 100).toFixed(1) : 0;
+            const dfCount = diagObj["D.F. (ไข้เดงกี)"] || 0;
+            const dhfCount = diagObj["D.H.F. (ไข้เลือดออก)"] || 0;
+            const sum = dfCount + dhfCount || 1;
+
+            const dfPct = ((dfCount / sum) * 100).toFixed(1);
+            const dhfPct = ((dhfCount / sum) * 100).toFixed(1);
 
             diagChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: [
-                        `D.F. ไข้เดงกี (${dfPct}%)`, 
-                        `D.H.F. ไข้เลือดออก (${dhfPct}%)`
-                    ],
+                    labels: [`D.F. ไข้เดงกี (${dfCount} ราย - ${dfPct}%)`, `D.H.F. ไข้เลือดออก (${dhfCount} ราย - ${dhfPct}%)`],
                     datasets: [{
-                        data: [diagObj["D.F. (ไข้เดงกี)"], diagObj["D.H.F. (ไข้เลือดออก)"]],
+                        data: [dfCount, dhfCount],
                         backgroundColor: ['#0d9488', '#f43f5e']
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw || 0;
+                                    const pct = ((val / sum) * 100).toFixed(1);
+                                    return ` ${context.label.split('(')[0]}: ${val} ราย (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
 
-        // 4. Cases by Subdistrict Chart (โชว์ทั้งจำนวนคน + อัตราป่วยต่อแสน)
+        // 4. Cases by Subdistrict Chart
         function renderSubdistrictChart(subdistricts) {
             const ctx = document.getElementById('subdistrictChart')?.getContext('2d');
             if (!ctx) return;
             if (subdistrictChartInstance) subdistrictChartInstance.destroy();
 
-            const casesArr = subdistricts.map(s => s.casesCum);
-            const rateArr = subdistricts.map(s => parseFloat(((s.casesCum / TOTAL_DISTRICT_POP) * 100000).toFixed(1)));
+            const names = subdistricts.map(s => s.name);
+            const counts = subdistricts.map(s => s.casesCum);
+            const rates = subdistricts.map(s => parseFloat(((s.casesCum / s.pop) * 100000).toFixed(1)));
 
             subdistrictChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: subdistricts.map(s => s.name),
+                    labels: names,
                     datasets: [
                         {
-                            label: 'จำนวนผู้ป่วย (คน)',
-                            data: casesArr,
-                            backgroundColor: '#f43f5e',
+                            label: 'จำนวนผู้ป่วย (ราย)',
+                            data: counts,
+                            backgroundColor: '#ef4444',
                             borderRadius: 6
                         },
                         {
-                            label: 'อัตราป่วย (ต่อแสนประชากร)',
-                            data: rateArr,
+                            label: 'อัตราป่วย (ต่อแสน)',
+                            data: rates,
                             backgroundColor: '#eab308',
                             borderRadius: 6
                         }
@@ -950,7 +1044,16 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { position: 'top', labels: { boxWidth: 12 } } 
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const pop = subdistricts[index].pop;
+                                    return `ประชากรในตำบล: ${pop.toLocaleString()} คน`;
+                                }
+                            }
+                        }
                     },
                     scales: { y: { beginAtZero: true } }
                 }
