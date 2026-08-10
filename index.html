@@ -122,8 +122,8 @@
 
                     <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shrink-0 self-start md:self-auto">
                         <div class="text-center px-2">
-                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวมทุกตำบล</p>
-                            <p class="text-sm font-bold text-teal-300 font-heading mt-0.5">71,500 คน</p>
+                            <p class="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">ประชากรรวม อ.วังน้ำเย็น</p>
+                            <p class="text-sm font-bold text-teal-300 font-heading mt-0.5">59,894 คน</p>
                         </div>
                         <div class="w-px h-8 bg-white/20"></div>
                         <div class="text-center px-2">
@@ -382,6 +382,7 @@
     <!-- ⚙️ JavaScript ทำงานหลักทั้งหมด -->
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8KgtIpGZglMZbawm6Rn55i19_EdEnH7H4BDhFfzIRN2roFpZtl1mspK54IU6yObEABw/exec";
+        const TOTAL_DISTRICT_POPULATION = 59894; // ประชากรรวม อ.วังน้ำเย็น
 
         let map = null;
         let mapMarkers = [];
@@ -416,7 +417,7 @@
         function handleMainLogin(e) {
             e.preventDefault();
             const u = document.getElementById('loginUser') ? document.getElementById('loginUser').value.trim() : '';
-            const p = document.getElementById('loginPass') ? document.getElementById('loginPass'].value.trim() : '';
+            const p = document.getElementById('loginPass') ? document.getElementById('loginPass').value.trim() : '';
             
             if ((u === 'admin' || u === 'wny001') && p === 'wny1234') {
                 sessionStorage.setItem('isLoggedIn', 'true');
@@ -572,18 +573,16 @@
             return null;
         }
 
-        // 📌 ฟังก์ชันอ่านข้อมูล Sheet 2 แบบไดนามิก 100% ตรงตาม Sheet ทุกประการ
         function getHiDataSourceAndVillages() {
             let villagesBySubdistrict = {};
             if (!rawSheet2Data || rawSheet2Data.length === 0) return villagesBySubdistrict;
 
-            let currentSubdistrict = "วังน้ำเย็น"; // ค่าเริ่มต้น
+            let currentSubdistrict = "วังน้ำเย็น";
 
             for (let i = 0; i < rawSheet2Data.length; i++) {
                 let row = rawSheet2Data[i];
                 if (!row || row.length === 0) continue;
 
-                // ตรวจสอบทุกเซลล์ในแถวเพื่อหาชื่อตำบล
                 for (let c = 0; c < row.length; c++) {
                     let cellVal = String(row[c] || '').trim();
                     if (cellVal.includes('ตำบล') || cellVal.includes('ต.')) {
@@ -598,7 +597,6 @@
                     villagesBySubdistrict[currentSubdistrict] = [];
                 }
 
-                // วนลูปอ่านข้อมูลบล็อกละ 3 คอลัมน์ (ชื่อหมู่บ้าน, มิ.ย., ก.ค.)
                 for (let c = 0; c < row.length; c += 3) {
                     let villageCell = row[c];
                     let junCell = row[c + 1];
@@ -613,7 +611,6 @@
                         let junVal = parseFloat(junCell);
                         let julVal = parseFloat(julCell);
 
-                        // ป้องกันหมู่บ้านซ้ำในตำบลเดียวกัน
                         if (!villagesBySubdistrict[currentSubdistrict].some(v => v.village === village)) {
                             villagesBySubdistrict[currentSubdistrict].push({
                                 village: village,
@@ -702,12 +699,13 @@
                 const vObj = {};
                 vList.forEach(v => vObj[v.village] = { casesCum: 0, casesToday: 0 });
                 
-                let popEst = 15000;
+                // จัดสรรสัดส่วนประชากรโดยอิงจาก 59,894 คน เฉลี่ยตามจำนวนหมู่บ้าน
+                let popEst = Math.round(TOTAL_DISTRICT_POPULATION / (subdistrictNames.length || 1));
                 let lat = 13.4600, lng = 102.1700;
-                if (subName.includes("วังน้ำเย็น")) { popEst = 21500; lat = 13.5015; lng = 102.1812; }
-                else if (subName.includes("ตาหลังใน")) { popEst = 13200; lat = 13.4331; lng = 102.2543; }
-                else if (subName.includes("คลองหินปูน")) { popEst = 10200; lat = 13.5580; lng = 102.1311; }
-                else if (subName.includes("ทุ่งมหาเจริญ")) { popEst = 18100; lat = 13.3812; lng = 102.1231; }
+                if (subName.includes("วังน้ำเย็น")) { lat = 13.5015; lng = 102.1812; }
+                else if (subName.includes("ตาหลังใน")) { lat = 13.4331; lng = 102.2543; }
+                else if (subName.includes("คลองหินปูน")) { lat = 13.5580; lng = 102.1311; }
+                else if (subName.includes("ทุ่งมหาเจริญ")) { lat = 13.3812; lng = 102.1231; }
 
                 return {
                     name: subName,
@@ -723,7 +721,7 @@
 
             if (dynamicSubdistricts.length === 0) {
                 dynamicSubdistricts = [
-                    { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: 21500, casesCum: 0, casesToday: 0, deaths: 0, villages: {} }
+                    { name: "วังน้ำเย็น", lat: 13.5015, lng: 102.1812, pop: TOTAL_DISTRICT_POPULATION, casesCum: 0, casesToday: 0, deaths: 0, villages: {} }
                 ];
             }
 
@@ -839,11 +837,10 @@
             }
 
             const totCases = processed.subdistricts.reduce((a, b) => a + b.casesCum, 0);
-            const totalPopAll = processed.subdistricts.reduce((a, b) => a + b.pop, 0);
 
             document.getElementById('kpiTodayCases').innerText = `+${processed.casesToday}`;
             document.getElementById('kpiCumCases').innerText = totCases;
-            document.getElementById('kpiMorbidity').innerText = ((totCases / totalPopAll) * 100000).toFixed(1);
+            document.getElementById('kpiMorbidity').innerText = ((totCases / TOTAL_DISTRICT_POPULATION) * 100000).toFixed(1);
             document.getElementById('kpiCumDeaths').innerText = processed.deathsCum;
             document.getElementById('kpiCFR').innerText = totCases > 0 ? `${((processed.deathsCum / totCases) * 100).toFixed(2)}%` : "0.00%";
 
@@ -948,7 +945,6 @@
             });
         }
 
-        // 📌 แสดงผลตาราง HI/CI พร้อมติดป้ายแดงหมู่บ้านที่พบผู้ป่วย
         function renderHiSurveillanceTable(sheet2Map, vCasesMap = {}) {
             const selectedMonth = document.getElementById('hiMonthSelect')?.value || 'jul';
             const accordionContainer = document.getElementById('hiSubdistrictAccordion');
