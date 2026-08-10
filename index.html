@@ -163,17 +163,17 @@
                 </div>
             </section>
 
-            <!-- 📊 แถวที่ 1: กราฟ Epi Curve + กราฟแยกรายตำบล -->
+            <!-- 📊 แถวที่ 1: กราฟสรุปจำนวนผู้ป่วยรายเดือน + กราฟแยกรายตำบล -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Chart 1: Epi Curve -->
+                <!-- Chart 1: จำนวนผู้ป่วยรายเดือน (Monthly Cases) -->
                 <div class="lg:col-span-7 glass-card rounded-2xl p-5">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-area text-teal-600"></i> จำนวนผู้ป่วยรายเดือน เปรียบเทียบมัธยฐาน 5 ปีย้อนหลัง (Epi Curve)
+                                <i class="fa-solid fa-chart-line text-teal-600"></i> จำนวนผู้ป่วยจำแนกรายเดือน (Monthly Cases)
                             </h3>
-                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน 5 ปีย้อนหลัง</p>
+                            <p id="epiCurveSubtitle" class="text-xs text-slate-500">แสดงแนวโน้มจำนวนผู้ป่วยสะสมจริงรายเดือนจากฐานข้อมูล</p>
                         </div>
                     </div>
                     <div class="relative w-full h-72 mt-2"><canvas id="epiCurveChart"></canvas></div>
@@ -233,7 +233,7 @@
 
             </section>
 
-            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) - อัปเดตตรงตาม Sheet 2 -->
+            <!-- 🏡 3. ระบบเฝ้าระวังระดับหมู่บ้าน (ดัชนี HI/CI) -->
             <section class="glass-card rounded-2xl p-5 space-y-4 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                     <div>
@@ -251,7 +251,6 @@
 
                 <!-- แถบสรุปสถานะการเฝ้าระวัง 3 สีใหญ่ -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <!-- การ์ดสีเขียว -->
                     <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-base md:text-lg">
                             <span class="w-3.5 h-3.5 bg-emerald-300 rounded-full inline-block animate-pulse"></span>
@@ -260,7 +259,6 @@
                         <span id="hiSafeCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
                     </div>
 
-                    <!-- การ์ดสีส้ม -->
                     <div class="bg-amber-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-base md:text-lg">
                             <span class="w-3.5 h-3.5 bg-amber-200 rounded-full inline-block animate-pulse"></span>
@@ -269,7 +267,6 @@
                         <span id="hiRiskCount" class="text-3xl md:text-4xl font-extrabold font-heading">0</span>
                     </div>
 
-                    <!-- การ์ดสีแดง -->
                     <div class="bg-rose-600 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-2 font-bold text-base md:text-lg">
                             <span class="w-3.5 h-3.5 bg-rose-300 rounded-full inline-block animate-pulse"></span>
@@ -322,7 +319,7 @@
             <!-- 🗺️📋 ส่วนล่างสุด: แผนที่ GIS สระแก้ว และ ตารางประเมินความเสี่ยงรายหมู่บ้าน -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                <!-- แผนที่ GIS (แสดงจุดแดงตำบล) -->
+                <!-- แผนที่ GIS -->
                 <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 sticky top-20">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -443,7 +440,7 @@
         let diagChartInstance = null;
         let subdistrictChartInstance = null;
 
-        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง (Data Labels)
+        // 📌 Plugin แสดงตัวเลขบนหัวกราฟแท่ง
         const topBarLabelsPlugin = {
             id: 'topBarLabels',
             afterDatasetsDraw(chart) {
@@ -469,9 +466,8 @@
         };
         Chart.register(topBarLabelsPlugin);
 
-        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2 (ถอดตรงตามภาพ 100%)
+        // 📌 ฐานข้อมูลดัชนีลูกน้ำยุงลาย Sheet 2
         const hiSheet2Master = [
-            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 1) ---
             { village: "หมู่ 3 บ้านสวนป่า", subdistrict: "วังน้ำเย็น", jun: 16.59, jul: 11.37 },
             { village: "หมู่ 4 บ้านเกษตรแก้ว", subdistrict: "วังน้ำเย็น", jun: 6.54, jul: 5.88 },
             { village: "หมู่ 5 บ้านวังแดง", subdistrict: "วังน้ำเย็น", jun: 11.69, jul: 15.58 },
@@ -482,8 +478,6 @@
             { village: "หมู่ 10 บ้านวังเจริญ", subdistrict: "วังน้ำเย็น", jun: 11.00, jul: 11.00 },
             { village: "หมู่ 13 บ้านมิตรสัมพันธ์", subdistrict: "วังน้ำเย็น", jun: 10.29, jul: 4.00 },
             { village: "หมู่ 14 บ้านวังศิลา", subdistrict: "วังน้ำเย็น", jun: 5.06, jul: 3.89 },
-
-            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 2) ---
             { village: "หมู่ 15 บ้านโคกสว่าง", subdistrict: "วังน้ำเย็น", jun: 20.41, jul: 22.45 },
             { village: "หมู่ 16 บ้านวังชมภู", subdistrict: "วังน้ำเย็น", jun: 10.71, jul: 10.71 },
             { village: "หมู่ 17 บ้านท่าเกวียน", subdistrict: "วังน้ำเย็น", jun: 22.31, jul: 13.08 },
@@ -494,8 +488,6 @@
             { village: "หมู่ 2 บ้านศรีเจริญ", subdistrict: "วังน้ำเย็น", jun: 35.75, jul: 28.42 },
             { village: "หมู่ 7 บ้านคลองทราย", subdistrict: "วังน้ำเย็น", jun: 10.59, jul: 12.35 },
             { village: "หมู่ 11 บ้านชัยมงคล", subdistrict: "วังน้ำเย็น", jun: 29.17, jul: 20.83 },
-
-            // --- ตำบลวังน้ำเย็น (คอลัมน์ที่ 3) ---
             { village: "หมู่ 12 บ้านภูเวียง", subdistrict: "วังน้ำเย็น", jun: 9.18, jul: 12.24 },
             { village: "หมู่ 18 บ้านวังบูรพา", subdistrict: "วังน้ำเย็น", jun: 9.24, jul: 6.72 },
             { village: "ชุมชน 2 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 9.48, jul: 27.59 },
@@ -506,16 +498,12 @@
             { village: "ชุมชน 7 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 14.63, jul: 25.20 },
             { village: "ชุมชน 8 หมู่ 1", subdistrict: "วังน้ำเย็น", jun: 10.43, jul: 28.33 },
             { village: "ชุมชน 10 หมู่ 2", subdistrict: "วังน้ำเย็น", jun: 35.00, jul: 6.67 },
-
-            // --- ตำบลตาหลังใน ---
             { village: "หมู่ 1 ตาหลังใน", subdistrict: "ตาหลังใน", jun: 3.60, jul: 8.00 },
             { village: "หมู่ 2 หนองปรือ", subdistrict: "ตาหลังใน", jun: 15.00, jul: 19.00 },
             { village: "หมู่ 15 บ้านหนองศาลา", subdistrict: "ตาหลังใน", jun: 27.50, jul: 28.75 },
             { village: "หมู่ 16 บ้านตาหลังใน", subdistrict: "ตาหลังใน", jun: 14.41, jul: 14.41 },
             { village: "หมู่ 21 บ้านสลักได", subdistrict: "ตาหลังใน", jun: 12.00, jul: 11.00 },
             { village: "ตาหลังใหม่ชัยเจริญ", subdistrict: "ตาหลังใน", jun: 0.00, jul: 0.00 },
-
-            // --- ตำบลอื่นๆ ---
             { village: "ทรัพย์เจริญ", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
             { village: "หนองสมบูรณ์", subdistrict: "คลองหินปูน", jun: 0.00, jul: 0.00 },
             { village: "ไพรวัลย์", subdistrict: "ทุ่งมหาเจริญ", jun: 0.00, jul: 0.00 }
@@ -667,74 +655,31 @@
             processAndRenderData();
         }
 
+        // 📌 ฟังก์ชันดึงเดือนจากสตริงวันที่แบบยืดหยุ่น
         function getMonthFromDateStr(dateStr) {
             if (!dateStr) return -1;
-            if (dateStr.includes('/')) {
-                const parts = dateStr.split('/');
+            const str = String(dateStr).trim();
+            
+            // Format: DD/MM/YYYY หรือ D/M/YYYY
+            if (str.includes('/')) {
+                const parts = str.split('/');
                 if (parts.length === 3) {
                     const m = parseInt(parts[1], 10) - 1;
                     if (m >= 0 && m <= 11) return m;
                 }
             }
-            const d = new Date(dateStr);
+            // Format: YYYY-MM-DD
+            else if (str.includes('-')) {
+                const parts = str.split('-');
+                if (parts.length === 3) {
+                    const m = parseInt(parts[1], 10) - 1;
+                    if (m >= 0 && m <= 11) return m;
+                }
+            }
+
+            const d = new Date(str);
             if (!isNaN(d.getTime())) return d.getMonth();
             return -1;
-        }
-
-        function calculateDynamic5YearMedian(currentYearBE) {
-            const currentY = parseInt(currentYearBE, 10);
-            const priorYears = [currentY - 5, currentY - 4, currentY - 3, currentY - 2, currentY - 1];
-            
-            const yearCounts = {};
-            priorYears.forEach(y => {
-                yearCounts[y] = Array(12).fill(0);
-            });
-
-            for (let i = 0; i < rawSheetData.length; i++) {
-                const row = rawSheetData[i];
-                if (!row || !Array.isArray(row) || row.length === 0) continue;
-
-                const strRow = JSON.stringify(row);
-                if (strRow.includes('ชื่อ-สกุล') || strRow.includes('ลำดับ') || strRow.includes('ชื่อโรค')) continue;
-
-                const onsetDate = String(row[12] || row[4] || row[0] || '').trim();
-                const subNameFromCol = String(row[10] || '').trim();
-
-                let isWny = defaultSubdistricts.some(s => subNameFromCol.includes(s.name));
-                if (!isWny) {
-                    for (let c = 0; c < row.length; c++) {
-                        let cellVal = String(row[c] || '');
-                        if (defaultSubdistricts.some(s => cellVal.includes(s.name))) { isWny = true; break; }
-                    }
-                }
-                if (!isWny) continue;
-
-                priorYears.forEach(yBE => {
-                    const yAD = String(yBE - 543);
-                    if (onsetDate && (onsetDate.includes(String(yBE)) || onsetDate.includes(yAD))) {
-                        const mIdx = getMonthFromDateStr(onsetDate);
-                        if (mIdx >= 0 && mIdx <= 11) {
-                            yearCounts[yBE][mIdx]++;
-                        }
-                    }
-                });
-            }
-
-            const medianMonthly = Array(12).fill(0);
-            for (let m = 0; m < 12; m++) {
-                const vals = priorYears.map(y => yearCounts[y][m]);
-                vals.sort((a, b) => a - b);
-                
-                const hasData = vals.some(v => v > 0);
-                if (hasData) {
-                    medianMonthly[m] = vals[2];
-                } else {
-                    const defaultScale = [1, 1, 2, 3, 4, 6, 5, 4, 3, 2, 1, 1];
-                    medianMonthly[m] = defaultScale[m];
-                }
-            }
-
-            return medianMonthly;
         }
 
         function processAndRenderData() {
@@ -817,6 +762,7 @@
                     }
                 }
 
+                // สรุปยอดผู้ป่วยแยกรายเดือนตามฐานข้อมูลจริง
                 const monthIdx = getMonthFromDateStr(onsetDate);
                 if (monthIdx >= 0 && monthIdx <= 11) {
                     processed.casesMonthly[monthIdx] += 1;
@@ -901,22 +847,73 @@
             if (kpiCFR) kpiCFR.innerText = totCases > 0 ? `${((processed.deathsCum / totCases) * 100).toFixed(2)}%` : "0.00%";
 
             updateYearEndSummaryCard(processed, totCases, selectedYearFilter);
-            
-            const dynamicMedianData = calculateDynamic5YearMedian(selectedYearFilter);
 
             // Render ALL Charts & Cards
-            renderEpiCurveChart(processed.casesMonthly, dynamicMedianData);
+            renderEpiCurveChart(processed.casesMonthly);
             renderAgeChart(processed.ageGroups, totCases);
             renderDiagChart(processed.diagTypes, totCases);
             renderSubdistrictChart(processed.subdistricts);
             renderTopOccupationsCard(processed.occupations, totCases);
 
-            // 🏡 Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
+            // Render ตารางเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
             renderHiSurveillanceTable(processed.villageCasesMap);
 
             // Render Map Markers & Table
             renderMapMarkers(processed.subdistricts);
             renderRiskMatrixAccordion(processed.subdistricts);
+        }
+
+        // 📌 ฟังก์ชันแสดงกราฟจำนวนผู้ป่วยรายเดือนแบบตรงตามฐานข้อมูลจริง (ไม่รวมย้อนหลัง)
+        function renderEpiCurveChart(monthlyData) {
+            const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
+            if (!ctx) return;
+            if (epiChartInstance) epiChartInstance.destroy();
+
+            const subTitleEl = document.getElementById('epiCurveSubtitle');
+            if (subTitleEl) {
+                subTitleEl.innerText = `แสดงแนวโน้มจำนวนผู้ป่วยสะสมจริงรายเดือน ประจำปี พ.ศ. ${selectedYearFilter}`;
+            }
+
+            epiChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
+                    datasets: [
+                        {
+                            label: `ปี พ.ศ. ${selectedYearFilter}`,
+                            data: monthlyData,
+                            borderColor: '#0d9488',
+                            backgroundColor: 'rgba(13, 148, 136, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#0d9488',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ผู้ป่วย: ${context.raw} ราย`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grace: '15%',
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
         }
 
         // 📌 ฟังก์ชันจัดการระบบเฝ้าระวังระดับหมู่บ้าน HI/CI (Sheet 2)
@@ -928,7 +925,6 @@
             currentHiList = hiSheet2Master.map(item => {
                 const hiValue = selectedMonth === 'jul' ? item.jul : item.jun;
                 
-                // คำนวณผู้ป่วยสะสมรายหมู่บ้าน
                 let caseCnt = 0;
                 for (let vKey in vCasesMap) {
                     if (vKey.includes(item.village) || item.village.includes(vKey)) {
@@ -936,7 +932,6 @@
                     }
                 }
                 
-                // คำนวณสถานะตามเกณฑ์ HI (HI < 5: เฝ้าระวัง, 5-10: เสี่ยง, >10: ระบาด)
                 let status = "เฝ้าระวัง";
                 if (hiValue > 10) status = "ระบาด";
                 else if (hiValue >= 5) status = "เสี่ยง";
@@ -1260,58 +1255,6 @@
                 opt.value = v;
                 opt.innerText = v;
                 select.appendChild(opt);
-            });
-        }
-
-        // --- Render Charts Functions ---
-        function renderEpiCurveChart(monthlyData, medianData) {
-            const ctx = document.getElementById('epiCurveChart')?.getContext('2d');
-            if (!ctx) return;
-            if (epiChartInstance) epiChartInstance.destroy();
-
-            const curYearBE = parseInt(selectedYearFilter, 10);
-            const startYearBE = curYearBE - 5;
-            const endYearBE = curYearBE - 1;
-
-            const subTitleEl = document.getElementById('epiCurveSubtitle');
-            if (subTitleEl) {
-                subTitleEl.innerText = `เปรียบเทียบแนวโน้มการระบาดรายเดือนกับค่ามัธยฐาน 5 ปีย้อนหลัง (พ.ศ. ${startYearBE} - ${endYearBE})`;
-            }
-
-            epiChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
-                    datasets: [
-                        {
-                            label: `ปี พ.ศ. ${selectedYearFilter}`,
-                            data: monthlyData,
-                            borderColor: '#0d9488',
-                            backgroundColor: 'rgba(13, 148, 136, 0.15)',
-                            fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#0d9488',
-                            pointRadius: 4
-                        },
-                        {
-                            label: `มัธยฐาน 5 ปี (${startYearBE} - ${endYearBE})`,
-                            data: medianData,
-                            borderColor: '#94a3b8',
-                            borderDash: [5, 5],
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 3,
-                            pointBackgroundColor: '#94a3b8'
-                        }
-                    ]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } }
-                    }
-                }
             });
         }
 
